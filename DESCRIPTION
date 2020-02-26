@@ -1,0 +1,19 @@
+Package: rsegregation
+Type: Package
+Title: Calculate Empirical Measures of Segregation
+Version: 0.0.1
+Author: Arthur Gailes
+Maintainer: Arthur Gailes <arthurgailes@berkeley.edu>
+Description: Provides functions for several empirical measures of racial segregation.
+    Includes divergence, entropy, dissimilarity, exposure, isolation, and location quotient.
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+Depends: R (>= 3.3.0),
+Suggests:
+  dplyr (>= 0.8.0),
+  tidyr,
+  tidycensus
+RoxygenNote: 6.1.1
+VignetteBuilder: knitr
