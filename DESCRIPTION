@@ -4,8 +4,9 @@ Title: Calculate Empirical Measures of Segregation
 Version: 0.0.1
 Author: Arthur Gailes
 Maintainer: Arthur Gailes <arthurgailes@berkeley.edu>
-Description: Provides functions for several empirical measures of racial segregation.
+Description: Provides functions for several empirical measures of racial segregation within a tidy framework.
     Includes divergence, entropy, dissimilarity, exposure, isolation, and location quotient.
+    Package produced and distributed by the Othering & Belonging Institute at UC Berkeley.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
