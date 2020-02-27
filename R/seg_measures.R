@@ -137,7 +137,7 @@ divergence <- function(..., totalPop = NULL){
   i = 0
   for(race in races){
     # create race proportion
-    race_bigGeo <- sumna(race) / sumna(totalPop)
+    race_bigGeo <- sum(race, na.rm=TRUE) / sum(totalPop, na.rm=TRUE)
     race <- ifelse(totalPop == 0, 0, race / totalPop)
     i = i + 1
     score <- ifelse(race <= 0 | race_bigGeo <= 0, 0,

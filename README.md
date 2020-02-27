@@ -19,19 +19,18 @@ install.packages("rsegregation")
 ```
 -->
 
-And the development version from [GitHub](https://github.com/) with:
+And the development version from [GitHub](https://github.com/)
+    with:
 
-``` r
-# install.packages("devtools")
-devtools::install_github("arthurgailes/rsegregation")
-```
+    #> Skipping install of 'rsegregation' from a github remote, the SHA1 (3b4a1a35) has not changed since last install.
+    #>   Use `force = TRUE` to force installation
 
 ## Example
 
 This is a basic example which shows you how to solve a common problem:
 
 ``` r
-# library(rsegregation)
+library(rsegregation)
 ## basic example code
 ```
 

@@ -30,7 +30,7 @@ install.packages("rsegregation")
 -->
 And the development version from [GitHub](https://github.com/) with:
 
-``` r
+``` {r echo=F}
 # install.packages("devtools")
 devtools::install_github("arthurgailes/rsegregation")
 ```
@@ -39,7 +39,7 @@ devtools::install_github("arthurgailes/rsegregation")
 This is a basic example which shows you how to solve a common problem:
 
 ```{r example}
-# library(rsegregation)
+library(rsegregation)
 ## basic example code
 ```
 
