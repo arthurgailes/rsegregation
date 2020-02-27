@@ -16,9 +16,9 @@
 #'  \item{`filepaths`}{Creates filenames for variables used within package for easy reading
 #'    across years. Returns variables for reading when testing package functions; if used
 #'    externally, they will be used in the global environment}
-#'  \item{`access_file`} {Wrapper function that simplifies saving files
+#'  \item{`access_file`}{Wrapper function that simplifies saving files
 #'    into the proper directory.}
-#'  \item{`censusVar`} {Wrapper for `paste0` that simplifies calling the variable with
+#'  \item{`censusVar`}{Wrapper for `paste0` that simplifies calling the variable with
 #'    the correct year.}
 #'
 #' }
