@@ -16,5 +16,5 @@ Suggests:
   dplyr (>= 0.8.0),
   tidyr,
   tidycensus
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.2
 VignetteBuilder: knitr
