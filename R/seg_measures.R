@@ -1,54 +1,118 @@
-#' Segregation measures
+#' Divergence Index
 #'
-#' Six segregation measures
+#' Calculates the divergence index of segregation
 #'
-#' @param totalPop The total population in the smallest geography being used
-#'   (usually tracts).
+#' @param totalPop The total population of the geography (e.g. Census
+#' tract) being analyzed. If not specified, deaults to the sum of the
+#' populations provided in `...`
+#'
+#' @param ... columns to be included in the calculation of the index.
+#'
+#' @param .sum If TRUE, will return one value. (Or one value per group if specifying
+#' `dplyr::group_by`.) If FALSE, will return a vector equaling the length
+#' of the input vectors.
+#'
+#' @examples
 #'
 #'
+#' @param na.rm logical. Should missing values (including NaN) be removed?
+#' @source Created by Elizabeth Robert: <https://arxiv.org/abs/1508.01167>
+#' @export
+divergence <- function(..., totalPop = NULL, na.rm=TRUE, .sum=FALSE){
+
+  races <- list(...)
+
+  # convert list of vectors into DF, then convert to percentages
+  raceMatrix <- dplyr::bind_cols(races)
+  raceMatrix[is.na(raceMatrix)] <- 0
+  #If total popuation is not provided, create from the sum of races
+  if(is.null(totalPop)) totalPop <- apply(raceMatrix, 1, sum)
+  raceMatrix <- raceMatrix / totalPop
+
+  # Create empty matrix with one column for each race
+  dat <- matrix(nrow = nrow(raceMatrix), ncol = length(races))
+  #each item in ... should be a matrix of race totals
+  i = 0
+  for(race in races){
+    # create race proportion
+    race_bigGeo <- sum(race, na.rm=TRUE) / sum(totalPop, na.rm=TRUE)
+    race <- ifelse(totalPop == 0, 0, race / totalPop)
+    i = i + 1
+    score <- ifelse(race <= 0 | race_bigGeo <= 0, 0,
+      race * log(race / race_bigGeo) )
+    #save the result in the matrix
+    dat[, i] <- score
+  }
+  #sum the results for each racial group
+  results <- rowSums(dat, na.rm = T)
+
+  results
+}
+#' Dissimilarity Score
+#'
+#' Stuff
+#'
+#' @inheritParams divergence
+#'
+#' @param group1,group2 Numeric vectors representing the popuplation of the
+#' groups to be compared.
+#'
+#' @return A vector the length of group1 & group2
+#'
+#' @export
+dissimilarity <- function(group1, group2, .sum=TRUE){
+  dissim <- 0.5 * abs(group1/sumna(group1) - group2/sumna(group2))
+  (dissim)
+}
+#' Exposure Index
+#'
+#' @inheritParams divergence
+#' @inheritParams dissimilarity
+#'
+#' @export
+exposure <- function(group1, group2, totalPop){
+  expo <- ifelse(totalPop == 0, 0,
+    ( (group1/sumna(group1)) * (group2/totalPop) )
+  )
+  (expo)
+}
+#' Isolation Index
+#'
+#' A single-group measure of the degree to which a group is isolated in
+#' the full dataset
+#'
+#' @inheritParams divergence
+#'
+#' @param group A numeric vector of population
+#'
+#' @export
+isolation <- function(group, totalPop){
+  iso <- ifelse(totalPop == 0, 0,
+    (group / sumna(group)) * (group / totalPop)
+  )
+  (iso)
+}
+#' Location Quotient
+#'
+#' @inheritParams divergence
+#' @inheritParams isolation
+#'
+#' @export
+location_quotient <- function(group, totalPop){
+  (group / totalPop) / (sumna(group) / sumna(totalPop))
+}
+#' Theil's Index of Entropy
 #'
 #' \describe{
 #'  \item{`entropy`}{Entropy score (Ei). `Ei = sum(Xim * log(1/Xim)` where Xim is the
 #'  proportion of racial group within the geography. }
 #'  \item{`entropy_score`}{Calculates the value of H (entropy index) for
 #'  large-scale geography. }
-#'  \item{`zipped_shapefile`}{Extract shapefile directory and shapefile name}
-#'  \item{`filepaths`}{Creates filenames for variables used within package for easy reading
-#'    across years. Returns variables for reading when testing package functions; if used
-#'    externally, they will be used in the global environment}
-#'  \item{`access_file`}{Wrapper function that simplifies saving files
-#'    into the proper directory.}
-#'  \item{`censusVar`}{Wrapper for `paste0` that simplifies calling the variable with
-#'    the correct year.}
+#'  }
 #'
-#' }
+#' @inheritParams divergence
 #'
-#' @name segregation_measures
-NULL
-#' @rdname segregation_measures
-dissim <- function(race1, race2){
-  dissim <- 0.5 * abs(race1/sumna(race1) - race2/sumna(race2))
-  (dissim)
-}
-#' @rdname segregation_measures
-exposure <- function(race1, race2, totalPop){
-  expo <- ifelse(totalPop == 0, 0,
-    ( (race1/sumna(race1)) * (race2/totalPop) )
-  )
-  (expo)
-}
-#' @rdname segregation_measures
-isolation <- function(race, totalPop){
-  iso <- ifelse(totalPop == 0, 0,
-    (race / sumna(race)) * (race / totalPop)
-  )
-  (iso)
-}
-#' @rdname segregation_measures
-location_quotient <- function(race, totalPop){
-  (race / totalPop) / (sumna(race) / sumna(totalPop))
-}
-#' @rdname segregation_measures
+#' @name entropy
 entropy <- function( ..., totalPop = NULL, scaled = FALSE, thresholds = FALSE){
   #each item in ... should be a vector of race populations
   races <- list(...)
@@ -110,48 +174,17 @@ entropy <- function( ..., totalPop = NULL, scaled = FALSE, thresholds = FALSE){
   }
   entropy
 }
-#' @rdname segregation_measures
+#' @rdname entropy
 entropy_index <- function(entropy_smallGeo, entropy_bigGeo){
     (entropy_bigGeo - entropy_smallGeo) / entropy_bigGeo
 }
-#' @rdname segregation_measures
+#'
+#' @rdname entropy
 entropy_score <- function(entropy_index, totalPop){
   sumna(entropy_index * (totalPop / sumna(totalPop)))
 }
-#' @rdname segregation_measures
-divergence <- function(..., totalPop = NULL){
 
-  races <- list(...)
-
-
-  # convert list of vectors into DF, then convert to percentages
-  raceMatrix <- dplyr::bind_cols(races)
-  raceMatrix[is.na(raceMatrix)] <- 0
-  #If total popuation is not provided, create from the sum of races
-  if(is.null(totalPop)) totalPop <- apply(raceMatrix, 1, sum)
-  raceMatrix <- raceMatrix / totalPop
-
-  # Create empty matrix with one column for each race
-  dat <- matrix(nrow = nrow(raceMatrix), ncol = length(races))
-  #each item in ... should be a matrix of race totals
-  i = 0
-  for(race in races){
-    # create race proportion
-    race_bigGeo <- sum(race, na.rm=TRUE) / sum(totalPop, na.rm=TRUE)
-    race <- ifelse(totalPop == 0, 0, race / totalPop)
-    i = i + 1
-    score <- ifelse(race <= 0 | race_bigGeo <= 0, 0,
-      race * log(race / race_bigGeo) )
-    #save the result in the matrix
-    dat[, i] <- score
-  }
-  #sum the results for each racial group
-  results <- rowSums(dat, na.rm = T)
-
-  results
-}
-
-#' @rdname segregation_measures
+#' Helper function to create scale from 0-100
 scale01 <- function(x, minimum = max(x, na.rm = T), maximum = max(x, na.rm = T)){
   (x-minimum)/(maximum-minimum)
-  }
+}
