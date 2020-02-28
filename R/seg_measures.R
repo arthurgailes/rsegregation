@@ -13,7 +13,13 @@
 #' of the input vectors.
 #'
 #' @examples
+#' divergence(alameda_wide$white,alameda_wide$hispanic,alameda_wide$asian,
+#' alameda_wide$black, totalPop = alameda_wide$total_pop)
 #'
+#' \dontrun{
+#' # Entering dataframe will cause an error
+#' divergence(alameda_wide[c("white","black","asian","hispanic")])
+#' }
 #'
 #' @param na.rm logical. Should missing values (including NaN) be removed?
 #' @source Created by Elizabeth Robert: <https://arxiv.org/abs/1508.01167>

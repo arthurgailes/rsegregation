@@ -5,6 +5,8 @@
 
 <!-- badges: start -->
 
+[![Travis build
+status](https://travis-ci.org/arthurgailes/rsegregation.svg?branch=master)](https://travis-ci.org/arthurgailes/rsegregation)
 <!-- badges: end -->
 
 The goal of rsegregation is to …
@@ -19,11 +21,20 @@ install.packages("rsegregation")
 ```
 -->
 
-And the development version from [GitHub](https://github.com/)
-    with:
+And the development version from [GitHub](https://github.com/) with:
 
-    #> Skipping install of 'rsegregation' from a github remote, the SHA1 (3b4a1a35) has not changed since last install.
-    #>   Use `force = TRUE` to force installation
+    #> Downloading GitHub repo arthurgailes/rsegregation@master
+    #>          checking for file 'C:\Users\agail\AppData\Local\Temp\RtmpCgwitt\remotes3bf84b321921\arthurgailes-rsegregation-3c7f704/DESCRIPTION' ...  v  checking for file 'C:\Users\agail\AppData\Local\Temp\RtmpCgwitt\remotes3bf84b321921\arthurgailes-rsegregation-3c7f704/DESCRIPTION'
+    #>       -  preparing 'rsegregation':
+    #>    checking DESCRIPTION meta-information ...     checking DESCRIPTION meta-information ...   v  checking DESCRIPTION meta-information
+    #>       -  checking for LF line-endings in source and make files and shell scripts
+    #>       -  checking for empty or unneeded directories
+    #>       -  looking to see if a 'data/datalist' file should be added
+    #>       -  building 'rsegregation_0.0.8.tar.gz'
+    #>      
+    #> 
+    #> Installing package into 'D:/Documents/R/win-library/3.6'
+    #> (as 'lib' is unspecified)
 
 ## Example
 
