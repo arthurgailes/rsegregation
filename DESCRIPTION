@@ -13,8 +13,5 @@ LazyData: true
 Roxygen: list(markdown = TRUE)
 Depends: R (>= 3.3.0),
 Suggests:
-    dplyr (>= 0.8.0),
-    tidyr,
-    tidycensus,
-    testthat
+    dplyr
 RoxygenNote: 7.0.2
