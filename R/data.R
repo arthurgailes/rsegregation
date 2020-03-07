@@ -6,9 +6,9 @@
 #' @format A data frame with columns:
 #' \describe{
 #'  \item{fips}{U.S. tract FIPS code}
-#'  \item{county}{Name of county}
-#'  \item{total_pop_2010}{Total tract population in 2010}
-#'  \item{etc}{Columns by race/ethnicity. All races except hispanic exclude hispanics (i.e. white_2010 is the subset of non-hispanic white people.)}
+#'  \item{total_pop}{Total tract population in 2010}
+#'  \item{info}{County name and year}
+#'  \item{asian,black,hispanic,white,all_other}{Columns by race/ethnicity. All races except hispanic exclude hispanics (i.e. white_2010 is the subset of non-hispanic white people.)}
 #' }
 #' @examples
 #' \dontrun{

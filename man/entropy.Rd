@@ -5,6 +5,12 @@
 \alias{entropy_index}
 \alias{entropy_score}
 \title{Theil's Index of Entropy}
+\source{
+Scale and threshold methodology from Holloway et al (2011):
+\url{https://www.tandfonline.com/doi/abs/10.1080/00330124.2011.585080}
+
+Theil, Henri. 1972. Statistical Decomposition Analysis.
+}
 \usage{
 entropy(..., totalPop = NULL, scaled = FALSE, thresholds = FALSE)
 
@@ -18,12 +24,37 @@ entropy_score(entropy_index, totalPop)
 \item{totalPop}{The total population of the geography (e.g. Census
 tract) being analyzed. If not specified, deaults to the sum of the
 populations provided in \code{...}}
+
+\item{scaled}{Scale entropy scores from 0-1. See sources}
+
+\item{thresholds}{Returns scores in from 1-3 (low-high diversity), based on the
+following criteria: \describe{
+\item{1}{Scaled entropy values less than or equal to 0.3707 or one group constitutes
+more than 80 percent of the population}
+\item{2}{All observations not coded as 1 or 3}
+\item{3}{Scaled entropy greater than 0.7414 AND no group constituting more than
+45 percent of the population}
+} See sources.}
+
+\item{entropy_smallGeo, entropy_bigGeo}{The small (e.g. tract, row) and large
+(e.g. county, group) entries.}
+
+\item{entropy_index}{Thiel's \emph{T} index}
 }
 \description{
+Entropy is used to measure the the extent to which multiple distributions conform to
+a baseline. In standard entropy (\code{entropy()}), the baseline is constant evenness. In
+Theil's \emph{T} Index
+}
+\details{
 \describe{
-\item{\code{entropy}}{Entropy score (Ei). \verb{Ei = sum(Xim * log(1/Xim)} where Xim is the
+\item{\code{entropy}}{Entropy score (Ei). \deqn{Ei = \Sigma (X_{im} * ln(1/X_{im})}{Ei = \Sigma (Xim \* ln(1/Xim))}
+where Xim is the
 proportion of racial group within the geography. }
 \item{\code{entropy_score}}{Calculates the value of H (entropy index) for
 large-scale geography. }
 }
+}
+\seealso{
+\url{https://en.wikipedia.org/wiki/Theil_index}
 }

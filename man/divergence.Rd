@@ -4,7 +4,7 @@
 \alias{divergence}
 \title{Divergence Index}
 \source{
-Created by Elizabeth Robert: \url{https://arxiv.org/abs/1508.01167}
+Created by Elizabeth Roberto: \url{https://arxiv.org/abs/1508.01167}
 }
 \usage{
 divergence(..., totalPop = NULL, na.rm = TRUE, .sum = FALSE)

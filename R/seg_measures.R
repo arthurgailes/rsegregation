@@ -22,14 +22,14 @@
 #' }
 #'
 #' @param na.rm logical. Should missing values (including NaN) be removed?
-#' @source Created by Elizabeth Robert: <https://arxiv.org/abs/1508.01167>
+#' @source Created by Elizabeth Roberto: <https://arxiv.org/abs/1508.01167>
 #' @export
 divergence <- function(..., totalPop = NULL, na.rm=TRUE, .sum=FALSE){
 
   races <- list(...)
 
   # convert list of vectors into DF, then convert to percentages
-  raceMatrix <- dplyr::bind_cols(races)
+  raceMatrix <- as.data.frame(do.call(cbind, races))
   raceMatrix[is.na(raceMatrix)] <- 0
   #If total popuation is not provided, create from the sum of races
   if(is.null(totalPop)) totalPop <- apply(raceMatrix, 1, sum)
@@ -109,27 +109,56 @@ location_quotient <- function(group, totalPop){
 }
 #' Theil's Index of Entropy
 #'
-#' \describe{
-#'  \item{`entropy`}{Entropy score (Ei). `Ei = sum(Xim * log(1/Xim)` where Xim is the
+#' Entropy is used to measure the the extent to which multiple distributions conform to
+#' a baseline. In standard entropy (`entropy()`), the baseline is constant evenness. In
+#' Theil's \emph{T} Index
+#'
+#' @param scaled Scale entropy scores from 0-1. See sources
+#'
+#' @param thresholds Returns scores in from 1-3 (low-high diversity), based on the
+#'  following criteria: \describe{
+#'  \item{1}{Scaled entropy values less than or equal to 0.3707 or one group constitutes
+#'  more than 80 percent of the population}
+#'  \item{2}{All observations not coded as 1 or 3}
+#'  \item{3}{Scaled entropy greater than 0.7414 AND no group constituting more than
+#'  45 percent of the population}
+#'  } See sources.
+#'
+#' @param entropy_index Thiel's \emph{T} index
+#'
+#' @param entropy_smallGeo,entropy_bigGeo The small (e.g. tract, row) and large
+#'  (e.g. county, group) entries.
+#'
+#' @inheritParams divergence
+#'
+#' @details \describe{
+#'  \item{`entropy`}{Entropy score (Ei). \deqn{Ei = \Sigma (X_{im} * ln(1/X_{im})}{Ei = \Sigma (Xim \* ln(1/Xim))}
+#'  where Xim is the
 #'  proportion of racial group within the geography. }
 #'  \item{`entropy_score`}{Calculates the value of H (entropy index) for
 #'  large-scale geography. }
 #'  }
 #'
-#' @inheritParams divergence
+#' @source Scale and threshold methodology from Holloway et al (2011):
+#' \url{https://www.tandfonline.com/doi/abs/10.1080/00330124.2011.585080}
 #'
+#' @source Theil, Henri. 1972. Statistical Decomposition Analysis.
+#'
+#' @seealso \url{https://en.wikipedia.org/wiki/Theil_index}
 #' @name entropy
+NULL
+#' @rdname entropy
 entropy <- function( ..., totalPop = NULL, scaled = FALSE, thresholds = FALSE){
   #each item in ... should be a vector of race populations
   races <- list(...)
 
   # convert list of vectors into DF, then convert to percentages
-  raceMatrix <- dplyr::bind_cols(races)
+  raceMatrix <- as.data.frame(do.call(cbind, races))
   raceMatrix[is.na(raceMatrix)] <- 0
   #If total popuation is not provided, create from the sum of races
   if(is.null(totalPop)) totalPop <- apply(raceMatrix, 1, sum)
   raceMatrix <- raceMatrix / totalPop
-  raceCols <- syms(colnames(raceMatrix))
+  raceCols <- (colnames(raceMatrix))
 
   #create empty matrix the length of the matrix
   dat <- matrix(nrow = nrow(raceMatrix), ncol = length(races))
@@ -159,20 +188,16 @@ entropy <- function( ..., totalPop = NULL, scaled = FALSE, thresholds = FALSE){
       # Add entropy values to DF
       raceMatrix$entropy <- entropy
 
-      raceMatrix <- raceMatrix %>%
-        mutate(entropy_thresh = cut(entropy,
-          # apply value cutoffs.
-          breaks = c(-0.1,0.3707,0.7414,1), labels = FALSE),
-          #apply population min/max filters
-          entropy_thresh = ifelse(pmax(!!!raceCols, na.rm = T) > 0.8, 1,
-          entropy_thresh),
-          entropy_thresh = ifelse((pmax(!!!raceCols, na.rm = T) > 0.45)
-            # | highest2 > 0.8)
-            & entropy_thresh == 3
-            , 2, entropy_thresh)#,
-          # high entropy means equal race values, so flip the scale for segregation
-          # entropy_thresh = factor(entropy_thresh, 1:3, 3:1)
-          )
+      raceMatrix$entropy_thresh = cut(entropy,
+        # apply value cutoffs.
+        breaks = c(-0.1,0.3707,0.7414,1), labels = FALSE)
+      #apply population min/max filters
+      raceMatrix$entropy_thresh = ifelse(do.call(pmax, c(raceMatrix[raceCols], na.rm = T)) >
+          0.8, 1, raceMatrix$entropy_thresh)
+      raceMatrix$entropy_thresh = ifelse((do.call(pmax, c(raceMatrix[raceCols], na.rm = T)) >
+          0.45)
+        # | highest2 > 0.8)
+        & raceMatrix$entropy_thresh == 3, 2, raceMatrix$entropy_thresh)
 
       #save only the thresholds column
       entropy <- raceMatrix$entropy_thresh
@@ -190,7 +215,7 @@ entropy_score <- function(entropy_index, totalPop){
   sum(entropy_index * (totalPop / sum(totalPop, na.rm=T)), na.rm=T)
 }
 
-# Helper function to create scale from 0-100
+# Helper function to create scale from 0-1
 scale01 <- function(x, minimum = max(x, na.rm = T), maximum = max(x, na.rm = T)){
   (x-minimum)/(maximum-minimum)
 }
