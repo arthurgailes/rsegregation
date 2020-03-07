@@ -67,7 +67,7 @@ divergence <- function(..., totalPop = NULL, na.rm=TRUE, .sum=FALSE){
 #'
 #' @export
 dissimilarity <- function(group1, group2, .sum=TRUE){
-  dissim <- 0.5 * abs(group1/sumna(group1) - group2/sumna(group2))
+  dissim <- 0.5 * abs(group1/sum(group1, na.rm=T) - group2/sum(group2, na.rm=T))
   (dissim)
 }
 #' Exposure Index
@@ -78,7 +78,7 @@ dissimilarity <- function(group1, group2, .sum=TRUE){
 #' @export
 exposure <- function(group1, group2, totalPop){
   expo <- ifelse(totalPop == 0, 0,
-    ( (group1/sumna(group1)) * (group2/totalPop) )
+    ( (group1/sum(group1, na.rm=T)) * (group2/totalPop) )
   )
   (expo)
 }
@@ -94,7 +94,7 @@ exposure <- function(group1, group2, totalPop){
 #' @export
 isolation <- function(group, totalPop){
   iso <- ifelse(totalPop == 0, 0,
-    (group / sumna(group)) * (group / totalPop)
+    (group / sum(group, na.rm=T)) * (group / totalPop)
   )
   (iso)
 }
@@ -105,7 +105,7 @@ isolation <- function(group, totalPop){
 #'
 #' @export
 location_quotient <- function(group, totalPop){
-  (group / totalPop) / (sumna(group) / sumna(totalPop))
+  (group / totalPop) / (sum(group, na.rm=T) / sum(totalPop, na.rm=T))
 }
 #' Theil's Index of Entropy
 #'
@@ -154,7 +154,7 @@ entropy <- function( ..., totalPop = NULL, scaled = FALSE, thresholds = FALSE){
 
       # sum two highest values from the race columns
       raceMatrix$highest2 <- apply(raceMatrix, 1, function(x){
-        sumna(sort(x, decreasing = T)[1:2])
+        sum(sort(x, decreasing = T)[1:2], na.rm=T)
       })
       # Add entropy values to DF
       raceMatrix$entropy <- entropy
@@ -187,10 +187,10 @@ entropy_index <- function(entropy_smallGeo, entropy_bigGeo){
 #'
 #' @rdname entropy
 entropy_score <- function(entropy_index, totalPop){
-  sumna(entropy_index * (totalPop / sumna(totalPop)))
+  sum(entropy_index * (totalPop / sum(totalPop, na.rm=T)), na.rm=T)
 }
 
-#' Helper function to create scale from 0-100
+# Helper function to create scale from 0-100
 scale01 <- function(x, minimum = max(x, na.rm = T), maximum = max(x, na.rm = T)){
   (x-minimum)/(maximum-minimum)
 }
