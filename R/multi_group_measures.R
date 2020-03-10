@@ -8,7 +8,7 @@
 #'
 #' @param ... columns to be included in the calculation of the index.
 #'
-#' @param .sum If TRUE, will return one value. (Or one value per group if specifying
+#' @param .sum If TRUE, will return a single summary statistic. (Or one value per group if specifying
 #' `dplyr::group_by`.) If FALSE, will return a vector equaling the length
 #' of the input vectors.
 #'
@@ -71,8 +71,12 @@ divergence <- function(..., totalPop = NULL, na.rm=TRUE, .sum=FALSE){
 #'  45 percent of the population}
 #'  } See sources.
 #'
-#' @param entropy_index Thiel's \emph{T} index
+#' @param entropy_type One of: \describe{
+#' \item{score}{t index in wiki aka entropy score}
+#' \item{index}{theil's h, akal entropy index, aka Theil's information theory index}
+#' }
 #'
+#' @param entropy_index depreciated. delete
 #' @param entropy_smallGeo,entropy_bigGeo The small (e.g. tract, row) and large
 #'  (e.g. county, group) entries.
 #'
@@ -86,18 +90,33 @@ divergence <- function(..., totalPop = NULL, na.rm=TRUE, .sum=FALSE){
 #'  large-scale geography. }
 #'  }
 #'
+#' @return A single value if .sum==TRUE, or a vector equaling the length of the inputs. Note that if
+#' `entropy_type` == "index", and .sum is FALSE, then the returned vector will be entropy index, unweighted by
+#'  population
+#'
 #' @source Scale and threshold methodology from Holloway et al (2011):
 #' \url{https://www.tandfonline.com/doi/abs/10.1080/00330124.2011.585080}
 #'
 #' @source Theil, Henri. 1972. Statistical Decomposition Analysis.
 #'
 #' @seealso \url{https://en.wikipedia.org/wiki/Theil_index}
+#'
+#' #' @examples
+#' entropy(alameda_wide$white,alameda_wide$hispanic,alameda_wide$asian,
+#' alameda_wide$black, totalPop = alameda_wide$total_pop)
+#'
 #' @name entropy
 NULL
 #' @rdname entropy
-entropy <- function( ..., totalPop = NULL, scaled = FALSE, thresholds = FALSE){
+entropy <- function( ..., totalPop = NULL, entropy_type = 'index', scaled = FALSE, thresholds = FALSE, .sum=TRUE){
   #each item in ... should be a vector of race populations
   races <- list(...)
+  # sanity checks
+  if(entropy_type == 'index' & (scaled+thresholds > 0)){
+    warning("scaled and thresholds can only be TRUE if entropy_type == 'score'. Setting to false")
+    entropy = scaled = F
+  }
+  if(entropy_type %in% c('index','score')) stop('entropy_type must be either "index" or "score"')
 
   # convert list of vectors into DF, then convert to percentages
   raceMatrix <- as.data.frame(do.call(cbind, races))
@@ -152,11 +171,12 @@ entropy <- function( ..., totalPop = NULL, scaled = FALSE, thresholds = FALSE){
   }
   entropy
 }
+#' Hi
 #' @rdname entropy
 entropy_index <- function(entropy_smallGeo, entropy_bigGeo){
     (entropy_bigGeo - entropy_smallGeo) / entropy_bigGeo
 }
-#'
+#' H
 #' @rdname entropy
 entropy_score <- function(entropy_index, totalPop){
   sum(entropy_index * (totalPop / sum(totalPop, na.rm=T)), na.rm=T)
