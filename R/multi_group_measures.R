@@ -54,59 +54,6 @@ divergence <- function(..., totalPop = NULL, na.rm=TRUE, .sum=FALSE){
 
   results
 }
-#' Dissimilarity Score
-#'
-#' Stuff
-#'
-#' @inheritParams divergence
-#'
-#' @param group1,group2 Numeric vectors representing the popuplation of the
-#' groups to be compared.
-#'
-#' @return A vector the length of group1 & group2
-#'
-#' @export
-dissimilarity <- function(group1, group2, .sum=TRUE){
-  dissim <- 0.5 * abs(group1/sum(group1, na.rm=T) - group2/sum(group2, na.rm=T))
-  (dissim)
-}
-#' Exposure Index
-#'
-#' @inheritParams divergence
-#' @inheritParams dissimilarity
-#'
-#' @export
-exposure <- function(group1, group2, totalPop){
-  expo <- ifelse(totalPop == 0, 0,
-    ( (group1/sum(group1, na.rm=T)) * (group2/totalPop) )
-  )
-  (expo)
-}
-#' Isolation Index
-#'
-#' A single-group measure of the degree to which a group is isolated in
-#' the full dataset
-#'
-#' @inheritParams divergence
-#'
-#' @param group A numeric vector of population
-#'
-#' @export
-isolation <- function(group, totalPop){
-  iso <- ifelse(totalPop == 0, 0,
-    (group / sum(group, na.rm=T)) * (group / totalPop)
-  )
-  (iso)
-}
-#' Location Quotient
-#'
-#' @inheritParams divergence
-#' @inheritParams isolation
-#'
-#' @export
-location_quotient <- function(group, totalPop){
-  (group / totalPop) / (sum(group, na.rm=T) / sum(totalPop, na.rm=T))
-}
 #' Theil's Index of Entropy
 #'
 #' Entropy is used to measure the the extent to which multiple distributions conform to
@@ -213,9 +160,4 @@ entropy_index <- function(entropy_smallGeo, entropy_bigGeo){
 #' @rdname entropy
 entropy_score <- function(entropy_index, totalPop){
   sum(entropy_index * (totalPop / sum(totalPop, na.rm=T)), na.rm=T)
-}
-
-# Helper function to create scale from 0-1
-scale01 <- function(x, minimum = max(x, na.rm = T), maximum = max(x, na.rm = T)){
-  (x-minimum)/(maximum-minimum)
 }
