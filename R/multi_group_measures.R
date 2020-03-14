@@ -12,6 +12,9 @@
 #' `dplyr::group_by`.) If FALSE, will return a vector equaling the length
 #' of the input vectors.
 #'
+#' @param na.rm logical. Should missing values (including NaN) be removed?
+#' Used only if `.sum` is set to TRUE.
+#'
 #' @examples
 #' divergence(alameda_wide$white,alameda_wide$hispanic,alameda_wide$asian,
 #' alameda_wide$black, totalPop = alameda_wide$total_pop)
@@ -41,7 +44,7 @@ divergence <- function(..., totalPop = NULL, na.rm=TRUE, .sum=FALSE){
   i = 0
   for(race in races){
     # create race proportion
-    race_bigGeo <- sum(race, na.rm=TRUE) / sum(totalPop, na.rm=TRUE)
+    race_bigGeo <- sum(race, na.rm=TRUE) / sum(totalPop, na.rm=na.rm)
     race <- ifelse(totalPop == 0, 0, race / totalPop)
     i = i + 1
     score <- ifelse(race <= 0 | race_bigGeo <= 0, 0,
@@ -50,9 +53,11 @@ divergence <- function(..., totalPop = NULL, na.rm=TRUE, .sum=FALSE){
     dat[, i] <- score
   }
   #sum the results for each racial group
-  results <- rowSums(dat, na.rm = T)
+  results <- rowSums(dat, na.rm = na.rm)
 
-  results
+  # create summary measure
+  if(.sum==TRUE) results <- sum(results, na.rm=na.rm)
+  return(results)
 }
 #' Theil's Index of Entropy
 #'
@@ -108,7 +113,8 @@ divergence <- function(..., totalPop = NULL, na.rm=TRUE, .sum=FALSE){
 #' @name entropy
 NULL
 #' @rdname entropy
-entropy <- function( ..., totalPop = NULL, entropy_type = 'index', scaled = FALSE, thresholds = FALSE, .sum=TRUE){
+entropy <- function( ..., totalPop = NULL, entropy_type = 'index',
+  scaled = FALSE, thresholds = FALSE, .sum=TRUE, na.rm=TRUE){
   #each item in ... should be a vector of race populations
   races <- list(...)
   # sanity checks
