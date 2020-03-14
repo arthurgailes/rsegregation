@@ -14,9 +14,14 @@
 #' @param group1,group2 Numeric vectors representing the popuplation of the
 #' groups to be compared.
 #'
-#' @return A vector the length of group1 & group2
+#' @return A scalar value, see note.
 #'
-#' @source Duncan, Otis Dudley, and Beverly Duncan. “A Methodological Analysis of Segregation Indexes.” American Sociological Review, vol. 20, no. 2, 1955, pp. 210–217. JSTOR, www.jstor.org/stable/2088328. Accessed 14 Mar. 2020.
+#' @source Duncan, Otis Dudley, and Beverly Duncan. A Methodological Analysis of Segregation Indexes.” American Sociological Review, vol. 20, no. 2, 1955, pp. 210–217. JSTOR, www.jstor.org/stable/2088328. Accessed 14 Mar. 2020.
+#'
+#' @note Setting .sum == FALSE will return by-observation measures, but this
+#' measure is not meant to be decomposed. These results are for verification
+#' purposes only.
+#'
 #' @export
 dissimilarity <- function(group1, group2, .sum=TRUE, na.rm=TRUE){
   dissim <- 0.5 * abs(group1/sum(group1, na.rm=na.rm) - group2/sum(group2, na.rm=na.rm))
@@ -43,6 +48,12 @@ dissimilarity <- function(group1, group2, .sum=TRUE, na.rm=TRUE){
 #' @inheritParams dissimilarity
 #'
 #' @source Wendell Bell, A Probability Model for the Measurement of Ecological Segregation, Social Forces, Volume 32, Issue 4, May 1954, Pages 357–364, https://doi.org/10.2307/2574118
+#'
+#' @return A scalar value, see note.
+#'
+#' @note Setting .sum == FALSE will return by-observation measures, but this
+#' measure is not meant to be decomposed. These results are for verification
+#' purposes only.
 #'
 #' @export
 exposure <- function(group1, group2, totalPop, .sum=TRUE, na.rm=TRUE){

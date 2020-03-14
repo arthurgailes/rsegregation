@@ -27,6 +27,9 @@ of the input vectors.}
 \item{na.rm}{logical. Should missing values (including NaN) be removed?
 Used only if \code{.sum} is set to TRUE.}
 }
+\value{
+A scalar value, see note.
+}
 \description{
 The summation is over all the geographic units, e. g. census tracts,
 comprising the larger geographic entity for which the exposure index
@@ -43,4 +46,9 @@ metropolis equals zero. The minimum value of the exposure index is zero.  That i
 
 The formula for exposure is \eqn{\Sigma (g1/G1)*(g2/t)},
 where g1=group1, G1=sum(group1),g2=group2, and t=totalPop
+}
+\note{
+Setting .sum == FALSE will return by-observation measures, but this
+measure is not meant to be decomposed. These results are for verification
+purposes only.
 }

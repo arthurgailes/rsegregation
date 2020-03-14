@@ -50,7 +50,7 @@ Theil's \emph{T} Index
 }
 \details{
 \describe{
-\item{\code{entropy}}{Entropy score (Ei). \deqn{E_{i} = \Sigma (X_{im} * ln(1/X_{im})}{Ei = \Sigma (Xim \* ln(1/X_{im}))}
+\item{\code{entropy}}{Entropy score (Ei). \eqn{E_{i} = \Sigma (X_{im} * ln(1/X_{im})}{Ei = \Sigma (Xim \* ln(1/X_{im}))}
 where Xim is the
 proportion of racial group within the geography. }
 \item{\code{entropy_score}}{Calculates the value of H (entropy index) for
@@ -61,6 +61,6 @@ large-scale geography. }
 \url{https://en.wikipedia.org/wiki/Theil_index}
 
 #' @examples
-entropy(alameda_wide$white,alameda_wide$hispanic,alameda_wide$asian,
-alameda_wide$black, totalPop = alameda_wide$total_pop)
+entropy(bay_race$white,bay_race$hispanic,bay_race$asian,
+bay_race$black, totalPop = bay_race$total_pop)
 }

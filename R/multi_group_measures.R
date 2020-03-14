@@ -16,12 +16,12 @@
 #' Used only if `.sum` is set to TRUE.
 #'
 #' @examples
-#' divergence(alameda_wide$white,alameda_wide$hispanic,alameda_wide$asian,
-#' alameda_wide$black, totalPop = alameda_wide$total_pop)
+#' divergence(bay_race$white,bay_race$hispanic,bay_race$asian,
+#' bay_race$black, totalPop = bay_race$total_pop)
 #'
 #' \dontrun{
 #' # Entering dataframe will cause an error
-#' divergence(alameda_wide[c("white","black","asian","hispanic")])
+#' divergence(bay_race[c("white","black","asian","hispanic")])
 #' }
 #'
 #' @source Created by Elizabeth Roberto: <https://arxiv.org/abs/1508.01167>
@@ -75,7 +75,7 @@ divergence <- function(..., totalPop = NULL, na.rm=TRUE, .sum=FALSE){
 #' @inheritParams divergence
 #'
 #' @details \describe{
-#'  \item{`entropy`}{Entropy score (Ei). \deqn{E_{i} = \Sigma (X_{im} * ln(1/X_{im})}{Ei = \Sigma (Xim \* ln(1/X_{im}))}
+#'  \item{`entropy`}{Entropy score (Ei). \eqn{E_{i} = \Sigma (X_{im} * ln(1/X_{im})}{Ei = \Sigma (Xim \* ln(1/X_{im}))}
 #'  where Xim is the
 #'  proportion of racial group within the geography. }
 #'  \item{`entropy_score`}{Calculates the value of H (entropy index) for
@@ -92,8 +92,8 @@ divergence <- function(..., totalPop = NULL, na.rm=TRUE, .sum=FALSE){
 #' @seealso \url{https://en.wikipedia.org/wiki/Theil_index}
 #'
 #' #' @examples
-#' entropy(alameda_wide$white,alameda_wide$hispanic,alameda_wide$asian,
-#' alameda_wide$black, totalPop = alameda_wide$total_pop)
+#' entropy(bay_race$white,bay_race$hispanic,bay_race$asian,
+#' bay_race$black, totalPop = bay_race$total_pop)
 #' @export
 entropy <- function( ..., totalPop = NULL, entropy_type = 'index',
   scaled = FALSE, .sum=TRUE, na.rm=TRUE){

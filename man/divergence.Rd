@@ -27,12 +27,12 @@ of the input vectors.}
 Calculates the divergence index of segregation
 }
 \examples{
-divergence(alameda_wide$white,alameda_wide$hispanic,alameda_wide$asian,
-alameda_wide$black, totalPop = alameda_wide$total_pop)
+divergence(bay_race$white,bay_race$hispanic,bay_race$asian,
+bay_race$black, totalPop = bay_race$total_pop)
 
 \dontrun{
 # Entering dataframe will cause an error
-divergence(alameda_wide[c("white","black","asian","hispanic")])
+divergence(bay_race[c("white","black","asian","hispanic")])
 }
 
 }

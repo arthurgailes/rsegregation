@@ -7,21 +7,26 @@
 #' This will report the percentage of population white in the geographic
 #' unit, e.g., tract, for the typical or average white person.
 #' The maximum value of this isolation index is 100.
-#' Even if whites make up only 20 percent of a metropolis’ population,
+#' Even if whites make up only 20 percent of a metropolis population,
 #' all of them could live in all-white neighborhoods.
 #' The minimum value of the isolation index is asymptotically close to 0.
 #' That is, if there is only one white person in a metropolis of 100,000,
 #' he or she would live in a geographic unit in which the percent white
 #' was close to zero.
 #'
-#' @details The isolation formula is \eqn{\sigma ((group/sum(group))*(group/totalPop))}
+#' @details The isolation formula is
+#' \eqn{\sigma ((group/sum(group))*(group/totalPop))}
 #'
 #' @inheritParams divergence
 #'
 #' @param group A numeric vector of population
 #'
 #' @source Wendell Bell, A Probability Model for the Measurement of Ecological Segregation, Social Forces, Volume 32, Issue 4, May 1954, Pages 357–364, https://doi.org/10.2307/2574118
+#' @return A scalar value, see note.
 #'
+#' @note Setting .sum == FALSE will return by-observation measures, but this
+#' measure is not meant to be decomposed. These results are for verification
+#' purposes only.
 #' @export
 isolation <- function(group, totalPop, .sum=TRUE, na.rm=TRUE){
   iso <- ifelse(totalPop == 0, 0,

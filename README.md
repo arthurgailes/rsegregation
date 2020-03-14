@@ -9,7 +9,8 @@
 status](https://travis-ci.org/arthurgailes/rsegregation.svg?branch=master)](https://travis-ci.org/arthurgailes/rsegregation)
 <!-- badges: end -->
 
-The goal of rsegregation is to …
+This package is designed to fit into the tidyverse framework,
+particularly dplyr.
 
 ## Installation
 
@@ -21,22 +22,32 @@ install.packages("rsegregation")
 ```
 -->
 
-And the development version from [GitHub](https://github.com/) with:
+The development version from [GitHub](https://github.com/) can be
+installed withwith:
 
-    #> Skipping install of 'rsegregation' from a github remote, the SHA1 (06612ec9) has not changed since last install.
-    #>   Use `force = TRUE` to force installation
+``` r
+# install.packages("devtools")
+devtools::install_github("arthurgailes/rsegregation")
+# dplyr is also recommended
+# install.packages('dplyr')
+```
 
-## Example
+## Usage
 
-This is a basic example which shows you how to solve a common problem:
+Return a single divergence score for bay County:
 
 ``` r
 library(rsegregation)
+library(dplyr)
 ## basic example code
+bay_divergence <- bay_race %>% 
+  mutate(bay_divergence = divergence(white,black,asian))
+  
 ```
 
-What is special about using `README.Rmd` instead of just `README.md`?
-You can include R chunks like so:
+## Base R Example
+
+The same operation can be achieved in base R with:
 
 ``` r
 summary(cars)
@@ -49,12 +60,17 @@ summary(cars)
 #>  Max.   :25.0   Max.   :120.00
 ```
 
-You’ll still need to render `README.Rmd` regularly, to keep `README.md`
-up-to-date.
+### Misc
 
-You can also embed plots, for example:
+Dataframes should be formatted as long on geographic observations
+(e.g. tracts), but wide on group observations (e.g. races), as in the
+included dataset of bay County, CA
 
-<img src="man/figures/README-pressure-1.png" width="100%" />
+``` r
+head(bay_wide)
+```
 
-In that case, don’t forget to commit and push the resulting figure
-files, so they display on GitHub\!
+### Split-Apply-Combine
+
+rsegregation supports group\_by %\>% summarize operations from the dplyr
+package.

@@ -23,6 +23,9 @@ of the input vectors.}
 \item{na.rm}{logical. Should missing values (including NaN) be removed?
 Used only if \code{.sum} is set to TRUE.}
 }
+\value{
+A scalar value, see note.
+}
 \description{
 The summation is over all the component geographic parts of the larger
 geographic entity for which the isolation index is calculated.
@@ -31,12 +34,18 @@ geographic entity for which the isolation index is calculated.
 This will report the percentage of population white in the geographic
 unit, e.g., tract, for the typical or average white person.
 The maximum value of this isolation index is 100.
-Even if whites make up only 20 percent of a metropolis’ population,
+Even if whites make up only 20 percent of a metropolis population,
 all of them could live in all-white neighborhoods.
 The minimum value of the isolation index is asymptotically close to 0.
 That is, if there is only one white person in a metropolis of 100,000,
 he or she would live in a geographic unit in which the percent white
 was close to zero.
 
-The isolation formula is \eqn{\sigma ((group/sum(group))*(group/totalPop))}
+The isolation formula is
+\eqn{\sigma ((group/sum(group))*(group/totalPop))}
+}
+\note{
+Setting .sum == FALSE will return by-observation measures, but this
+measure is not meant to be decomposed. These results are for verification
+purposes only.
 }
