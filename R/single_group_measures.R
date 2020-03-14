@@ -8,6 +8,8 @@
 #'
 #' @param group A numeric vector of population
 #'
+#' @source Wendell Bell, A Probability Model for the Measurement of Ecological Segregation, Social Forces, Volume 32, Issue 4, May 1954, Pages 357–364, https://doi.org/10.2307/2574118
+#'
 #' @export
 isolation <- function(group, totalPop){
   iso <- ifelse(totalPop == 0, 0,

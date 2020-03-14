@@ -1,59 +1,3 @@
-#' Divergence Index
-#'
-#' Calculates the divergence index of segregation
-#'
-#' @param totalPop The total population of the geography (e.g. Census
-#' tract) being analyzed. If not specified, deaults to the sum of the
-#' populations provided in `...`
-#'
-#' @param ... columns to be included in the calculation of the index.
-#'
-#' @param .sum If TRUE, will return one value. (Or one value per group if specifying
-#' `dplyr::group_by`.) If FALSE, will return a vector equaling the length
-#' of the input vectors.
-#'
-#' @examples
-#' divergence(alameda_wide$white,alameda_wide$hispanic,alameda_wide$asian,
-#' alameda_wide$black, totalPop = alameda_wide$total_pop)
-#'
-#' \dontrun{
-#' # Entering dataframe will cause an error
-#' divergence(alameda_wide[c("white","black","asian","hispanic")])
-#' }
-#'
-#' @param na.rm logical. Should missing values (including NaN) be removed?
-#' @source Created by Elizabeth Roberto: <https://arxiv.org/abs/1508.01167>
-#' @export
-divergence <- function(..., totalPop = NULL, na.rm=TRUE, .sum=FALSE){
-
-  races <- list(...)
-
-  # convert list of vectors into DF, then convert to percentages
-  raceMatrix <- as.data.frame(do.call(cbind, races))
-  raceMatrix[is.na(raceMatrix)] <- 0
-  #If total popuation is not provided, create from the sum of races
-  if(is.null(totalPop)) totalPop <- apply(raceMatrix, 1, sum)
-  raceMatrix <- raceMatrix / totalPop
-
-  # Create empty matrix with one column for each race
-  dat <- matrix(nrow = nrow(raceMatrix), ncol = length(races))
-  #each item in ... should be a matrix of race totals
-  i = 0
-  for(race in races){
-    # create race proportion
-    race_bigGeo <- sum(race, na.rm=TRUE) / sum(totalPop, na.rm=TRUE)
-    race <- ifelse(totalPop == 0, 0, race / totalPop)
-    i = i + 1
-    score <- ifelse(race <= 0 | race_bigGeo <= 0, 0,
-      race * log(race / race_bigGeo) )
-    #save the result in the matrix
-    dat[, i] <- score
-  }
-  #sum the results for each racial group
-  results <- rowSums(dat, na.rm = T)
-
-  results
-}
 #' Dissimilarity Score
 #'
 #' Stuff
@@ -65,6 +9,7 @@ divergence <- function(..., totalPop = NULL, na.rm=TRUE, .sum=FALSE){
 #'
 #' @return A vector the length of group1 & group2
 #'
+#' @source Duncan, Otis Dudley, and Beverly Duncan. “A Methodological Analysis of Segregation Indexes.” American Sociological Review, vol. 20, no. 2, 1955, pp. 210–217. JSTOR, www.jstor.org/stable/2088328. Accessed 14 Mar. 2020.
 #' @export
 dissimilarity <- function(group1, group2, .sum=TRUE){
   dissim <- 0.5 * abs(group1/sum(group1, na.rm=T) - group2/sum(group2, na.rm=T))
@@ -74,6 +19,8 @@ dissimilarity <- function(group1, group2, .sum=TRUE){
 #'
 #' @inheritParams divergence
 #' @inheritParams dissimilarity
+#'
+#' @source Wendell Bell, A Probability Model for the Measurement of Ecological Segregation, Social Forces, Volume 32, Issue 4, May 1954, Pages 357–364, https://doi.org/10.2307/2574118
 #'
 #' @export
 exposure <- function(group1, group2, totalPop){
