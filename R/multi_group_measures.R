@@ -72,10 +72,6 @@ divergence <- function(..., totalPop = NULL, na.rm=TRUE, .sum=FALSE){
 #' \item{index}{theil's h, akal entropy index, aka Theil's information theory index}
 #' }
 #'
-#' @param entropy_index depreciated. delete
-#' @param entropy_smallGeo,entropy_bigGeo The small (e.g. tract, row) and large
-#'  (e.g. county, group) entries.
-#'
 #' @inheritParams divergence
 #'
 #' @details \describe{

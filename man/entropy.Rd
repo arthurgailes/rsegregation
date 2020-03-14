@@ -37,11 +37,6 @@ of the input vectors.}
 
 \item{na.rm}{logical. Should missing values (including NaN) be removed?
 Used only if \code{.sum} is set to TRUE.}
-
-\item{entropy_index}{depreciated. delete}
-
-\item{entropy_smallGeo, entropy_bigGeo}{The small (e.g. tract, row) and large
-(e.g. county, group) entries.}
 }
 \value{
 A single value if .sum==TRUE, or a vector equaling the length of the inputs. Note that if
