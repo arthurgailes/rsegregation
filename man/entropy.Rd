@@ -18,7 +18,8 @@ entropy(
   entropy_type = "index",
   scaled = FALSE,
   thresholds = FALSE,
-  .sum = TRUE
+  .sum = TRUE,
+  na.rm = TRUE
 )
 
 entropy_index(entropy_smallGeo, entropy_bigGeo)
@@ -48,9 +49,12 @@ more than 80 percent of the population}
 45 percent of the population}
 } See sources.}
 
-\item{.sum}{If TRUE, will return one value. (Or one value per group if specifying
+\item{.sum}{If TRUE, will return a single summary statistic. (Or one value per group if specifying
 \code{dplyr::group_by}.) If FALSE, will return a vector equaling the length
 of the input vectors.}
+
+\item{na.rm}{logical. Should missing values (including NaN) be removed?
+Used only if \code{.sum} is set to TRUE.}
 
 \item{entropy_smallGeo, entropy_bigGeo}{The small (e.g. tract, row) and large
 (e.g. county, group) entries.}

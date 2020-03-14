@@ -24,7 +24,6 @@
 #' divergence(alameda_wide[c("white","black","asian","hispanic")])
 #' }
 #'
-#' @param na.rm logical. Should missing values (including NaN) be removed?
 #' @source Created by Elizabeth Roberto: <https://arxiv.org/abs/1508.01167>
 #' @export
 divergence <- function(..., totalPop = NULL, na.rm=TRUE, .sum=FALSE){
@@ -44,7 +43,7 @@ divergence <- function(..., totalPop = NULL, na.rm=TRUE, .sum=FALSE){
   i = 0
   for(race in races){
     # create race proportion
-    race_bigGeo <- sum(race, na.rm=TRUE) / sum(totalPop, na.rm=na.rm)
+    race_bigGeo <- sum(race, na.rm=na.rm) / sum(totalPop, na.rm=na.rm)
     race <- ifelse(totalPop == 0, 0, race / totalPop)
     i = i + 1
     score <- ifelse(race <= 0 | race_bigGeo <= 0, 0,
@@ -155,7 +154,7 @@ entropy <- function( ..., totalPop = NULL, entropy_type = 'index',
 
       # sum two highest values from the race columns
       raceMatrix$highest2 <- apply(raceMatrix, 1, function(x){
-        sum(sort(x, decreasing = T)[1:2], na.rm=T)
+        sum(sort(x, decreasing = T)[1:2], na.rm=na.rm)
       })
       # Add entropy values to DF
       raceMatrix$entropy <- entropy
@@ -185,5 +184,5 @@ entropy_index <- function(entropy_smallGeo, entropy_bigGeo){
 #' H
 #' @rdname entropy
 entropy_score <- function(entropy_index, totalPop){
-  sum(entropy_index * (totalPop / sum(totalPop, na.rm=T)), na.rm=T)
+  sum(entropy_index * (totalPop / sum(totalPop, na.rm=na.rm)), na.rm=na.rm)
 }

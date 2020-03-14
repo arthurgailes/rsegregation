@@ -3,8 +3,11 @@
 \name{exposure}
 \alias{exposure}
 \title{Exposure Index}
+\source{
+Wendell Bell, A Probability Model for the Measurement of Ecological Segregation, Social Forces, Volume 32, Issue 4, May 1954, Pages 357–364, https://doi.org/10.2307/2574118
+}
 \usage{
-exposure(group1, group2, totalPop)
+exposure(group1, group2, totalPop, .sum = TRUE, na.rm = TRUE)
 }
 \arguments{
 \item{group1}{Numeric vectors representing the popuplation of the
@@ -16,7 +19,20 @@ groups to be compared.}
 \item{totalPop}{The total population of the geography (e.g. Census
 tract) being analyzed. If not specified, deaults to the sum of the
 populations provided in \code{...}}
+
+\item{.sum}{If TRUE, will return a single summary statistic. (Or one value per group if specifying
+\code{dplyr::group_by}.) If FALSE, will return a vector equaling the length
+of the input vectors.}
+
+\item{na.rm}{logical. Should missing values (including NaN) be removed?
+Used only if \code{.sum} is set to TRUE.}
 }
 \description{
-Exposure Index
+The summation is over all the geographic units, e. g. census tracts, comprising the larger geographic entity for which the exposure index  is being calculated.
+}
+\details{
+The maximum value of the exposure index is the percent in the second group.  That is, if blacks make up 30 percent of the population of a metropolis, the maximum value of the average percent black for white residents of that metropolis will be 30 percent.  This will require that the index of dissimilarity measuring the evenness with which blacks and every other racial group are distributed across the metropolis equals zero. The minimum value of the exposure index is zero.  That is, although blacks might make up 30 percent of a metropolis, whites could live in exclusively white neighborhoods.   If the exposure index equals zero, than the index of dissimilarity comparing those two groups will equal zero. The exposure index involves two mutually exclusive racial groups.  However, the average percent black in the census tract of the typical white in a metropolis is almost always different from the average percent white for the typical black living in the same metropolis.
+
+The formula for exposure is \deqn{Sigma (g1/G1)*(g2/t)},
+where g1=group1, G1=sum(group1),g2=group2, and t=totalPop
 }

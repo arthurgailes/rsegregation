@@ -3,20 +3,30 @@
 \name{dissimilarity}
 \alias{dissimilarity}
 \title{Dissimilarity Score}
+\source{
+Duncan, Otis Dudley, and Beverly Duncan. “A Methodological Analysis of Segregation Indexes.” American Sociological Review, vol. 20, no. 2, 1955, pp. 210–217. JSTOR, www.jstor.org/stable/2088328. Accessed 14 Mar. 2020.
+}
 \usage{
-dissimilarity(group1, group2, .sum = TRUE)
+dissimilarity(group1, group2, .sum = TRUE, na.rm = TRUE)
 }
 \arguments{
 \item{group1, group2}{Numeric vectors representing the popuplation of the
 groups to be compared.}
 
-\item{.sum}{If TRUE, will return one value. (Or one value per group if specifying
+\item{.sum}{If TRUE, will return a single summary statistic. (Or one value per group if specifying
 \code{dplyr::group_by}.) If FALSE, will return a vector equaling the length
 of the input vectors.}
+
+\item{na.rm}{logical. Should missing values (including NaN) be removed?
+Used only if \code{.sum} is set to TRUE.}
 }
 \value{
 A vector the length of group1 & group2
 }
 \description{
-Stuff
+This index measures the evenness with which two mutually exclusive
+groups are distributed across the geographic units that make up a
+larger geographic entity; for example, the distribution of blacks and
+whites across the census tracts that make up a metropolis.
+Its minimum value is zero and its maximum value is 100.
 }
