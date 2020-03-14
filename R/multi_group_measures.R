@@ -28,20 +28,20 @@
 #' @export
 divergence <- function(..., totalPop = NULL, na.rm=TRUE, .sum=FALSE){
 
-  races <- list(...)
+  groups <- list(...)
 
   # convert list of vectors into DF, then convert to percentages
-  raceMatrix <- as.data.frame(do.call(cbind, races))
+  raceMatrix <- as.data.frame(do.call(cbind, groups))
   raceMatrix[is.na(raceMatrix)] <- 0
-  #If total popuation is not provided, create from the sum of races
+  #If total popuation is not provided, create from the sum of groups
   if(is.null(totalPop)) totalPop <- apply(raceMatrix, 1, sum)
   raceMatrix <- raceMatrix / totalPop
 
   # Create empty matrix with one column for each race
-  dat <- matrix(nrow = nrow(raceMatrix), ncol = length(races))
+  dat <- matrix(nrow = nrow(raceMatrix), ncol = length(groups))
   #each item in ... should be a matrix of race totals
   i = 0
-  for(race in races){
+  for(race in groups){
     # create race proportion
     race_bigGeo <- sum(race, na.rm=na.rm) / sum(totalPop, na.rm=na.rm)
     race <- ifelse(totalPop == 0, 0, race / totalPop)
@@ -55,7 +55,7 @@ divergence <- function(..., totalPop = NULL, na.rm=TRUE, .sum=FALSE){
   results <- rowSums(dat, na.rm = na.rm)
 
   # create summary measure
-  if(.sum==TRUE) results <- sum(results, na.rm=na.rm)
+  if(.sum==TRUE) results <- sum(results * totalPop / sum(totalPop))
   return(results)
 }
 #' Theil's Index of Entropy
@@ -64,16 +64,8 @@ divergence <- function(..., totalPop = NULL, na.rm=TRUE, .sum=FALSE){
 #' a baseline. In standard entropy (`entropy()`), the baseline is constant evenness. In
 #' Theil's \emph{T} Index
 #'
-#' @param scaled Scale entropy scores from 0-1. See sources
-#'
-#' @param thresholds Returns scores in from 1-3 (low-high diversity), based on the
-#'  following criteria: \describe{
-#'  \item{1}{Scaled entropy values less than or equal to 0.3707 or one group constitutes
-#'  more than 80 percent of the population}
-#'  \item{2}{All observations not coded as 1 or 3}
-#'  \item{3}{Scaled entropy greater than 0.7414 AND no group constituting more than
-#'  45 percent of the population}
-#'  } See sources.
+#' @param scaled Scale entropy scores from 0-1. Setting scaled to TRUE
+#' ignores the entropy_type and .sum parameters
 #'
 #' @param entropy_type One of: \describe{
 #' \item{score}{t index in wiki aka entropy score}
@@ -87,7 +79,7 @@ divergence <- function(..., totalPop = NULL, na.rm=TRUE, .sum=FALSE){
 #' @inheritParams divergence
 #'
 #' @details \describe{
-#'  \item{`entropy`}{Entropy score (Ei). \deqn{Ei = \Sigma (X_{im} * ln(1/X_{im})}{Ei = \Sigma (Xim \* ln(1/Xim))}
+#'  \item{`entropy`}{Entropy score (Ei). \deqn{E_{i} = \Sigma (X_{im} * ln(1/X_{im})}{Ei = \Sigma (Xim \* ln(1/X_{im}))}
 #'  where Xim is the
 #'  proportion of racial group within the geography. }
 #'  \item{`entropy_score`}{Calculates the value of H (entropy index) for
@@ -98,8 +90,6 @@ divergence <- function(..., totalPop = NULL, na.rm=TRUE, .sum=FALSE){
 #' `entropy_type` == "index", and .sum is FALSE, then the returned vector will be entropy index, unweighted by
 #'  population
 #'
-#' @source Scale and threshold methodology from Holloway et al (2011):
-#' \url{https://www.tandfonline.com/doi/abs/10.1080/00330124.2011.585080}
 #'
 #' @source Theil, Henri. 1972. Statistical Decomposition Analysis.
 #'
@@ -108,33 +98,64 @@ divergence <- function(..., totalPop = NULL, na.rm=TRUE, .sum=FALSE){
 #' #' @examples
 #' entropy(alameda_wide$white,alameda_wide$hispanic,alameda_wide$asian,
 #' alameda_wide$black, totalPop = alameda_wide$total_pop)
-#'
-#' @name entropy
-NULL
-#' @rdname entropy
+#' @export
 entropy <- function( ..., totalPop = NULL, entropy_type = 'index',
-  scaled = FALSE, thresholds = FALSE, .sum=TRUE, na.rm=TRUE){
+  scaled = FALSE, .sum=TRUE, na.rm=TRUE){
+
   #each item in ... should be a vector of race populations
-  races <- list(...)
-  # sanity checks
-  if(entropy_type == 'index' & (scaled+thresholds > 0)){
-    warning("scaled and thresholds can only be TRUE if entropy_type == 'score'. Setting to false")
-    entropy = scaled = F
+  groups <- list(...)
+  #calculate basic entropy/diversity score
+  entropy <- raw_entropy(groups, totalPop=totalPop,
+    scaled=scaled, .sum=.sum, na.rm=na.rm)
+
+
+  if(scaled == TRUE){
+    #scale entropy between zero and 1, where 1 represents log(number of groups)
+    entropy <- scale01(entropy, 0, log(length(groups)))
+    # sanity checks
+    if(entropy_type == 'index' | .sum == TRUE){
+      warning("scaled set to TRUE, ignoring entropy_type and
+        .sum parameters")
+    }
+    return(entropy)
   }
-  if(entropy_type %in% c('index','score')) stop('entropy_type must be either "index" or "score"')
+
+  # in either entropy_type, the entropy of the larger geography is needed
+  if(.sum==T) {
+    #sum the groups and total population (if provided)
+    sumgroups <- lapply(groups, sum, na.rm=na.rm)
+    sumtot <- ifelse(is.null(totalPop), NULL, sum(totalPop, na.rm=na.rm))
+    # calculate entropy on this basis
+    entropy_large <- raw_entropy(sumgroups, totalPop=sumtot,
+      scaled=scaled, .sum=.sum, na.rm=na.rm)
+  }
+  if(entropy_type == 'score') {
+    if(.sum==T) return(entropy_large)
+    else return(entropy)
+  } else if (entropy_type == 'index'){
+    # Theil's Hi
+    entropy_index <- (entropy_large - entropy) / entropy_large
+    # Theil's H
+    if(.sum==T) entropy_index <- sum(entropy_index * (totalPop / sum(totalPop, na.rm=na.rm)))
+    return(entropy_index)
+  } else (stop("entropy_type must be either 'score' or 'index'"))
+}
+# calculate entropy/diversity
+raw_entropy <- function(groups, totalPop = NULL,
+  scaled = FALSE, .sum=TRUE, na.rm=TRUE){
 
   # convert list of vectors into DF, then convert to percentages
-  raceMatrix <- as.data.frame(do.call(cbind, races))
+  raceMatrix <- as.data.frame(do.call(cbind, groups))
   raceMatrix[is.na(raceMatrix)] <- 0
-  #If total popuation is not provided, create from the sum of races
+  #If total popuation is not provided, create from the sum of groups
   if(is.null(totalPop)) totalPop <- apply(raceMatrix, 1, sum)
   raceMatrix <- raceMatrix / totalPop
   raceCols <- (colnames(raceMatrix))
 
   #create empty matrix the length of the matrix
-  dat <- matrix(nrow = nrow(raceMatrix), ncol = length(races))
+  dat <- matrix(nrow = nrow(raceMatrix), ncol = length(groups))
   i = 0
-  for(race in races){
+  for(race in groups){
     # create race proportion
     race <- ifelse(totalPop == 0, 0, race / totalPop)
     i = i + 1
@@ -145,44 +166,4 @@ entropy <- function( ..., totalPop = NULL, entropy_type = 'index',
   #sum the results for each racial group
   entropy <- rowSums(dat, na.rm = T)
 
-
-  if(scaled == TRUE | thresholds == TRUE){
-    #scale entropy between zero and log(number of races)
-    entropy <- scale01(entropy, 0, log(length(races)))
-    if(thresholds == TRUE){
-
-
-      # sum two highest values from the race columns
-      raceMatrix$highest2 <- apply(raceMatrix, 1, function(x){
-        sum(sort(x, decreasing = T)[1:2], na.rm=na.rm)
-      })
-      # Add entropy values to DF
-      raceMatrix$entropy <- entropy
-
-      raceMatrix$entropy_thresh = cut(entropy,
-        # apply value cutoffs.
-        breaks = c(-0.1,0.3707,0.7414,1), labels = FALSE)
-      #apply population min/max filters
-      raceMatrix$entropy_thresh = ifelse(do.call(pmax, c(raceMatrix[raceCols], na.rm = T)) >
-          0.8, 1, raceMatrix$entropy_thresh)
-      raceMatrix$entropy_thresh = ifelse((do.call(pmax, c(raceMatrix[raceCols], na.rm = T)) >
-          0.45)
-        # | highest2 > 0.8)
-        & raceMatrix$entropy_thresh == 3, 2, raceMatrix$entropy_thresh)
-
-      #save only the thresholds column
-      entropy <- raceMatrix$entropy_thresh
-    }
-  }
-  entropy
-}
-#' Hi
-#' @rdname entropy
-entropy_index <- function(entropy_smallGeo, entropy_bigGeo){
-    (entropy_bigGeo - entropy_smallGeo) / entropy_bigGeo
-}
-#' H
-#' @rdname entropy
-entropy_score <- function(entropy_index, totalPop){
-  sum(entropy_index * (totalPop / sum(totalPop, na.rm=na.rm)), na.rm=na.rm)
 }

@@ -30,3 +30,7 @@ larger geographic entity; for example, the distribution of blacks and
 whites across the census tracts that make up a metropolis.
 Its minimum value is zero and its maximum value is 100.
 }
+\details{
+The index of dissimilarity is calculated as:
+\eqn{1/2 * \Sigma (group1/sum(group1) - group2/sum(group2))}
+}

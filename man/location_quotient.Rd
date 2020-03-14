@@ -3,8 +3,11 @@
 \name{location_quotient}
 \alias{location_quotient}
 \title{Location Quotient}
+\source{
+U.S. Bureau of Economic Analysis: https://www.bea.gov/help/faq/478
+}
 \usage{
-location_quotient(group, totalPop)
+location_quotient(group, totalPop, na.rm = TRUE)
 }
 \arguments{
 \item{group}{A numeric vector of population}
@@ -12,7 +15,22 @@ location_quotient(group, totalPop)
 \item{totalPop}{The total population of the geography (e.g. Census
 tract) being analyzed. If not specified, deaults to the sum of the
 populations provided in \code{...}}
+
+\item{na.rm}{logical. Should missing values (including NaN) be removed?
+Used only if \code{.sum} is set to TRUE.}
 }
 \description{
-Location Quotient
+A location quotient (LQ) is an analytical statistic that measures a
+region’s concentration of a particular attribut relative to a larger geographic
+unit (e.g. census tract to state). In economics, an
+LQ is computed as an industry’s share of
+a regional total for some economic statistic (earnings, GDP by
+metropolitan area, employment, etc.) divided by the industry’s share
+of the national total for the same statistic. For example, an LQ of
+1.0 in mining means that the region and the nation are equally
+specialized in mining; while an LQ of 1.8 means that the region has a
+higher concentration in mining than the nation.
+}
+\details{
+The forumla for LQ is: \eqn{(group/totalPop)/(sum(group)/sum(totalPop))}
 }

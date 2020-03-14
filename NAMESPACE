@@ -2,6 +2,7 @@
 
 export(dissimilarity)
 export(divergence)
+export(entropy)
 export(exposure)
 export(isolation)
 export(location_quotient)

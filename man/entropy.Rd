@@ -2,13 +2,8 @@
 % Please edit documentation in R/multi_group_measures.R
 \name{entropy}
 \alias{entropy}
-\alias{entropy_index}
-\alias{entropy_score}
 \title{Theil's Index of Entropy}
 \source{
-Scale and threshold methodology from Holloway et al (2011):
-\url{https://www.tandfonline.com/doi/abs/10.1080/00330124.2011.585080}
-
 Theil, Henri. 1972. Statistical Decomposition Analysis.
 }
 \usage{
@@ -17,14 +12,9 @@ entropy(
   totalPop = NULL,
   entropy_type = "index",
   scaled = FALSE,
-  thresholds = FALSE,
   .sum = TRUE,
   na.rm = TRUE
 )
-
-entropy_index(entropy_smallGeo, entropy_bigGeo)
-
-entropy_score(entropy_index, totalPop)
 }
 \arguments{
 \item{...}{columns to be included in the calculation of the index.}
@@ -38,16 +28,8 @@ populations provided in \code{...}}
 \item{index}{theil's h, akal entropy index, aka Theil's information theory index}
 }}
 
-\item{scaled}{Scale entropy scores from 0-1. See sources}
-
-\item{thresholds}{Returns scores in from 1-3 (low-high diversity), based on the
-following criteria: \describe{
-\item{1}{Scaled entropy values less than or equal to 0.3707 or one group constitutes
-more than 80 percent of the population}
-\item{2}{All observations not coded as 1 or 3}
-\item{3}{Scaled entropy greater than 0.7414 AND no group constituting more than
-45 percent of the population}
-} See sources.}
+\item{scaled}{Scale entropy scores from 0-1. Setting scaled to TRUE
+ignores the entropy_type and .sum parameters}
 
 \item{.sum}{If TRUE, will return a single summary statistic. (Or one value per group if specifying
 \code{dplyr::group_by}.) If FALSE, will return a vector equaling the length
@@ -56,10 +38,10 @@ of the input vectors.}
 \item{na.rm}{logical. Should missing values (including NaN) be removed?
 Used only if \code{.sum} is set to TRUE.}
 
+\item{entropy_index}{depreciated. delete}
+
 \item{entropy_smallGeo, entropy_bigGeo}{The small (e.g. tract, row) and large
 (e.g. county, group) entries.}
-
-\item{entropy_index}{depreciated. delete}
 }
 \value{
 A single value if .sum==TRUE, or a vector equaling the length of the inputs. Note that if
@@ -73,7 +55,7 @@ Theil's \emph{T} Index
 }
 \details{
 \describe{
-\item{\code{entropy}}{Entropy score (Ei). \deqn{Ei = \Sigma (X_{im} * ln(1/X_{im})}{Ei = \Sigma (Xim \* ln(1/Xim))}
+\item{\code{entropy}}{Entropy score (Ei). \deqn{E_{i} = \Sigma (X_{im} * ln(1/X_{im})}{Ei = \Sigma (Xim \* ln(1/X_{im}))}
 where Xim is the
 proportion of racial group within the geography. }
 \item{\code{entropy_score}}{Calculates the value of H (entropy index) for
