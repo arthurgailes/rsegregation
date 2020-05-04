@@ -15,6 +15,9 @@
 #' @param na.rm logical. Should missing values (including NaN) be removed?
 #' Used only if `.sum` is set to TRUE.
 #'
+#' @param percentage Are your supplying whole numbers (FALSE, default) or
+#' percentages of the populatoin (TRUE)? If the latter, totalPop is
+#'
 #' @examples
 #' divergence(bay_race$white,bay_race$hispanic,bay_race$asian,
 #' bay_race$black, totalPop = bay_race$total_pop)

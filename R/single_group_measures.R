@@ -48,14 +48,19 @@ isolation <- function(group, totalPop, .sum=TRUE, na.rm=TRUE){
 #' specialized in mining; while an LQ of 1.8 means that the region has a
 #' higher concentration in mining than the nation.
 #'
-#' @details The forumla for LQ is: \eqn{(group/totalPop)/(sum(group)/sum(totalPop))}
+#' @details The forumla for LQ is: \eqn{(group/totalPop)/(sum(group)/sum(totalPop))},
+#' or equivalently group/totalPop if group and totalPop are given as
+#' percentages.
 #' @inheritParams divergence
 #' @inheritParams isolation
 #'
 #' @source U.S. Bureau of Economic Analysis: https://www.bea.gov/help/faq/478
 #'
 #' @export
-location_quotient <- function(group, totalPop, na.rm=TRUE){
-  lq <- (group / totalPop) / (sum(group, na.rm=na.rm) / sum(totalPop, na.rm=na.rm))
+location_quotient <- function(group, totalPop, na.rm=TRUE,
+  percentage = FALSE){
+  sanity_check(c(group, totalPop))
+  if(percentage) group/totalPop
+  else lq <- (group / totalPop) / (sum(group, na.rm=na.rm) / sum(totalPop, na.rm=na.rm))
   return(lq)
 }
