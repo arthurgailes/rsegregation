@@ -61,7 +61,7 @@ divergence <- function(..., totalPop = NULL, na.rm=TRUE, .sum=FALSE){
   if(.sum==TRUE) results <- sum(results * totalPop / sum(totalPop))
   return(results)
 }
-#' @rdname divergence
+#' Title
 #' @export
 divergence_pct <- function(..., na.rm = TRUE, .sum=FALSE){
   groups <- list(...)

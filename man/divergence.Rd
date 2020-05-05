@@ -2,15 +2,12 @@
 % Please edit documentation in R/multi_group_measures.R
 \name{divergence}
 \alias{divergence}
-\alias{divergence_pct}
 \title{Divergence Index}
 \source{
 Created by Elizabeth Roberto: \url{https://arxiv.org/abs/1508.01167}
 }
 \usage{
 divergence(..., totalPop = NULL, na.rm = TRUE, .sum = FALSE)
-
-divergence_pct(..., na.rm = TRUE, .sum = FALSE)
 }
 \arguments{
 \item{...}{columns to be included in the calculation of the index.}
