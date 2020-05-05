@@ -62,6 +62,7 @@ divergence <- function(..., totalPop = NULL, na.rm=TRUE, .sum=FALSE){
   return(results)
 }
 #' @rdname divergence
+#' @export
 divergence_pct <- function(..., na.rm = TRUE, .sum=FALSE){
   groups <- list(...)
   # create dataframes from lists, splitting them back into the pairs they

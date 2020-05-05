@@ -2,6 +2,7 @@
 
 export(dissimilarity)
 export(divergence)
+export(divergence_pct)
 export(entropy)
 export(exposure)
 export(isolation)
