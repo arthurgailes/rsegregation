@@ -22,6 +22,9 @@ Used only if \code{.sum} is set to TRUE.}
 \item{.sum}{If TRUE, will return a single summary statistic. (Or one value per group if specifying
 \code{dplyr::group_by}.) If FALSE, will return a vector equaling the length
 of the input vectors.}
+
+\item{percentage}{Are your supplying whole numbers (FALSE, default) or
+percentages of the populatoin (TRUE)? If the latter, totalPop is}
 }
 \description{
 Calculates the divergence index of segregation

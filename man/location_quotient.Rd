@@ -7,7 +7,7 @@
 U.S. Bureau of Economic Analysis: https://www.bea.gov/help/faq/478
 }
 \usage{
-location_quotient(group, totalPop, na.rm = TRUE)
+location_quotient(group, totalPop, na.rm = TRUE, percentage = FALSE)
 }
 \arguments{
 \item{group}{A numeric vector of population}
@@ -18,6 +18,9 @@ populations provided in \code{...}}
 
 \item{na.rm}{logical. Should missing values (including NaN) be removed?
 Used only if \code{.sum} is set to TRUE.}
+
+\item{percentage}{Are your supplying whole numbers (FALSE, default) or
+percentages of the populatoin (TRUE)? If the latter, totalPop is}
 }
 \description{
 A location quotient (LQ) is an analytical statistic that measures a
@@ -32,5 +35,7 @@ specialized in mining; while an LQ of 1.8 means that the region has a
 higher concentration in mining than the nation.
 }
 \details{
-The forumla for LQ is: \eqn{(group/totalPop)/(sum(group)/sum(totalPop))}
+The forumla for LQ is: \eqn{(group/totalPop)/(sum(group)/sum(totalPop))},
+or equivalently group/totalPop if group and totalPop are given as
+percentages.
 }

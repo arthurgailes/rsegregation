@@ -1,6 +1,6 @@
 #' Divergence Index
 #'
-#' Calculates the divergence index of segregation
+#' FIX? divergence_pct Calculates the divergence index of segregation
 #'
 #' @param totalPop The total population of the geography (e.g. Census
 #' tract) being analyzed. If not specified, deaults to the sum of the
@@ -60,6 +60,25 @@ divergence <- function(..., totalPop = NULL, na.rm=TRUE, .sum=FALSE){
   # create summary measure
   if(.sum==TRUE) results <- sum(results * totalPop / sum(totalPop))
   return(results)
+}
+#' @rdname divergence
+divergence_pct <- function(..., na.rm = TRUE, .sum=FALSE){
+  groups <- list(...)
+  # create dataframes from lists, splitting them back into the pairs they
+  # should be provided in
+  preDiv <- sapply(groups, function(x){
+    len <- length(x)
+    if(len %% 2 != 0) stop('Each list in ... must be two vectors of the same length')
+    if(min(x, na.rm=T)<0) warning('Negative numbers are not supported.')
+    small = x[1:(len/2)]
+    large = x[(1+len/2):len]
+    #calculate individual race pre-divergence
+    ifelse(small==0,0, small * log(small/large))
+  })
+  #create overall divergence score
+  div <- rowSums(preDiv, na.rm = na.rm)
+  if(.sum) div <- sum(div, na.rm = na.rm)
+  return(div)
 }
 #' Theil's Index of Entropy
 #'
