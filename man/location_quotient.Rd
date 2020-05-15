@@ -19,6 +19,9 @@ it is used to reconstruct percentages in the larger geography.}
 
 \item{na.rm}{logical. Should missing values (including NaN) be removed?
 Used only if \code{.sum} is set to TRUE.}
+
+\item{percentage}{Set to TRUE if giving group and totalPop are percentages,
+FALSE otherwise.}
 }
 \description{
 A location quotient (LQ) is an analytical statistic that measures a

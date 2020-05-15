@@ -54,12 +54,14 @@ isolation <- function(group, totalPop, .sum=TRUE, na.rm=TRUE){
 #' @inheritParams divergence
 #' @inheritParams isolation
 #'
+#' @param percentage Set to TRUE if giving group and totalPop are percentages,
+#' FALSE otherwise.
+#'
 #' @source U.S. Bureau of Economic Analysis: https://www.bea.gov/help/faq/478
 #'
 #' @export
 location_quotient <- function(group, totalPop, na.rm=TRUE,
   percentage = FALSE){
-  sanity_check(c(group, totalPop))
   if(percentage) group/totalPop
   else lq <- (group / totalPop) / (sum(group, na.rm=na.rm) / sum(totalPop, na.rm=na.rm))
   return(lq)

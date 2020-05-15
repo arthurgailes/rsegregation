@@ -81,7 +81,7 @@ divergence <- function(..., totalPop = NULL, na.rm=TRUE, .sum=FALSE,
   if(.sum==TRUE) results <- sum(results * totalPop / sum(totalPop, na.rm = na.rm), na.rm = na.rm)
   return(results)
 }
-#' Sanity checks and warnings for divergence
+# Sanity checks and warnings for divergence
 divergence_sanity <- function(df, totalPop){
   if(any(df<0)) warning("Negative numbers detected; may skew results")
   if(any(df>1)) warning("Percentages greater than 100% detected; is `totalPop` specified correctly?")

@@ -4,7 +4,7 @@ scale01 <- function(x, minimum = max(x, na.rm = T), maximum = max(x, na.rm = T))
 }
 
 # sanity check whether numbers are percentages
-sanity_check <- function(testvals, pct = percentage){
+sanity_check <- function(testvals, pct){
   minval <- min(testvals, na.rm=T)
   meanval <- mean(testvals, na.rm=T)
   if(minval < 0) warning("Negative numbers are not supported.")
