@@ -1,7 +1,7 @@
 Package: rsegregation
 Type: Package
 Title: Calculate Empirical Measures of Segregation
-Version: 0.1.9
+Version: 0.2.0
 Author: Arthur Gailes
 Maintainer: Arthur Gailes <arthurgailes@berkeley.edu>
 Description: Provides functions for several empirical measures of racial segregation within a tidy framework.

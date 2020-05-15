@@ -7,14 +7,17 @@
 Created by Elizabeth Roberto: \url{https://arxiv.org/abs/1508.01167}
 }
 \usage{
-divergence(..., totalPop = NULL, na.rm = TRUE, .sum = FALSE)
+divergence(..., totalPop = NULL, na.rm = TRUE, .sum = FALSE, weighted = FALSE)
 }
 \arguments{
-\item{...}{columns to be included in the calculation of the index.}
+\item{...}{Population vectors for every group included in the divergence
+calculation. If using percentages instead of population totals, specify
+\code{totalPop}}
 
-\item{totalPop}{The total population of the geography (e.g. Census
-tract) being analyzed. If not specified, deaults to the sum of the
-populations provided in \code{...}}
+\item{totalPop}{A vector for the total population (not group population).
+Only necessary if the vectors
+in \code{...} are percentages, rather than population totals, in which case
+it is used to reconstruct percentages in the larger geography.}
 
 \item{na.rm}{logical. Should missing values (including NaN) be removed?
 Used only if \code{.sum} is set to TRUE.}
@@ -23,17 +26,32 @@ Used only if \code{.sum} is set to TRUE.}
 \code{dplyr::group_by}.) If FALSE, will return a vector equaling the length
 of the input vectors.}
 
-\item{percentage}{Are your supplying whole numbers (FALSE, default) or
-percentages of the populatoin (TRUE)? If the latter, totalPop is}
+\item{weighted}{Return population-weighted divergence scores for each
+observation. Has no effect if \code{.sum} is true, as the total divergence
+score is always the sum of weighted values.}
 }
 \description{
 FIX? divergence_pct Calculates the divergence index of segregation
 }
 \examples{
+data(bay_race)
+#return by-observation scores
 divergence(bay_race$white,bay_race$hispanic,bay_race$asian,
-bay_race$black, totalPop = bay_race$total_pop)
+bay_race$black, bay_race$all_other)
 
 \dontrun{
+# Using dplyr
+require(dplyr)
+mutate(bay_race, divergence_score = divergence(white, hispanic,
+  asian, black, all_other))
+
+# divergence alsow works with percentages as long as you have
+# population totals by observation
+bay_race \%>\%
+  mutate_at(vars(hispanic:all_other), list(~(./total_pop))) \%>\%
+  mutate(divergence_score = divergence(white, hispanic, asian,
+  black, all_other, totalPop = total_pop))
+
 # Entering dataframe will cause an error
 divergence(bay_race[c("white","black","asian","hispanic")])
 }

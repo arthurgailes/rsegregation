@@ -17,11 +17,14 @@ entropy(
 )
 }
 \arguments{
-\item{...}{columns to be included in the calculation of the index.}
+\item{...}{Population vectors for every group included in the divergence
+calculation. If using percentages instead of population totals, specify
+\code{totalPop}}
 
-\item{totalPop}{The total population of the geography (e.g. Census
-tract) being analyzed. If not specified, deaults to the sum of the
-populations provided in \code{...}}
+\item{totalPop}{A vector for the total population (not group population).
+Only necessary if the vectors
+in \code{...} are percentages, rather than population totals, in which case
+it is used to reconstruct percentages in the larger geography.}
 
 \item{entropy_type}{One of: \describe{
 \item{score}{t index in wiki aka entropy score}

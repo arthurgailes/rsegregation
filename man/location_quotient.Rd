@@ -12,15 +12,13 @@ location_quotient(group, totalPop, na.rm = TRUE, percentage = FALSE)
 \arguments{
 \item{group}{A numeric vector of population}
 
-\item{totalPop}{The total population of the geography (e.g. Census
-tract) being analyzed. If not specified, deaults to the sum of the
-populations provided in \code{...}}
+\item{totalPop}{A vector for the total population (not group population).
+Only necessary if the vectors
+in \code{...} are percentages, rather than population totals, in which case
+it is used to reconstruct percentages in the larger geography.}
 
 \item{na.rm}{logical. Should missing values (including NaN) be removed?
 Used only if \code{.sum} is set to TRUE.}
-
-\item{percentage}{Are your supplying whole numbers (FALSE, default) or
-percentages of the populatoin (TRUE)? If the latter, totalPop is}
 }
 \description{
 A location quotient (LQ) is an analytical statistic that measures a

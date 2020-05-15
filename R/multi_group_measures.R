@@ -2,11 +2,18 @@
 #'
 #' FIX? divergence_pct Calculates the divergence index of segregation
 #'
-#' @param totalPop The total population of the geography (e.g. Census
-#' tract) being analyzed. If not specified, deaults to the sum of the
-#' populations provided in `...`
+#' @param totalPop A vector for the total population (not group population).
+#' Only necessary if the vectors
+#' in `...` are percentages, rather than population totals, in which case
+#' it is used to reconstruct percentages in the larger geography.
 #'
-#' @param ... columns to be included in the calculation of the index.
+#' @param ... Population vectors for every group included in the divergence
+#' calculation. If using percentages instead of population totals, specify
+#' `totalPop`
+#'
+#' @param weighted Return population-weighted divergence scores for each
+#' observation. Has no effect if `.sum` is true, as the total divergence
+#' score is always the sum of weighted values.
 #'
 #' @param .sum If TRUE, will return a single summary statistic. (Or one value per group if specifying
 #' `dplyr::group_by`.) If FALSE, will return a vector equaling the length
@@ -15,71 +22,69 @@
 #' @param na.rm logical. Should missing values (including NaN) be removed?
 #' Used only if `.sum` is set to TRUE.
 #'
-#' @param percentage Are your supplying whole numbers (FALSE, default) or
-#' percentages of the populatoin (TRUE)? If the latter, totalPop is
-#'
 #' @examples
+#' data(bay_race)
+#' #return by-observation scores
 #' divergence(bay_race$white,bay_race$hispanic,bay_race$asian,
-#' bay_race$black, totalPop = bay_race$total_pop)
+#' bay_race$black, bay_race$all_other)
 #'
 #' \dontrun{
+#' # Using dplyr
+#' require(dplyr)
+#' mutate(bay_race, divergence_score = divergence(white, hispanic,
+#'   asian, black, all_other))
+#'
+#' # divergence alsow works with percentages as long as you have
+#' # population totals by observation
+#' bay_race %>%
+#'   mutate_at(vars(hispanic:all_other), list(~(./total_pop))) %>%
+#'   mutate(divergence_score = divergence(white, hispanic, asian,
+#'   black, all_other, totalPop = total_pop))
+#'
 #' # Entering dataframe will cause an error
 #' divergence(bay_race[c("white","black","asian","hispanic")])
 #' }
 #'
 #' @source Created by Elizabeth Roberto: <https://arxiv.org/abs/1508.01167>
 #' @export
-divergence <- function(..., totalPop = NULL, na.rm=TRUE, .sum=FALSE){
+divergence <- function(..., totalPop = NULL, na.rm=TRUE, .sum=FALSE,
+  weighted = FALSE){
 
-  groups <- list(...)
-
-  # convert list of vectors into DF, then convert to percentages
-  raceMatrix <- as.data.frame(do.call(cbind, groups))
-  raceMatrix[is.na(raceMatrix)] <- 0
-  #If total popuation is not provided, create from the sum of groups
-  if(is.null(totalPop)) totalPop <- apply(raceMatrix, 1, sum)
-  raceMatrix <- raceMatrix / totalPop
-
-  # Create empty matrix with one column for each race
-  dat <- matrix(nrow = nrow(raceMatrix), ncol = length(groups))
-  #each item in ... should be a matrix of race totals
-  i = 0
-  for(race in groups){
-    # create race proportion
-    race_bigGeo <- sum(race, na.rm=na.rm) / sum(totalPop, na.rm=na.rm)
-    race <- ifelse(totalPop == 0, 0, race / totalPop)
-    i = i + 1
-    score <- ifelse(race <= 0 | race_bigGeo <= 0, 0,
-      race * log(race / race_bigGeo) )
-    #save the result in the matrix
-    dat[, i] <- score
+  groupMatrix <- data.frame(...)
+  # remove NAs
+  if(na.rm == TRUE) groupMatrix[is.na(groupMatrix)] <- 0
+  #If `totalPop` is not provided, create from the sum of groups and convert
+  # totals to percentages
+  if(is.null(totalPop)) {
+    totalPop <- rowSums(groupMatrix, na.rm = na.rm)
+    # for observations with zero sum, create a dummy denomintor to prevent
+    # NaN results
+    denominator <- ifelse(totalPop == 0, 0.1, totalPop)
+    groupMatrix <- groupMatrix / denominator
   }
-  #sum the results for each racial group
-  results <- rowSums(dat, na.rm = na.rm)
+  # check for construction problems
+  divergence_sanity(groupMatrix,totalPop)
+  # create by-group scores
+  prescores <- sapply(groupMatrix, function(group){
+    # create overall group proportion in sum of observations
+    group_bigGeo <- sum(group*totalPop, na.rm=na.rm) / sum(totalPop, na.rm=na.rm)
+    # calculate group, substituting 0 for log(0)
+    score <- ifelse(group <= 0 | group_bigGeo <= 0, 0,
+      group * log(group / group_bigGeo) )
+    return(score)
+  })
+  #sum the results for each racial group for divergence score
+  results <- rowSums(prescores, na.rm = na.rm)
 
-  # create summary measure
-  if(.sum==TRUE) results <- sum(results * totalPop / sum(totalPop))
+  # create total divergence score if selected
+  if(weighted == TRUE & .sum == FALSE) results <- results*totalPop/sum(totalPop, na.rm = na.rm)
+  if(.sum==TRUE) results <- sum(results * totalPop / sum(totalPop, na.rm = na.rm), na.rm = na.rm)
   return(results)
 }
-#' Title
-#' @export
-divergence_pct <- function(..., na.rm = TRUE, .sum=FALSE){
-  groups <- list(...)
-  # create dataframes from lists, splitting them back into the pairs they
-  # should be provided in
-  preDiv <- sapply(groups, function(x){
-    len <- length(x)
-    if(len %% 2 != 0) stop('Each list in ... must be two vectors of the same length')
-    if(min(x, na.rm=T)<0) warning('Negative numbers are not supported.')
-    small = x[1:(len/2)]
-    large = x[(1+len/2):len]
-    #calculate individual race pre-divergence
-    ifelse(small==0,0, small * log(small/large))
-  })
-  #create overall divergence score
-  div <- rowSums(preDiv, na.rm = na.rm)
-  if(.sum) div <- sum(div, na.rm = na.rm)
-  return(div)
+#' Sanity checks and warnings for divergence
+divergence_sanity <- function(df, totalPop){
+  if(any(df<0)) warning("Negative numbers detected; may skew results")
+  if(any(df>1)) warning("Percentages greater than 100% detected; is `totalPop` specified correctly?")
 }
 #' Theil's Index of Entropy
 #'

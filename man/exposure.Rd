@@ -16,9 +16,10 @@ groups to be compared.}
 \item{group2}{Numeric vectors representing the popuplation of the
 groups to be compared.}
 
-\item{totalPop}{The total population of the geography (e.g. Census
-tract) being analyzed. If not specified, deaults to the sum of the
-populations provided in \code{...}}
+\item{totalPop}{A vector for the total population (not group population).
+Only necessary if the vectors
+in \code{...} are percentages, rather than population totals, in which case
+it is used to reconstruct percentages in the larger geography.}
 
 \item{.sum}{If TRUE, will return a single summary statistic. (Or one value per group if specifying
 \code{dplyr::group_by}.) If FALSE, will return a vector equaling the length
