@@ -51,6 +51,7 @@ divergence <- function(..., totalPop = NULL, na.rm=TRUE, .sum=FALSE,
   weighted = FALSE){
 
   groupMatrix <- data.frame(...)
+  if(nrow(df) == 1) return(0) # if a sinlge observation composes a group
   # remove NAs
   if(na.rm == TRUE) groupMatrix[is.na(groupMatrix)] <- 0
   #If `totalPop` is not provided, create from the sum of groups and convert
