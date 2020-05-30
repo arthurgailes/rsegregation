@@ -53,7 +53,7 @@ divergence <- function(..., totalPop = NULL, na.rm=TRUE, .sum=FALSE,
   groupMatrix <- data.frame(...)
   if(nrow(groupMatrix) == 1) return(0) # if a sinlge observation composes a group
   # remove NAs
-  if(na.rm == TRUE) groupMatrix[is.na(groupMatrix)] <- 0
+  if(isTRUE(na.rm)) groupMatrix[is.na(groupMatrix)] <- 0
   #If `totalPop` is not provided, create from the sum of groups and convert
   # totals to percentages
   if(is.null(totalPop)) {
@@ -78,14 +78,14 @@ divergence <- function(..., totalPop = NULL, na.rm=TRUE, .sum=FALSE,
   results <- rowSums(prescores, na.rm = na.rm)
 
   # create total divergence score if selected
-  if(weighted == TRUE & .sum == FALSE) results <- results*totalPop/sum(totalPop, na.rm = na.rm)
-  if(.sum==TRUE) results <- sum(results * totalPop / sum(totalPop, na.rm = na.rm), na.rm = na.rm)
+  if(isTRUE(weighted) & isTRUE(.sum) results <- results*totalPop/sum(totalPop, na.rm = na.rm)
+  if(isTRUE(.sum)) results <- sum(results * totalPop / sum(totalPop, na.rm = na.rm), na.rm = na.rm)
   return(results)
 }
 # Sanity checks and warnings for divergence
 divergence_sanity <- function(df, totalPop){
-  if(any(df<0)) warning("Negative numbers detected; may skew results")
-  if(any(df>1)) warning("Percentages greater than 100% detected; is `totalPop` specified correctly?")
+  if(isTRUE(any(df<0))) warning("Negative numbers detected; may skew results")
+  if(isTRUE(any(df>1))) warning("Percentages greater than 100% detected; is `totalPop` specified correctly?")
 }
 #' Theil's Index of Entropy
 #'
@@ -134,11 +134,11 @@ entropy <- function( ..., totalPop = NULL, entropy_type = 'index',
     scaled=scaled, .sum=.sum, na.rm=na.rm)
 
 
-  if(scaled == TRUE){
+  if(isTRUE(scaled)){
     #scale entropy between zero and 1, where 1 represents log(number of groups)
     entropy <- scale01(entropy, 0, log(length(groups)))
     # sanity checks
-    if(entropy_type == 'index' | .sum == TRUE){
+    if(entropy_type == 'index' | isTRUE(.sum)){
       warning("scaled set to TRUE, ignoring entropy_type and
         .sum parameters")
     }
