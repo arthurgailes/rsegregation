@@ -78,7 +78,7 @@ divergence <- function(..., totalPop = NULL, na.rm=TRUE, .sum=FALSE,
   results <- rowSums(prescores, na.rm = na.rm)
 
   # create total divergence score if selected
-  if(isTRUE(weighted) & isTRUE(.sum) results <- results*totalPop/sum(totalPop, na.rm = na.rm)
+  if(isTRUE(weighted) & isTRUE(.sum)) results <- results*totalPop/sum(totalPop, na.rm = na.rm)
   if(isTRUE(.sum)) results <- sum(results * totalPop / sum(totalPop, na.rm = na.rm), na.rm = na.rm)
   return(results)
 }
