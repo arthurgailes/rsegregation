@@ -17,11 +17,11 @@
 #'  set of percentages summing to 1 for each row, `sum` and `none` are equivalent.}
 #'  }
 #'
-#' @param totalPop The percentage of each group in the larger population (i.e. the
+#' @param sumProp The percentage of each group in the larger population (i.e. the
 #' population composed of the sum of groups provided in `...`). Can be any of:
 #' \describe{
-#'  \item{A numeric vector with one entry for each group/vector provided in `...`. (i.e.
-#'  the rowwise length of `...`)
+#'  \item{A numeric vector. Each entry represents the total population of the  with one entry for each group/vector provided in `...`. (i.e.
+#'  the rowwise length of `...`).
 #'  Note that for this to work correctly, each group must be provided in the same order in
 #'  `groupSums` as in `...`}
 #'  \item{`weights`}{Default. Uses the value of `weights` to construct total population proportions.
@@ -63,21 +63,16 @@
 #' @source Created by Elizabeth Roberto: <https://arxiv.org/abs/1508.01167>
 #' @export
 divergence <- function(..., weights = NULL, na.rm=TRUE, summed=FALSE,
-  weighted = FALSE, totalPop = NULL){
+  weighted = FALSE, sumProp = NULL){
 
   groupMatrix <- data.frame(...)
   if(nrow(groupMatrix) == 1) return(0) # if a sinlge observation composes a group
   # remove NAs
   if(isTRUE(na.rm)) groupMatrix[is.na(groupMatrix)] <- 0
-  #If `totalPop` is not provided, create from the sum of groups and convert
-  # totals to percentages
-  if(is.null(totalPop)) {
-    totalPop <- rowSums(groupMatrix, na.rm = na.rm)
-    # for observations with zero sum, create a dummy denomintor to prevent
-    # NaN results
-    denominator <- ifelse(totalPop == 0, 0.1, totalPop)
-    groupMatrix <- groupMatrix / denominator
-  }
+
+  # deal with weights.
+  weights <- convert_weights(groupMatrix, weights, na.rm = na.rm)
+
   # check for construction problems
   divergence_sanity(groupMatrix,totalPop)
   # create by-group scores
@@ -140,7 +135,7 @@ divergence_sanity <- function(df, totalPop){
 #' entropy(bay_race$white,bay_race$hispanic,bay_race$asian,
 #' bay_race$black, totalPop = bay_race$total_pop)
 #' @export
-entropy <- function( ..., weights = totalPop = NULL, entropy_type = 'index',
+entropy <- function( ..., weights = 'sum', sumProp = NULL, entropy_type = 'index',
   scaled = FALSE, summed=TRUE, na.rm=TRUE){
 
   #each item in ... should be a vector of race populations
@@ -149,16 +144,10 @@ entropy <- function( ..., weights = totalPop = NULL, entropy_type = 'index',
   if(nrow(groupMatrix) == 1) return(0) # if a sinlge observation composes a group
   # remove NAs
   if(isTRUE(na.rm)) groupMatrix[is.na(groupMatrix)] <- 0
-  #If `totalPop` is not provided, create from the sum of groups and convert
-  # totals to percentages
-  if(is.null(totalPop)) {
-    totalPop <- rowSums(groupMatrix, na.rm = na.rm)
-    # for observations with zero sum, create a dummy denomintor to prevent
-    # NaN results
-    denominator <- ifelse(totalPop == 0, 0.1, totalPop)
-    groupMatrix <- groupMatrix / denominator
-  }
 
+  #deal with weights and sumProp in separate functions
+  weights <- convert_weights(groupMatrix, weights, na.rm = na.rm)
+  sumProp <- proc_sumProp(groupMatrix, sumProp, weights, na.rm)
   # create by-group scores
   prescores <- sapply(groupMatrix, function(group){
     # create overall group proportion in sum of observations
@@ -220,4 +209,14 @@ convert_weights <- function(df, weights, na.rm){
   sumweight <- sum(weights, na.rm = na.rm)
   weights <- weights/sumweight
   return(weights)
+}
+
+proc_sumProp <- function(df, sumProp, weights, na.rm){
+  # conversion from weights if specified
+  if(sumProp == 'weights'){
+    popTotals <- df * weights
+    popTotals <- colSums(df, na.rm = na.rm)
+    sumProp <- popTotals/sum(popTotals, na.rm = na.rm)
+  }
+  return(sumProp)
 }
