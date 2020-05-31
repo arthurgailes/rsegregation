@@ -14,18 +14,20 @@
 #' @param group1,group2 Numeric vectors representing the popuplation of the
 #' groups to be compared.
 #'
+#' @param totalPop A numeric vector the length of `group` with population totals.
+#'
 #' @return A scalar value, see note.
 #'
 #' @source Duncan, Otis Dudley, and Beverly Duncan. A Methodological Analysis of Segregation Indexes.” American Sociological Review, vol. 20, no. 2, 1955, pp. 210–217. JSTOR, www.jstor.org/stable/2088328. Accessed 14 Mar. 2020.
 #'
-#' @note Setting .sum == FALSE will return by-observation measures, but this
+#' @note Setting summed == FALSE will return by-observation measures, but this
 #' measure is not meant to be decomposed. These results are for verification
 #' purposes only.
 #'
 #' @export
-dissimilarity <- function(group1, group2, .sum=TRUE, na.rm=TRUE){
+dissimilarity <- function(group1, group2, summed=TRUE, na.rm=TRUE){
   dissim <- 0.5 * abs(group1/sum(group1, na.rm=na.rm) - group2/sum(group2, na.rm=na.rm))
-  if(.sum==T) dissim <- sum(dissim, na.rm=na.rm)
+  if(summed==T) dissim <- sum(dissim, na.rm=na.rm)
   return(dissim)
 }
 #' Exposure Index
@@ -51,15 +53,15 @@ dissimilarity <- function(group1, group2, .sum=TRUE, na.rm=TRUE){
 #'
 #' @return A scalar value, see note.
 #'
-#' @note Setting .sum == FALSE will return by-observation measures, but this
+#' @note Setting summed == FALSE will return by-observation measures, but this
 #' measure is not meant to be decomposed. These results are for verification
 #' purposes only.
 #'
 #' @export
-exposure <- function(group1, group2, totalPop, .sum=TRUE, na.rm=TRUE){
+exposure <- function(group1, group2, totalPop, summed=TRUE, na.rm=TRUE){
   expo <- ifelse(totalPop == 0, 0,
     ( (group1/sum(group1, na.rm=na.rm)) * (group2/totalPop) )
   )
-  if(.sum==T) expo <- sum(expo, na.rm=na.rm)
+  if(summed==T) expo <- sum(expo, na.rm=na.rm)
   return(expo)
 }

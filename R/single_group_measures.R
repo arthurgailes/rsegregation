@@ -18,8 +18,9 @@
 #' \eqn{\sigma ((group/sum(group))*(group/totalPop))}
 #'
 #' @inheritParams divergence
+#' @inheritParams dissimilarity
 #'
-#' @param group A numeric vector of population
+#' @param group A numeric vector of subpopulation totals
 #'
 #' @source Wendell Bell, A Probability Model for the Measurement of Ecological Segregation, Social Forces, Volume 32, Issue 4, May 1954, Pages 357–364, https://doi.org/10.2307/2574118
 #' @return A scalar value, see note.
@@ -48,9 +49,7 @@ isolation <- function(group, totalPop, summed=TRUE, na.rm=TRUE){
 #' specialized in mining; while an LQ of 1.8 means that the region has a
 #' higher concentration in mining than the nation.
 #'
-#' @details The forumla for LQ is: \eqn{(group/totalPop)/(sum(group)/sum(totalPop))},
-#' or equivalently group/totalPop if group and totalPop are given as
-#' percentages.
+#' @details A simple wrapper for group/groupSum, which must both be given as percentages.
 #' @inheritParams divergence
 #' @inheritParams isolation
 #'
@@ -60,20 +59,20 @@ isolation <- function(group, totalPop, summed=TRUE, na.rm=TRUE){
 #' @param groupSum a number or vector the length of group, the percentage of a group in
 #' the overall population.
 #'
-#' @param percentage Set to TRUE if giving group and totalPop are percentages,
-#' FALSE if population totals
-#'
 #' @source U.S. Bureau of Economic Analysis: https://www.bea.gov/help/faq/478
 #'
 #' @examples
-#' data(bay_race)
+#' data("bay_race")
 #' # calculate the location quotient for Hispanic people in each tract in the bay area
-#' location_quotient(bay_race)
+#' location_quotient(group = bay_race$hispanic/bay_race$total_pop,
+#' groupSum = sum(bay_race$hispanic)/sum(bay_race$total_pop))
+#'
+#' #alternatively, calculate the location quotient for each tract against an
+#' # arbitrary theshold
+#'
 #'
 #' @export
-location_quotient <- function(group, groupSum, na.rm=TRUE,
-  percentage = FALSE){
-  if(percentage) group/totalPop
-  else lq <- (group / totalPop) / (sum(group, na.rm=na.rm) / sum(totalPop, na.rm=na.rm))
+location_quotient <- function(group, groupSum){
+  lq <- group/groupSum
   return(lq)
 }
