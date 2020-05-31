@@ -29,10 +29,6 @@
 #'  average of the percentages in each observaiton.}
 #'  }
 #'
-#' @param weighted Return population-weighted divergence scores for each
-#' observation. Has no effect if `summed` is true, as the total divergence
-#' score is always the sum of weighted values.
-#'
 #' @param summed If TRUE, will return a single summary statistic. (Or one value per group if specifying
 #' `dplyr::group_by`.) If FALSE, will return a vector equaling the length
 #' of the input vectors.
@@ -63,7 +59,7 @@
 #' @source Created by Elizabeth Roberto: <https://arxiv.org/abs/1508.01167>
 #' @export
 divergence <- function(..., weights = NULL, na.rm=TRUE, summed=FALSE,
-  weighted = FALSE, sumProp = NULL){
+  sumProp = NULL){
 
   groupMatrix <- data.frame(...)
   if(nrow(groupMatrix) == 1) return(0) # if a single observation composes a group
@@ -79,20 +75,19 @@ divergence <- function(..., weights = NULL, na.rm=TRUE, summed=FALSE,
   # check for construction problems
   multigroup_sanity(groupMatrix,totalPop)
   # create by-group scores
-  prescores <- sapply(groupMatrix, function(group){
-    # create overall group proportion in sum of observations
-    group_bigGeo <- sum(group*totalPop, na.rm=na.rm) / sum(totalPop, na.rm=na.rm)
+  preScores <- groupMatrix
+  for(column in seq_along(groupMatrix)){
+    group <- groupMatrix[[column]]
+    group_large <- sumProp[[column]]
     # calculate group, substituting 0 for log(0)
-    score <- ifelse(group <= 0 | group_bigGeo <= 0, 0,
-      group * log(group / group_bigGeo) )
-    return(score)
-  })
+    prescores[[column]] <- ifelse(group <= 0 | group_large <= 0, 0,
+      groupMatrix * log(groupMatrix / group_large) )
+  }
   #sum the results for each racial group for divergence score
   results <- rowSums(prescores, na.rm = na.rm)
 
   # create total divergence score if selected
-  if(isTRUE(weighted) & isTRUE(summed)) results <- results*totalPop/sum(totalPop, na.rm = na.rm)
-  if(isTRUE(summed)) results <- sum(results * totalPop / sum(totalPop, na.rm = na.rm), na.rm = na.rm)
+  if(isTRUE(summed)) results <- sum(results * weights, na.rm = na.rm)
   return(results)
 }
 # Sanity checks and warnings for divergence and entropy
