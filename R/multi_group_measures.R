@@ -57,7 +57,7 @@
 #'
 #' @source Created by Elizabeth Roberto: <https://arxiv.org/abs/1508.01167>
 #' @export
-divergence <- function(..., weights = NULL, na.rm=TRUE, summed=FALSE,
+divergence <- function(..., weights = 'sum', na.rm=TRUE, summed=FALSE,
   sumProp = NULL){
 
   groupMatrix <- data.frame(...)
