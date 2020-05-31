@@ -122,7 +122,6 @@ multigroup_sanity <- function(df, totalPop){
 #' `entropy_type` == "index", and summed is FALSE, then the returned vector will be entropy index, unweighted by
 #'  population
 #'
-#'
 #' @source Theil, Henri. 1972. Statistical Decomposition Analysis.
 #'
 #' @seealso \url{https://en.wikipedia.org/wiki/Theil_index}
@@ -134,31 +133,26 @@ multigroup_sanity <- function(df, totalPop){
 entropy <- function( ..., weights = 'sum', sumProp = NULL, entropy_type = 'index',
   scaled = FALSE, summed=TRUE, na.rm=TRUE){
 
-  #each item in ... should be a vector of race populations
   groupMatrix <- data.frame(...)
-
-  if(nrow(groupMatrix) == 1) return(0) # if a sinlge observation composes a group
+  if(nrow(groupMatrix) == 1) return(0) # if a single observation composes a group
   # remove NAs
   if(isTRUE(na.rm)) groupMatrix[is.na(groupMatrix)] <- 0
 
   #deal with weights and sumProp in separate functions
   weights <- convert_weights(groupMatrix, weights, na.rm = na.rm)
   sumProp <- proc_sumProp(groupMatrix, sumProp, weights, na.rm)
+  #convert to percentages if necessary
+  groupMatrix <- to_percentages(groupMatrix)
+  # check for construction problems
+  multigroup_sanity(groupMatrix,totalPop)
   # create by-group scores
-  prescores <- sapply(groupMatrix, function(group){
-    # create overall group proportion in sum of observations
-    group_bigGeo <- sum(group*totalPop, na.rm=na.rm) / sum(totalPop, na.rm=na.rm)
+  preScores <- groupMatrix
+  for(column in seq_along(groupMatrix)){
+    group <- groupMatrix[[column]]
+    group_large <- sumProp[[column]]
     # calculate group, substituting 0 for log(0)
-    score <- ifelse(group <= 0 | group_bigGeo <= 0, 0,
-      group * log(1 / group) )
-    return(score)
-  })
-
-  #sum the results for each racial group for Entropy score Ei.
-  entropy <- rowSums(prescores, na.rm = na.rm)
-
-  if(entropy_type == 'index'){
-
+    prescores[[column]] <- ifelse(group <= 0 | group_large <= 0, 0,
+      groupMatrix * log(groupMatrix / group_large) )
   }
 
 
