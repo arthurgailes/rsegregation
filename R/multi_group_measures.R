@@ -66,15 +66,18 @@ divergence <- function(..., weights = NULL, na.rm=TRUE, summed=FALSE,
   weighted = FALSE, sumProp = NULL){
 
   groupMatrix <- data.frame(...)
-  if(nrow(groupMatrix) == 1) return(0) # if a sinlge observation composes a group
+  if(nrow(groupMatrix) == 1) return(0) # if a single observation composes a group
   # remove NAs
   if(isTRUE(na.rm)) groupMatrix[is.na(groupMatrix)] <- 0
 
-  # deal with weights.
+  #deal with weights and sumProp in separate functions
   weights <- convert_weights(groupMatrix, weights, na.rm = na.rm)
+  sumProp <- proc_sumProp(groupMatrix, sumProp, weights, na.rm)
+  #convert to percentages if necessary
+  groupMatrix <- to_percentages(groupMatrix)
 
   # check for construction problems
-  divergence_sanity(groupMatrix,totalPop)
+  multigroup_sanity(groupMatrix,totalPop)
   # create by-group scores
   prescores <- sapply(groupMatrix, function(group){
     # create overall group proportion in sum of observations
@@ -92,11 +95,9 @@ divergence <- function(..., weights = NULL, na.rm=TRUE, summed=FALSE,
   if(isTRUE(summed)) results <- sum(results * totalPop / sum(totalPop, na.rm = na.rm), na.rm = na.rm)
   return(results)
 }
-# Sanity checks and warnings for divergence
-divergence_sanity <- function(df, totalPop){
+# Sanity checks and warnings for divergence and entropy
+multigroup_sanity <- function(df, totalPop){
   if(isTRUE(any(df<0))) warning("Negative numbers detected; may skew results")
-  if(isTRUE(any(df>1))) warning("Percentages greater than 100% detected; is `totalPop` specified correctly?")
-  if(isTRUE(any(totalPop < 1))) warning("Either totalPop is specified incorrectly, or some percentages do not add to 100%")
 }
 #' Theil's Index of Entropy
 #'
@@ -210,7 +211,7 @@ convert_weights <- function(df, weights, na.rm){
   weights <- weights/sumweight
   return(weights)
 }
-
+# create sumProp from weights if necessary
 proc_sumProp <- function(df, sumProp, weights, na.rm){
   # conversion from weights if specified
   if(sumProp == 'weights'){
@@ -219,4 +220,13 @@ proc_sumProp <- function(df, sumProp, weights, na.rm){
     sumProp <- popTotals/sum(popTotals, na.rm = na.rm)
   }
   return(sumProp)
+}
+# convert matrix to percentages or normalize percentages to sum to one
+to_percentages <- function(df, na.rm){
+  # test if rows add up to whole numbers
+  for(row in rowSums(df, na.rm = T)){
+    if(!isTRUE(row %% 1 == 0)) warning("The sum of at least one row in `...` is not a whole number. `divergence` converts all rows in `...` to a percentage of their sum total.")
+  }
+  df <- df/rowSums(df, na.rm = na.rm)
+  return(df)
 }
