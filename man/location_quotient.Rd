@@ -7,21 +7,14 @@
 U.S. Bureau of Economic Analysis: https://www.bea.gov/help/faq/478
 }
 \usage{
-location_quotient(group, totalPop, na.rm = TRUE, percentage = FALSE)
+location_quotient(group, groupSum)
 }
 \arguments{
-\item{group}{A numeric vector of population}
+\item{group}{a numeric vector giving either a group's percentage of the population in
+the observation.}
 
-\item{totalPop}{A vector for the total population (not group population).
-Only necessary if the vectors
-in \code{...} are percentages, rather than population totals, in which case
-it is used to reconstruct percentages in the larger geography.}
-
-\item{na.rm}{logical. Should missing values (including NaN) be removed?
-Used only if \code{.sum} is set to TRUE.}
-
-\item{percentage}{Set to TRUE if giving group and totalPop are percentages,
-FALSE otherwise.}
+\item{groupSum}{a number or vector the length of group, the percentage of a group in
+the overall population.}
 }
 \description{
 A location quotient (LQ) is an analytical statistic that measures a
@@ -36,7 +29,16 @@ specialized in mining; while an LQ of 1.8 means that the region has a
 higher concentration in mining than the nation.
 }
 \details{
-The forumla for LQ is: \eqn{(group/totalPop)/(sum(group)/sum(totalPop))},
-or equivalently group/totalPop if group and totalPop are given as
-percentages.
+A simple wrapper for group/groupSum, which must both be given as percentages.
+}
+\examples{
+data("bay_race")
+# calculate the location quotient for Hispanic people in each tract in the bay area
+location_quotient(group = bay_race$hispanic/bay_race$total_pop,
+groupSum = sum(bay_race$hispanic)/sum(bay_race$total_pop))
+
+#alternatively, calculate the location quotient for each tract against an
+# arbitrary theshold
+
+
 }

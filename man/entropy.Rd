@@ -9,41 +9,60 @@ Theil, Henri. 1972. Statistical Decomposition Analysis.
 \usage{
 entropy(
   ...,
-  totalPop = NULL,
+  weights = "sum",
+  sumProp = NULL,
   entropy_type = "index",
   scaled = FALSE,
-  .sum = TRUE,
+  summed = TRUE,
   na.rm = TRUE
 )
 }
 \arguments{
 \item{...}{Population vectors for every group included in the divergence
-calculation. If using percentages instead of population totals, specify
-\code{totalPop}}
+calculation.}
 
-\item{totalPop}{A vector for the total population (not group population).
-Only necessary if the vectors
-in \code{...} are percentages, rather than population totals, in which case
-it is used to reconstruct percentages in the larger geography.}
+\item{weights}{Only used if \code{summed} or \code{weighted} is set to \code{TRUE}.
+This can be either a vector of weights summing to one, or the total
+population for each observation in \code{...}. Can be any of:
+\describe{
+\item{A numeric vector}{The length of each vector provided in each
+entry in \code{...} (i.e. the column-wise length of \code{...}). Can be either population
+or weights by observation}
+\item{\code{sum}}{Sets \code{weights} to the rowwise sum of \code{...}}
+\item{\code{none}}{Weighs each observation evenly (1/length). Note that if \code{...} is a
+set of percentages summing to 1 for each row, \code{sum} and \code{none} are equivalent.}
+}}
+
+\item{sumProp}{The percentage of each group in the larger population (i.e. the
+population composed of the sum of groups provided in \code{...}). Can be any of:
+\describe{
+\item{A numeric vector}{Each entry represents the total population of the  with one entry for each group/vector provided in \code{...}. (i.e.
+the rowwise length of \code{...}).
+Note that for this to work correctly, each group must be provided in the same order in
+\code{groupSums} as in \code{...}}
+\item{\code{weights}}{Default. Uses the value of \code{weights} to construct total population proportions.
+If weights is set to \code{none}, the total population proportions will be the unweighted
+average of the percentages in each observaiton.}
+}}
 
 \item{entropy_type}{One of: \describe{
-\item{score}{t index in wiki aka entropy score}
-\item{index}{theil's h, akal entropy index, aka Theil's information theory index}
+\item{"entropy"}{Default. t index in wiki aka entropy score}
+\item{"information_theory"}{Theil's information theory index}
 }}
 
 \item{scaled}{Scale entropy scores from 0-1. Setting scaled to TRUE
-ignores the entropy_type and .sum parameters}
+ignores the entropy_type and summed parameters}
 
-\item{.sum}{If TRUE, will return a single summary statistic. (Or one value per group if specifying
+\item{summed}{If TRUE, will return a single summary statistic. (Or one value per group if specifying
 \code{dplyr::group_by}.) If FALSE, will return a vector equaling the length
 of the input vectors.}
 
 \item{na.rm}{logical. Should missing values (including NaN) be removed?
-Used only if \code{.sum} is set to TRUE.}
+Used only if \code{summed} is set to TRUE.}
 }
 \value{
-A single value if .sum==TRUE, or a vector equaling the length of the inputs. Note that if
-\code{entropy_type} == "index", and .sum is FALSE, then the returned vector will be entropy index, unweighted by
+A single value if summed==TRUE, or a vector equaling the length of the inputs. Note that if
+\code{entropy_type} == "index", and summed is FALSE, then the returned vector will be entropy index, unweighted by
 population
 }
 \description{
@@ -65,5 +84,5 @@ large-scale geography. }
 
 #' @examples
 entropy(bay_race$white,bay_race$hispanic,bay_race$asian,
-bay_race$black, totalPop = bay_race$total_pop)
+bay_race$black, weights = bay_race$total_pop)
 }

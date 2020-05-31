@@ -1,16 +1,14 @@
 #' Divergence Index
-#'
-#' @param totalPop Depreciated. Use `weights`.
+
 #'
 #' @param ... Population vectors for every group included in the divergence
-#' calculation. If using percentages instead of population totals, specify
-#' `totalPop`
+#' calculation.
 #'
 #' @param weights Only used if `summed` or `weighted` is set to `TRUE`.
 #' This can be either a vector of weights summing to one, or the total
 #' population for each observation in `...`. Can be any of:
 #' \describe{
-#'  \item{A numeric or integer vector the length of each vector provided in each
+#'  \item{A numeric vector}{The length of each vector provided in each
 #'  entry in `...` (i.e. the column-wise length of `...`). Can be either population
 #'  or weights by observation}
 #'  \item{`sum`}{Sets `weights` to the rowwise sum of `...`}
@@ -21,7 +19,7 @@
 #' @param sumProp The percentage of each group in the larger population (i.e. the
 #' population composed of the sum of groups provided in `...`). Can be any of:
 #' \describe{
-#'  \item{A numeric vector. Each entry represents the total population of the  with one entry for each group/vector provided in `...`. (i.e.
+#'  \item{A numeric vector}{Each entry represents the total population of the  with one entry for each group/vector provided in `...`. (i.e.
 #'  the rowwise length of `...`).
 #'  Note that for this to work correctly, each group must be provided in the same order in
 #'  `groupSums` as in `...`}
@@ -54,7 +52,7 @@
 #' bay_race %>%
 #'   mutate_at(vars(hispanic:all_other), list(~(./total_pop))) %>%
 #'   mutate(divergence_score = divergence(white, hispanic, asian,
-#'   black, all_other, totalPop = total_pop))
+#'   black, all_other, weights = total_pop))
 #'
 #'
 #' @source Created by Elizabeth Roberto: <https://arxiv.org/abs/1508.01167>
@@ -74,7 +72,7 @@ divergence <- function(..., weights = NULL, na.rm=TRUE, summed=FALSE,
   groupMatrix <- to_percentages(groupMatrix)
 
   # check for construction problems
-  multigroup_sanity(groupMatrix,totalPop)
+  multigroup_sanity(groupMatrix,weights)
   # create by-group scores
   preScores <- groupMatrix
   for(column in seq_along(groupMatrix)){
@@ -92,7 +90,7 @@ divergence <- function(..., weights = NULL, na.rm=TRUE, summed=FALSE,
   return(results)
 }
 # Sanity checks and warnings for divergence and entropy
-multigroup_sanity <- function(df, totalPop){
+multigroup_sanity <- function(df, weights){
   if(isTRUE(any(df<0))) warning("Negative numbers detected; may skew results")
 }
 #' Theil's Index of Entropy
@@ -129,7 +127,7 @@ multigroup_sanity <- function(df, totalPop){
 #'
 #' #' @examples
 #' entropy(bay_race$white,bay_race$hispanic,bay_race$asian,
-#' bay_race$black, totalPop = bay_race$total_pop)
+#' bay_race$black, weights = bay_race$total_pop)
 #' @export
 entropy <- function( ..., weights = 'sum', sumProp = NULL, entropy_type = 'index',
   scaled = FALSE, summed=TRUE, na.rm=TRUE){
@@ -145,12 +143,13 @@ entropy <- function( ..., weights = 'sum', sumProp = NULL, entropy_type = 'index
   #convert to percentages if necessary
   groupMatrix <- to_percentages(groupMatrix)
   # check for construction problems
-  multigroup_sanity(groupMatrix,totalPop)
+  multigroup_sanity(groupMatrix,weights)
   # create by-group scores
   entropy <- groupMatrix
   # calculate entropy
   for(column in seq_along(groupMatrix)){
     group <- groupMatrix[[column]]
+    group_large <- sumProp[[column]]
     # calculate group, substituting 0 for log(0)
     entropy[[column]] <- ifelse(group <= 0 | group_large <= 0, 0,
       groupMatrix * log(1 / groupMatrix) )
@@ -158,7 +157,7 @@ entropy <- function( ..., weights = 'sum', sumProp = NULL, entropy_type = 'index
 
   if(isTRUE(scaled)){
     #scale entropy between zero and 1, where 1 represents log(number of groups)
-    entropy <- scale01(entropy, 0, log(length(groups)))
+    entropy <- scale01(entropy, 0, log(length(groupMatrix)))
     # sanity checks
     if(entropy_type != 'entropy' | isTRUE(summed)){
       warning("scaled set to TRUE, ignoring entropy_type and
@@ -168,21 +167,19 @@ entropy <- function( ..., weights = 'sum', sumProp = NULL, entropy_type = 'index
   }
 
   if(entropy_type == 'information_theory') {
-    entropy <- information_theory(groupMatrix, sumProp, weights, summed)
+    return(information_theory(groupMatrix, sumProp, weights, summed))
   }
 
   # in either entropy_type, the entropy of the larger geography is needed
-  if(summed==T) {
-    #sum the groups and total population (if provided)
-    sumgroups <- lapply(groups, sum, na.rm=na.rm)
-    sumtot <- ifelse(is.null(totalPop), NULL, sum(totalPop, na.rm=na.rm))
-    # calculate entropy on this basis
-    entropy_large <- raw_entropy(sumgroups, totalPop=sumtot,
-      scaled=scaled, summed=summed, na.rm=na.rm)
+  if(summed==T & entropy_type != 'information_theory') {
+    #large population entropy score
+    entropySum <- ifelse(sumProp <= 0, 0,
+      sumProp * log(1 / sumProp) )
+    entropySum <- sum(sumProp)
+    return(entropySum)
   }
 
   return(entropy)
-
 }
 # information theory
 information_theory <- function(entropy, sumProp, weights, summed){

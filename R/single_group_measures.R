@@ -21,6 +21,7 @@
 #' @inheritParams dissimilarity
 #'
 #' @param group A numeric vector of subpopulation totals
+#' @param totalPop A numeric vector the length of `group` with population totals.
 #'
 #' @source Wendell Bell, A Probability Model for the Measurement of Ecological Segregation, Social Forces, Volume 32, Issue 4, May 1954, Pages 357–364, https://doi.org/10.2307/2574118
 #' @return A scalar value, see note.

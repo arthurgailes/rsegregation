@@ -14,8 +14,6 @@
 #' @param group1,group2 Numeric vectors representing the popuplation of the
 #' groups to be compared.
 #'
-#' @param totalPop A numeric vector the length of `group` with population totals.
-#'
 #' @return A scalar value, see note.
 #'
 #' @source Duncan, Otis Dudley, and Beverly Duncan. A Methodological Analysis of Segregation Indexes.” American Sociological Review, vol. 20, no. 2, 1955, pp. 210–217. JSTOR, www.jstor.org/stable/2088328. Accessed 14 Mar. 2020.
@@ -48,6 +46,7 @@ dissimilarity <- function(group1, group2, summed=TRUE, na.rm=TRUE){
 #' where g1=group1, G1=sum(group1),g2=group2, and t=totalPop
 #' @inheritParams divergence
 #' @inheritParams dissimilarity
+#' @inheritParams isolation
 #'
 #' @source Wendell Bell, A Probability Model for the Measurement of Ecological Segregation, Social Forces, Volume 32, Issue 4, May 1954, Pages 357–364, https://doi.org/10.2307/2574118
 #'

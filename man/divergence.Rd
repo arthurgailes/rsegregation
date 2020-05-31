@@ -7,53 +7,43 @@
 Created by Elizabeth Roberto: \url{https://arxiv.org/abs/1508.01167}
 }
 \usage{
-divergence(..., totalPop = NULL, na.rm = TRUE, .sum = FALSE, weighted = FALSE)
+divergence(..., weights = NULL, na.rm = TRUE, summed = FALSE, sumProp = NULL)
 }
 \arguments{
 \item{...}{Population vectors for every group included in the divergence
-calculation. If using percentages instead of population totals, specify
-\code{totalPop}}
+calculation.}
 
-\item{totalPop}{A vector for the total population (not group population).
-Only necessary if the vectors
-in \code{...} are percentages, rather than population totals, in which case
-it is used to reconstruct percentages in the larger geography.}
+\item{weights}{Only used if \code{summed} or \code{weighted} is set to \code{TRUE}.
+This can be either a vector of weights summing to one, or the total
+population for each observation in \code{...}. Can be any of:
+\describe{
+\item{A numeric vector}{The length of each vector provided in each
+entry in \code{...} (i.e. the column-wise length of \code{...}). Can be either population
+or weights by observation}
+\item{\code{sum}}{Sets \code{weights} to the rowwise sum of \code{...}}
+\item{\code{none}}{Weighs each observation evenly (1/length). Note that if \code{...} is a
+set of percentages summing to 1 for each row, \code{sum} and \code{none} are equivalent.}
+}}
 
 \item{na.rm}{logical. Should missing values (including NaN) be removed?
-Used only if \code{.sum} is set to TRUE.}
+Used only if \code{summed} is set to TRUE.}
 
-\item{.sum}{If TRUE, will return a single summary statistic. (Or one value per group if specifying
+\item{summed}{If TRUE, will return a single summary statistic. (Or one value per group if specifying
 \code{dplyr::group_by}.) If FALSE, will return a vector equaling the length
 of the input vectors.}
 
-\item{weighted}{Return population-weighted divergence scores for each
-observation. Has no effect if \code{.sum} is true, as the total divergence
-score is always the sum of weighted values.}
+\item{sumProp}{The percentage of each group in the larger population (i.e. the
+population composed of the sum of groups provided in \code{...}). Can be any of:
+\describe{
+\item{A numeric vector}{Each entry represents the total population of the  with one entry for each group/vector provided in \code{...}. (i.e.
+the rowwise length of \code{...}).
+Note that for this to work correctly, each group must be provided in the same order in
+\code{groupSums} as in \code{...}}
+\item{\code{weights}}{Default. Uses the value of \code{weights} to construct total population proportions.
+If weights is set to \code{none}, the total population proportions will be the unweighted
+average of the percentages in each observaiton.}
+}}
 }
 \description{
-FIX? divergence_pct Calculates the divergence index of segregation
-}
-\examples{
-data(bay_race)
-#return by-observation scores
-divergence(bay_race$white,bay_race$hispanic,bay_race$asian,
-bay_race$black, bay_race$all_other)
-
-\dontrun{
-# Using dplyr
-require(dplyr)
-mutate(bay_race, divergence_score = divergence(white, hispanic,
-  asian, black, all_other))
-
-# divergence alsow works with percentages as long as you have
-# population totals by observation
-bay_race \%>\%
-  mutate_at(vars(hispanic:all_other), list(~(./total_pop))) \%>\%
-  mutate(divergence_score = divergence(white, hispanic, asian,
-  black, all_other, totalPop = total_pop))
-
-# Entering dataframe will cause an error
-divergence(bay_race[c("white","black","asian","hispanic")])
-}
-
+Divergence Index
 }

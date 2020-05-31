@@ -7,18 +7,18 @@
 Duncan, Otis Dudley, and Beverly Duncan. A Methodological Analysis of Segregation Indexes.” American Sociological Review, vol. 20, no. 2, 1955, pp. 210–217. JSTOR, www.jstor.org/stable/2088328. Accessed 14 Mar. 2020.
 }
 \usage{
-dissimilarity(group1, group2, .sum = TRUE, na.rm = TRUE)
+dissimilarity(group1, group2, summed = TRUE, na.rm = TRUE)
 }
 \arguments{
 \item{group1, group2}{Numeric vectors representing the popuplation of the
 groups to be compared.}
 
-\item{.sum}{If TRUE, will return a single summary statistic. (Or one value per group if specifying
+\item{summed}{If TRUE, will return a single summary statistic. (Or one value per group if specifying
 \code{dplyr::group_by}.) If FALSE, will return a vector equaling the length
 of the input vectors.}
 
 \item{na.rm}{logical. Should missing values (including NaN) be removed?
-Used only if \code{.sum} is set to TRUE.}
+Used only if \code{summed} is set to TRUE.}
 }
 \value{
 A scalar value, see note.
@@ -35,7 +35,7 @@ The index of dissimilarity is calculated as:
 \eqn{1/2 * \Sigma (group1/sum(group1) - group2/sum(group2))}
 }
 \note{
-Setting .sum == FALSE will return by-observation measures, but this
+Setting summed == FALSE will return by-observation measures, but this
 measure is not meant to be decomposed. These results are for verification
 purposes only.
 }

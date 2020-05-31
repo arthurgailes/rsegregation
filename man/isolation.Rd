@@ -7,22 +7,19 @@
 Wendell Bell, A Probability Model for the Measurement of Ecological Segregation, Social Forces, Volume 32, Issue 4, May 1954, Pages 357–364, https://doi.org/10.2307/2574118
 }
 \usage{
-isolation(group, totalPop, .sum = TRUE, na.rm = TRUE)
+isolation(group, totalPop, summed = TRUE, na.rm = TRUE)
 }
 \arguments{
-\item{group}{A numeric vector of population}
+\item{group}{A numeric vector of subpopulation totals}
 
-\item{totalPop}{A vector for the total population (not group population).
-Only necessary if the vectors
-in \code{...} are percentages, rather than population totals, in which case
-it is used to reconstruct percentages in the larger geography.}
+\item{totalPop}{A numeric vector the length of \code{group} with population totals.}
 
-\item{.sum}{If TRUE, will return a single summary statistic. (Or one value per group if specifying
+\item{summed}{If TRUE, will return a single summary statistic. (Or one value per group if specifying
 \code{dplyr::group_by}.) If FALSE, will return a vector equaling the length
 of the input vectors.}
 
 \item{na.rm}{logical. Should missing values (including NaN) be removed?
-Used only if \code{.sum} is set to TRUE.}
+Used only if \code{summed} is set to TRUE.}
 }
 \value{
 A scalar value, see note.
@@ -46,7 +43,7 @@ The isolation formula is
 \eqn{\sigma ((group/sum(group))*(group/totalPop))}
 }
 \note{
-Setting .sum == FALSE will return by-observation measures, but this
+Setting summed == FALSE will return by-observation measures, but this
 measure is not meant to be decomposed. These results are for verification
 purposes only.
 }
