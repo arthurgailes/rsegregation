@@ -211,9 +211,13 @@ entropy <- function( ..., weights = totalPop = NULL, entropy_type = 'index',
 
 # convert sums into weights if necessarty
 convert_weights <- function(df, weights, na.rm){
-  if(is.null(weights))
-  if(!class(weights) %in% c('numeric','integer')) stop("weights must be class numeric or integer")
+  #create equal weights
+  if(weights == 'none') weights = rep_len(1, nrow(df))
+  #create weights from summed rows
+  if(weights == 'sum') weights = rowSums(df, na.rm = na.rm)
+  # else weights should be a given vector, all paths lead here:
+  # divide each weight by their sum to make all sum to 1
   sumweight <- sum(weights, na.rm = na.rm)
   weights <- weights/sumweight
-  return(weight)
+  return(weights)
 }
