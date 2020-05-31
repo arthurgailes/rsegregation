@@ -1,26 +1,44 @@
 #' Divergence Index
 #'
-#' FIX? divergence_pct Calculates the divergence index of segregation
-#'
-#' @param totalPop A vector for the total population (not group population).
-#' Only necessary if the vectors
-#' in `...` are percentages, rather than population totals, in which case
-#' it is used to reconstruct percentages in the larger geography.
+#' @param totalPop Depreciated. Use `weights`.
 #'
 #' @param ... Population vectors for every group included in the divergence
 #' calculation. If using percentages instead of population totals, specify
 #' `totalPop`
 #'
+#' @param weights Only used if `summed` or `weighted` is set to `TRUE`.
+#' This can be either a vector of weights summing to one, or the total
+#' population for each observation in `...`. Can be any of:
+#' \describe{
+#'  \item{A numeric or integer vector the length of each vector provided in each
+#'  entry in `...`. (i.e. the column-wise length of ...)}
+#'  \item{`sum`}{Sets `weights` to the rowwise sum of `...`}
+#'  \item{`none`}{Weighs each observation evenly (1/length). Note that if `...` is a
+#'  set of percentages summing to 1 for each row, `sum` and `none` are equivalent.}
+#'  }
+#'
+#' @param totalPop The percentage of each group in the larger population (i.e. the
+#' population composed of the sum of groups provided in `...`). Can be any of:
+#' \describe{
+#'  \item{A numeric vector with one entry for each group/vector provided in `...`. (i.e.
+#'  the rowwise length of `...`)
+#'  Note that for this to work correctly, each group must be provided in the same order in
+#'  `groupSums` as in `...`}
+#'  \item{`weights`}{Default. Uses the value of `weights` to construct total population proportions.
+#'  If weights is set to `none`, the total population proportions will be the unweighted
+#'  average of the percentages in each observaiton.}
+#'  }
+#'
 #' @param weighted Return population-weighted divergence scores for each
-#' observation. Has no effect if `.sum` is true, as the total divergence
+#' observation. Has no effect if `summed` is true, as the total divergence
 #' score is always the sum of weighted values.
 #'
-#' @param .sum If TRUE, will return a single summary statistic. (Or one value per group if specifying
+#' @param summed If TRUE, will return a single summary statistic. (Or one value per group if specifying
 #' `dplyr::group_by`.) If FALSE, will return a vector equaling the length
 #' of the input vectors.
 #'
 #' @param na.rm logical. Should missing values (including NaN) be removed?
-#' Used only if `.sum` is set to TRUE.
+#' Used only if `summed` is set to TRUE.
 #'
 #' @examples
 #' data(bay_race)
@@ -41,14 +59,11 @@
 #'   mutate(divergence_score = divergence(white, hispanic, asian,
 #'   black, all_other, totalPop = total_pop))
 #'
-#' # Entering dataframe will cause an error
-#' divergence(bay_race[c("white","black","asian","hispanic")])
-#' }
 #'
 #' @source Created by Elizabeth Roberto: <https://arxiv.org/abs/1508.01167>
 #' @export
-divergence <- function(..., totalPop = NULL, na.rm=TRUE, .sum=FALSE,
-  weighted = FALSE){
+divergence <- function(..., weights = NULL, na.rm=TRUE, summed=FALSE,
+  weighted = FALSE, totalPop = NULL){
 
   groupMatrix <- data.frame(...)
   if(nrow(groupMatrix) == 1) return(0) # if a sinlge observation composes a group
@@ -78,14 +93,15 @@ divergence <- function(..., totalPop = NULL, na.rm=TRUE, .sum=FALSE,
   results <- rowSums(prescores, na.rm = na.rm)
 
   # create total divergence score if selected
-  if(isTRUE(weighted) & isTRUE(.sum)) results <- results*totalPop/sum(totalPop, na.rm = na.rm)
-  if(isTRUE(.sum)) results <- sum(results * totalPop / sum(totalPop, na.rm = na.rm), na.rm = na.rm)
+  if(isTRUE(weighted) & isTRUE(summed)) results <- results*totalPop/sum(totalPop, na.rm = na.rm)
+  if(isTRUE(summed)) results <- sum(results * totalPop / sum(totalPop, na.rm = na.rm), na.rm = na.rm)
   return(results)
 }
 # Sanity checks and warnings for divergence
 divergence_sanity <- function(df, totalPop){
   if(isTRUE(any(df<0))) warning("Negative numbers detected; may skew results")
   if(isTRUE(any(df>1))) warning("Percentages greater than 100% detected; is `totalPop` specified correctly?")
+  if(isTRUE(any(totalPop < 1))) warning("Either totalPop is specified incorrectly, or some percentages do not add to 100%")
 }
 #' Theil's Index of Entropy
 #'
@@ -94,7 +110,7 @@ divergence_sanity <- function(df, totalPop){
 #' Theil's \emph{T} Index
 #'
 #' @param scaled Scale entropy scores from 0-1. Setting scaled to TRUE
-#' ignores the entropy_type and .sum parameters
+#' ignores the entropy_type and summed parameters
 #'
 #' @param entropy_type One of: \describe{
 #' \item{score}{t index in wiki aka entropy score}
@@ -111,8 +127,8 @@ divergence_sanity <- function(df, totalPop){
 #'  large-scale geography. }
 #'  }
 #'
-#' @return A single value if .sum==TRUE, or a vector equaling the length of the inputs. Note that if
-#' `entropy_type` == "index", and .sum is FALSE, then the returned vector will be entropy index, unweighted by
+#' @return A single value if summed==TRUE, or a vector equaling the length of the inputs. Note that if
+#' `entropy_type` == "index", and summed is FALSE, then the returned vector will be entropy index, unweighted by
 #'  population
 #'
 #'
@@ -124,71 +140,80 @@ divergence_sanity <- function(df, totalPop){
 #' entropy(bay_race$white,bay_race$hispanic,bay_race$asian,
 #' bay_race$black, totalPop = bay_race$total_pop)
 #' @export
-entropy <- function( ..., totalPop = NULL, entropy_type = 'index',
-  scaled = FALSE, .sum=TRUE, na.rm=TRUE){
+entropy <- function( ..., weights = totalPop = NULL, entropy_type = 'index',
+  scaled = FALSE, summed=TRUE, na.rm=TRUE){
 
   #each item in ... should be a vector of race populations
-  groups <- list(...)
-  #calculate basic entropy/diversity score
-  entropy <- raw_entropy(groups, totalPop=totalPop,
-    scaled=scaled, .sum=.sum, na.rm=na.rm)
+  groupMatrix <- data.frame(...)
+
+  if(nrow(groupMatrix) == 1) return(0) # if a sinlge observation composes a group
+  # remove NAs
+  if(isTRUE(na.rm)) groupMatrix[is.na(groupMatrix)] <- 0
+  #If `totalPop` is not provided, create from the sum of groups and convert
+  # totals to percentages
+  if(is.null(totalPop)) {
+    totalPop <- rowSums(groupMatrix, na.rm = na.rm)
+    # for observations with zero sum, create a dummy denomintor to prevent
+    # NaN results
+    denominator <- ifelse(totalPop == 0, 0.1, totalPop)
+    groupMatrix <- groupMatrix / denominator
+  }
+
+  # create by-group scores
+  prescores <- sapply(groupMatrix, function(group){
+    # create overall group proportion in sum of observations
+    group_bigGeo <- sum(group*totalPop, na.rm=na.rm) / sum(totalPop, na.rm=na.rm)
+    # calculate group, substituting 0 for log(0)
+    score <- ifelse(group <= 0 | group_bigGeo <= 0, 0,
+      group * log(1 / group) )
+    return(score)
+  })
+
+  #sum the results for each racial group for Entropy score Ei.
+  entropy <- rowSums(prescores, na.rm = na.rm)
+
+  if(entropy_type == 'index'){
+
+  }
 
 
   if(isTRUE(scaled)){
     #scale entropy between zero and 1, where 1 represents log(number of groups)
     entropy <- scale01(entropy, 0, log(length(groups)))
     # sanity checks
-    if(entropy_type == 'index' | isTRUE(.sum)){
+    if(entropy_type == 'index' | isTRUE(summed)){
       warning("scaled set to TRUE, ignoring entropy_type and
-        .sum parameters")
+        summed parameters")
     }
     return(entropy)
   }
 
   # in either entropy_type, the entropy of the larger geography is needed
-  if(.sum==T) {
+  if(summed==T) {
     #sum the groups and total population (if provided)
     sumgroups <- lapply(groups, sum, na.rm=na.rm)
     sumtot <- ifelse(is.null(totalPop), NULL, sum(totalPop, na.rm=na.rm))
     # calculate entropy on this basis
     entropy_large <- raw_entropy(sumgroups, totalPop=sumtot,
-      scaled=scaled, .sum=.sum, na.rm=na.rm)
+      scaled=scaled, summed=summed, na.rm=na.rm)
   }
   if(entropy_type == 'score') {
-    if(.sum==T) return(entropy_large)
+    if(summed==T) return(entropy_large)
     else return(entropy)
   } else if (entropy_type == 'index'){
     # Theil's Hi
     entropy_index <- (entropy_large - entropy) / entropy_large
     # Theil's H
-    if(.sum==T) entropy_index <- sum(entropy_index * (totalPop / sum(totalPop, na.rm=na.rm)))
+    if(summed==T) entropy_index <- sum(entropy_index * (totalPop / sum(totalPop, na.rm=na.rm)))
     return(entropy_index)
   } else (stop("entropy_type must be either 'score' or 'index'"))
 }
-# calculate entropy/diversity
-raw_entropy <- function(groups, totalPop = NULL,
-  scaled = FALSE, .sum=TRUE, na.rm=TRUE){
 
-  # convert list of vectors into DF, then convert to percentages
-  raceMatrix <- as.data.frame(do.call(cbind, groups))
-  raceMatrix[is.na(raceMatrix)] <- 0
-  #If total popuation is not provided, create from the sum of groups
-  if(is.null(totalPop)) totalPop <- apply(raceMatrix, 1, sum)
-  raceMatrix <- raceMatrix / totalPop
-  raceCols <- (colnames(raceMatrix))
-
-  #create empty matrix the length of the matrix
-  dat <- matrix(nrow = nrow(raceMatrix), ncol = length(groups))
-  i = 0
-  for(race in groups){
-    # create race proportion
-    race <- ifelse(totalPop == 0, 0, race / totalPop)
-    i = i + 1
-    score <- ifelse(race <= 0, 0,
-      race * log(1/race) )
-    dat[, i] <- score
-  }
-  #sum the results for each racial group
-  entropy <- rowSums(dat, na.rm = T)
-
+# convert sums into weights if necessarty
+convert_weights <- function(df, weights, na.rm){
+  if(is.null(weights))
+  if(!class(weights) %in% c('numeric','integer')) stop("weights must be class numeric or integer")
+  sumweight <- sum(weights, na.rm = na.rm)
+  weights <- weights/sumweight
+  return(weight)
 }
