@@ -24,15 +24,15 @@
 #' @source Wendell Bell, A Probability Model for the Measurement of Ecological Segregation, Social Forces, Volume 32, Issue 4, May 1954, Pages 357–364, https://doi.org/10.2307/2574118
 #' @return A scalar value, see note.
 #'
-#' @note Setting .sum == FALSE will return by-observation measures, but this
+#' @note Setting summed == FALSE will return by-observation measures, but this
 #' measure is not meant to be decomposed. These results are for verification
 #' purposes only.
 #' @export
-isolation <- function(group, totalPop, .sum=TRUE, na.rm=TRUE){
+isolation <- function(group, totalPop, summed=TRUE, na.rm=TRUE){
   iso <- ifelse(totalPop == 0, 0,
     (group / sum(group, na.rm=na.rm)) * (group / totalPop)
   )
-  if(.sum==T) iso <- sum(iso, na.rm=na.rm)
+  if(summed==T) iso <- sum(iso, na.rm=na.rm)
   return(iso)
 }
 #' Location Quotient
@@ -54,13 +54,24 @@ isolation <- function(group, totalPop, .sum=TRUE, na.rm=TRUE){
 #' @inheritParams divergence
 #' @inheritParams isolation
 #'
+#' @param group a numeric vector giving either a group's percentage of the population in
+#' the observation.
+#'
+#' @param groupSum a number or vector the length of group, the percentage of a group in
+#' the overall population.
+#'
 #' @param percentage Set to TRUE if giving group and totalPop are percentages,
-#' FALSE otherwise.
+#' FALSE if population totals
 #'
 #' @source U.S. Bureau of Economic Analysis: https://www.bea.gov/help/faq/478
 #'
+#' @examples
+#' data(bay_race)
+#' # calculate the location quotient for Hispanic people in each tract in the bay area
+#' location_quotient(bay_race)
+#'
 #' @export
-location_quotient <- function(group, totalPop, na.rm=TRUE,
+location_quotient <- function(group, groupSum, na.rm=TRUE,
   percentage = FALSE){
   if(percentage) group/totalPop
   else lq <- (group / totalPop) / (sum(group, na.rm=na.rm) / sum(totalPop, na.rm=na.rm))
