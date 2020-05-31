@@ -81,7 +81,7 @@ divergence <- function(..., weights = NULL, na.rm=TRUE, summed=FALSE,
     group_large <- sumProp[[column]]
     # calculate group, substituting 0 for log(0)
     prescores[[column]] <- ifelse(group <= 0 | group_large <= 0, 0,
-      groupMatrix * log(groupMatrix / group_large) )
+      group * log(group / group_large) )
   }
   #sum the results for each racial group for divergence score
   results <- rowSums(prescores, na.rm = na.rm)
@@ -146,13 +146,13 @@ entropy <- function( ..., weights = 'sum', sumProp = NULL, entropy_type = 'index
   # check for construction problems
   multigroup_sanity(groupMatrix,totalPop)
   # create by-group scores
-  preScores <- groupMatrix
+  entropy <- groupMatrix
+  # calculate entropy
   for(column in seq_along(groupMatrix)){
     group <- groupMatrix[[column]]
-    group_large <- sumProp[[column]]
     # calculate group, substituting 0 for log(0)
-    prescores[[column]] <- ifelse(group <= 0 | group_large <= 0, 0,
-      groupMatrix * log(groupMatrix / group_large) )
+    entropy[[column]] <- ifelse(group <= 0 | group_large <= 0, 0,
+      groupMatrix * log(1 / groupMatrix) )
   }
 
 
@@ -187,7 +187,20 @@ entropy <- function( ..., weights = 'sum', sumProp = NULL, entropy_type = 'index
     return(entropy_index)
   } else (stop("entropy_type must be either 'score' or 'index'"))
 }
+# information theory
+information_theory <- function(entropy, sumProp, weights, summed){
+  #large population entropy score
+  entropySum <- ifelse(sumProp <= 0, 0,
+    sumProp * log(1 / sumProp) )
+  entropySum <- sum(sumProp)
+  # Information index - single observation
+  index <- 1 - (entropy/entropySum)
 
+  #index score
+  if(isTRUE(summed)) index <- sum(weights * index)
+
+  return(index)
+}
 # convert sums into weights if necessarty
 convert_weights <- function(df, weights, na.rm){
   #create equal weights
