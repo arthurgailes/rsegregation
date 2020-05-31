@@ -11,7 +11,8 @@
 #' population for each observation in `...`. Can be any of:
 #' \describe{
 #'  \item{A numeric or integer vector the length of each vector provided in each
-#'  entry in `...`. (i.e. the column-wise length of ...)}
+#'  entry in `...` (i.e. the column-wise length of `...`). Can be either population
+#'  or weights by observation}
 #'  \item{`sum`}{Sets `weights` to the rowwise sum of `...`}
 #'  \item{`none`}{Weighs each observation evenly (1/length). Note that if `...` is a
 #'  set of percentages summing to 1 for each row, `sum` and `none` are equivalent.}
@@ -104,8 +105,8 @@ multigroup_sanity <- function(df, totalPop){
 #' ignores the entropy_type and summed parameters
 #'
 #' @param entropy_type One of: \describe{
-#' \item{score}{t index in wiki aka entropy score}
-#' \item{index}{theil's h, akal entropy index, aka Theil's information theory index}
+#' \item{"entropy"}{Default. t index in wiki aka entropy score}
+#' \item{"information_theory"}{Theil's information theory index}
 #' }
 #'
 #' @inheritParams divergence
@@ -155,16 +156,19 @@ entropy <- function( ..., weights = 'sum', sumProp = NULL, entropy_type = 'index
       groupMatrix * log(1 / groupMatrix) )
   }
 
-
   if(isTRUE(scaled)){
     #scale entropy between zero and 1, where 1 represents log(number of groups)
     entropy <- scale01(entropy, 0, log(length(groups)))
     # sanity checks
-    if(entropy_type == 'index' | isTRUE(summed)){
+    if(entropy_type != 'entropy' | isTRUE(summed)){
       warning("scaled set to TRUE, ignoring entropy_type and
         summed parameters")
     }
     return(entropy)
+  }
+
+  if(entropy_type == 'information_theory') {
+    entropy <- information_theory(groupMatrix, sumProp, weights, summed)
   }
 
   # in either entropy_type, the entropy of the larger geography is needed
@@ -176,16 +180,9 @@ entropy <- function( ..., weights = 'sum', sumProp = NULL, entropy_type = 'index
     entropy_large <- raw_entropy(sumgroups, totalPop=sumtot,
       scaled=scaled, summed=summed, na.rm=na.rm)
   }
-  if(entropy_type == 'score') {
-    if(summed==T) return(entropy_large)
-    else return(entropy)
-  } else if (entropy_type == 'index'){
-    # Theil's Hi
-    entropy_index <- (entropy_large - entropy) / entropy_large
-    # Theil's H
-    if(summed==T) entropy_index <- sum(entropy_index * (totalPop / sum(totalPop, na.rm=na.rm)))
-    return(entropy_index)
-  } else (stop("entropy_type must be either 'score' or 'index'"))
+
+  return(entropy)
+
 }
 # information theory
 information_theory <- function(entropy, sumProp, weights, summed){
