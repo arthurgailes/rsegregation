@@ -1,5 +1,7 @@
 #' Divergence Index
 #'
+#' Elizabeth Roberto's Divergence index for calculating and decomposing segregation.
+#'
 #' @param ... Population vectors for every group included in the divergence
 #' calculation.
 #'
@@ -99,8 +101,7 @@ multigroup_sanity <- function(df, weights){
 #' Theil's Index of Entropy
 #'
 #' Entropy is used to measure the the extent to which multiple distributions conform to
-#' a baseline. In standard entropy (`entropy()`), the baseline is constant evenness. In
-#' Theil's \emph{T} Index
+#' a baseline.
 #'
 #' @param scaled Scale entropy scores from 0-1. Setting scaled to TRUE
 #' ignores the entropy_type and summed parameters
@@ -150,16 +151,16 @@ entropy <- function( ..., weights = 'sum', sumProp = 'weights', entropy_type = '
   # check for construction problems
   multigroup_sanity(groupMatrix,weights)
   # create by-group scores
-  entropy <- groupMatrix
+  prescores <- groupMatrix
   # calculate entropy
   for(column in seq_along(groupMatrix)){
     group <- groupMatrix[[column]]
     group_large <- sumProp[[column]]
     # calculate group, substituting 0 for log(0)
-    entropy[[column]] <- ifelse(group <= 0 | group_large <= 0, 0,
+    prescores[[column]] <- ifelse(group <= 0 | group_large <= 0, 0,
       group * log(1 / group) )
   }
-
+  entropy <- rowSums(prescores, na.rm = na.rm)
   if(isTRUE(scaled)){
     #scale entropy between zero and 1, where 1 represents log(number of groups)
     entropy <- scale01(entropy, 0, log(length(groupMatrix)))
@@ -172,7 +173,7 @@ entropy <- function( ..., weights = 'sum', sumProp = 'weights', entropy_type = '
   }
 
   if(entropy_type == 'information_theory') {
-    return(information_theory(groupMatrix, sumProp, weights, summed))
+    return(information_theory(entropy, sumProp, weights, summed))
   }
 
   # in either entropy_type, the entropy of the larger geography is needed

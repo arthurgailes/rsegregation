@@ -67,8 +67,7 @@ population
 }
 \description{
 Entropy is used to measure the the extent to which multiple distributions conform to
-a baseline. In standard entropy (\code{entropy()}), the baseline is constant evenness. In
-Theil's \emph{T} Index
+a baseline.
 }
 \details{
 \describe{

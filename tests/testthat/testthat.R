@@ -7,9 +7,19 @@ test_that("Default data works",{
   expect_equal(dim(bay_race)[[1]], 1588)
 })
 
-expect_equal(nrow(bay_race), length(divergence(bay_race$white,
-  bay_race$hispanic,bay_race$asian,bay_race$black)))
-#entropy
-t <- entropy(bay_race$white,bay_race$hispanic,bay_race$asian,
+divergence <- divergence(bay_race$white,
+  bay_race$hispanic,bay_race$asian,bay_race$black)
+entropy <- entropy(bay_race$white,bay_race$hispanic,bay_race$asian,
+  bay_race$black, weights = bay_race$total_pop)
+information <- entropy(bay_race$white,bay_race$hispanic,bay_race$asian,
+  bay_race$black, weights = bay_race$total_pop, entropy_type = 'information_theory')
+entropy_sum <- entropy(bay_race$white,bay_race$hispanic,bay_race$asian,
   bay_race$black, weights = bay_race$total_pop, summed = T)
-  expect_equal(round(t, 2), 1.23)
+
+# formatting
+proper_length <- nrow(bay_race)
+expect_equal(proper_length, length(divergence))
+expect_equal(proper_length, length(entropy))
+expect_equal(proper_length, length(information))
+#entropy values
+expect_equal(round(entropy_sum, 2), 1.23)

@@ -54,7 +54,7 @@ average of the percentages in each observaiton.}
 A single value if summed==TRUE, or a vector equaling the length of the inputs.
 }
 \description{
-Divergence Index
+Elizabeth Roberto's Divergence index for calculating and decomposing segregation.
 }
 \examples{
 library(rsegregation)
