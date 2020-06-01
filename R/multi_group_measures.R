@@ -77,7 +77,7 @@ divergence <- function(..., weights = 'sum', na.rm=TRUE, summed=FALSE,
   # check for construction problems
   multigroup_sanity(groupMatrix,weights)
   # create by-group scores
-  preScores <- groupMatrix
+  prescores <- groupMatrix
   for(column in seq_along(groupMatrix)){
     group <- groupMatrix[[column]]
     group_large <- sumProp[[column]]
