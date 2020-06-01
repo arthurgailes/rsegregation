@@ -1,6 +1,8 @@
 library(testthat)
 library(rsegregation)
 data("bay_race")
+load('tests/testthat/bay_results.Rdata')
+load('tests/testthat/bay_results_sum.Rdata')
 
 
 test_that("Default data works",{

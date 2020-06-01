@@ -1,0 +1,35 @@
+---
+title: "Collect Data for package"
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r setup}
+sapply(c('tidycensus','here','tidyverse'), require, character.only=T)
+knitr::opts_knit$set(root.dir = here())
+```
+
+```{r}
+racevars <- c('P005001','P005010','P005003','P005004','P005006','P005005')
+bay_counties <- c("001", "013", "041", "055", "075", "081", "085", "095",
+  "097")
+data <- get_decennial(geography = 'tract',variables = racevars,state=6,county=bay_counties, output = 'wide')
+
+```
+
+## Rename and format data
+```{r}
+bay_race <- transmute(data,fips=GEOID, total_pop	=	P005001, hispanic	=	P005010,
+  white	=	P005003, black	=	P005004, asian	=	P005006, 
+  all_other = total_pop - white-black-hispanic-asian,
+  county=gsub('^[A-z0-9 ]+, ','',NAME), county=paste0(county, ", 2010"))
+bay_long <- pivot_longer(bay_wide, cols=(total_pop:all_other), names_to = 'race',values_to = 'population')
+```
+
+## For now, I only want to save the wide format
+```{r}
+usethis::use_data(bay_race, overwrite=T)
+```
+

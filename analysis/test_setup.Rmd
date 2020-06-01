@@ -1,0 +1,40 @@
+---
+title: "Set Up Tests"
+---
+
+Set up testing code.
+```{r echo=FALSE}
+sapply(c('tidycensus','here','tidyverse'), require, character.only=T)
+knitr::opts_knit$set(root.dir = here())
+```
+
+Set up testthat
+```{r}
+usethis::use_testthat()
+```
+
+Actually test the package
+```{r}
+devtools::test()
+```
+
+Check the package
+```{r}
+devtools::check()
+```
+
+ 
+An example test
+```{r echo=FALSE}
+# by default, creates a vector. Note that each vector must be input manually
+divergence(alameda_wide$white,alameda_wide$hispanic,alameda_wide$asian,alameda_wide$black, totalPop = alameda_wide$total_pop)
+
+# if .sum==TRUE, creates a single number
+divergence(alameda_wide$white,alameda_wide$hispanic,alameda_wide$asian,alameda_wide$black, totalPop = alameda_wide$total_pop, .sum=T)
+```
+
+## Testing entropy
+```{r}
+entropy(alameda_wide$white,alameda_wide$hispanic,alameda_wide$asian,alameda_wide$black, totalPop = alameda_wide$total_pop)
+```
+
