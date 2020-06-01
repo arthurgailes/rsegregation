@@ -1,5 +1,8 @@
 library(testthat)
-library(rsegregation)
+library(devtools)
+library(here)
+setwd(here())
+load_all()
 data("bay_race")
 load('tests/testthat/bay_results.Rdata')
 load('tests/testthat/bay_results_sum.Rdata')
@@ -10,13 +13,13 @@ test_that("Default data works",{
 })
 
 divergence <- divergence(bay_race$white,
-  bay_race$hispanic,bay_race$asian,bay_race$black)
+  bay_race$hispanic,bay_race$asian,bay_race$black, bay_race$all_other)
 entropy <- entropy(bay_race$white,bay_race$hispanic,bay_race$asian,
-  bay_race$black, weights = bay_race$total_pop)
+  bay_race$black, bay_race$all_other, weights = bay_race$total_pop)
 information <- entropy(bay_race$white,bay_race$hispanic,bay_race$asian,
-  bay_race$black, weights = bay_race$total_pop, entropy_type = 'information_theory')
+  bay_race$black, bay_race$all_other, weights = bay_race$total_pop, entropy_type = 'information_theory')
 entropy_sum <- entropy(bay_race$white,bay_race$hispanic,bay_race$asian,
-  bay_race$black, weights = bay_race$total_pop, summed = T)
+  bay_race$black, bay_race$all_other, weights = bay_race$total_pop, summed = T)
 
 # formatting
 proper_length <- nrow(bay_race)
@@ -24,4 +27,4 @@ expect_equal(proper_length, length(divergence))
 expect_equal(proper_length, length(entropy))
 expect_equal(proper_length, length(information))
 #entropy values
-expect_equal(round(entropy_sum, 2), 1.23)
+expect_equal(entropy_sum, bay_results_sum$entropy)
