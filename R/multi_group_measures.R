@@ -41,6 +41,8 @@
 #' divergence(bay_race$white,bay_race$hispanic,bay_race$asian,
 #' bay_race$black, bay_race$all_other)
 #'
+#' library(rsegregation)
+#'
 #' \dontrun{
 #' # Using dplyr
 #' require(dplyr)
@@ -58,7 +60,7 @@
 #' @source Created by Elizabeth Roberto: <https://arxiv.org/abs/1508.01167>
 #' @export
 divergence <- function(..., weights = 'sum', na.rm=TRUE, summed=FALSE,
-  sumProp = NULL){
+  sumProp = 'weights'){
 
   groupMatrix <- data.frame(...)
   if(nrow(groupMatrix) == 1) return(0) # if a single observation composes a group
@@ -125,11 +127,12 @@ multigroup_sanity <- function(df, weights){
 #'
 #' @seealso \url{https://en.wikipedia.org/wiki/Theil_index}
 #'
-#' #' @examples
+#' @examples
+#' library(rsegregation)
 #' entropy(bay_race$white,bay_race$hispanic,bay_race$asian,
 #' bay_race$black, weights = bay_race$total_pop)
 #' @export
-entropy <- function( ..., weights = 'sum', sumProp = NULL, entropy_type = 'index',
+entropy <- function( ..., weights = 'sum', sumProp = 'weights', entropy_type = 'index',
   scaled = FALSE, summed=TRUE, na.rm=TRUE){
 
   groupMatrix <- data.frame(...)
