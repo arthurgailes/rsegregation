@@ -10,10 +10,10 @@ Theil, Henri. 1972. Statistical Decomposition Analysis.
 entropy(
   ...,
   weights = "sum",
-  sumProp = NULL,
+  sumProp = "weights",
   entropy_type = "index",
   scaled = FALSE,
-  summed = TRUE,
+  summed = FALSE,
   na.rm = TRUE
 )
 }
@@ -79,10 +79,12 @@ proportion of racial group within the geography. }
 large-scale geography. }
 }
 }
-\seealso{
-\url{https://en.wikipedia.org/wiki/Theil_index}
-
-#' @examples
+\examples{
+library(rsegregation)
 entropy(bay_race$white,bay_race$hispanic,bay_race$asian,
 bay_race$black, weights = bay_race$total_pop)
+
+}
+\seealso{
+\url{https://en.wikipedia.org/wiki/Theil_index}
 }

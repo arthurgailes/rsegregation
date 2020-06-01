@@ -1,11 +1,15 @@
 library(testthat)
 library(rsegregation)
-data("alameda_wide")
+data("bay_race")
 
 
 test_that("Default data works",{
-  expect_equal(dim(alameda_wide)[[1]], 361)
+  expect_equal(dim(bay_race)[[1]], 1588)
 })
 
-expect_equal(nrow(alameda_wide), length(divergence(alameda_wide$white,
-  alameda_wide$hispanic,alameda_wide$asian,alameda_wide$black)))
+expect_equal(nrow(bay_race), length(divergence(bay_race$white,
+  bay_race$hispanic,bay_race$asian,bay_race$black)))
+#entropy
+t <- entropy(bay_race$white,bay_race$hispanic,bay_race$asian,
+  bay_race$black, weights = bay_race$total_pop, summed = T)
+  expect_equal(round(t, 2), 1.23)

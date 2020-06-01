@@ -38,7 +38,7 @@
 #'
 #' @examples
 #' library(rsegregation)
-#' data(bay_race)
+#' data("bay_race")
 #' #return by-observation scores
 #' divergence(bay_race$white,bay_race$hispanic,bay_race$asian,
 #' bay_race$black, bay_race$all_other)
@@ -56,7 +56,7 @@
 #'   mutate_at(vars(hispanic:all_other), list(~(./total_pop))) %>%
 #'   mutate(divergence_score = divergence(white, hispanic, asian,
 #'   black, all_other, weights = total_pop))
-#'
+#' }
 #'
 #' @source Created by Elizabeth Roberto: <https://arxiv.org/abs/1508.01167>
 #' @export

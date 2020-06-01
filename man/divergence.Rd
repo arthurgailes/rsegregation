@@ -7,7 +7,13 @@
 Created by Elizabeth Roberto: \url{https://arxiv.org/abs/1508.01167}
 }
 \usage{
-divergence(..., weights = NULL, na.rm = TRUE, summed = FALSE, sumProp = NULL)
+divergence(
+  ...,
+  weights = "sum",
+  na.rm = TRUE,
+  summed = FALSE,
+  sumProp = "weights"
+)
 }
 \arguments{
 \item{...}{Population vectors for every group included in the divergence
@@ -44,6 +50,32 @@ If weights is set to \code{none}, the total population proportions will be the u
 average of the percentages in each observaiton.}
 }}
 }
+\value{
+A single value if summed==TRUE, or a vector equaling the length of the inputs.
+}
 \description{
 Divergence Index
+}
+\examples{
+library(rsegregation)
+data("bay_race")
+#return by-observation scores
+divergence(bay_race$white,bay_race$hispanic,bay_race$asian,
+bay_race$black, bay_race$all_other)
+
+
+\dontrun{
+# Using dplyr
+require(dplyr)
+mutate(bay_race, divergence_score = divergence(white, hispanic,
+  asian, black, all_other))
+
+# divergence alsow works with percentages as long as you have
+# population totals by observation
+bay_race \%>\%
+  mutate_at(vars(hispanic:all_other), list(~(./total_pop))) \%>\%
+  mutate(divergence_score = divergence(white, hispanic, asian,
+  black, all_other, weights = total_pop))
+}
+
 }

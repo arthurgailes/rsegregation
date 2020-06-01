@@ -51,8 +51,6 @@ isolation <- function(group, totalPop, summed=TRUE, na.rm=TRUE){
 #' higher concentration in mining than the nation.
 #'
 #' @details A simple wrapper for group/groupSum, which must both be given as percentages.
-#' @inheritParams divergence
-#' @inheritParams isolation
 #'
 #' @param group a numeric vector giving either a group's percentage of the population in
 #' the observation.
