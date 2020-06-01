@@ -1,5 +1,4 @@
 #' Divergence Index
-
 #'
 #' @param ... Population vectors for every group included in the divergence
 #' calculation.
@@ -35,13 +34,15 @@
 #' @param na.rm logical. Should missing values (including NaN) be removed?
 #' Used only if `summed` is set to TRUE.
 #'
+#' @return A single value if summed==TRUE, or a vector equaling the length of the inputs.
+#'
 #' @examples
+#' library(rsegregation)
 #' data(bay_race)
 #' #return by-observation scores
 #' divergence(bay_race$white,bay_race$hispanic,bay_race$asian,
 #' bay_race$black, bay_race$all_other)
 #'
-#' library(rsegregation)
 #'
 #' \dontrun{
 #' # Using dplyr
@@ -71,7 +72,7 @@ divergence <- function(..., weights = 'sum', na.rm=TRUE, summed=FALSE,
   weights <- convert_weights(groupMatrix, weights, na.rm = na.rm)
   sumProp <- proc_sumProp(groupMatrix, sumProp, weights, na.rm)
   #convert to percentages if necessary
-  groupMatrix <- to_percentages(groupMatrix)
+  groupMatrix <- to_percentages(groupMatrix, na.rm)
 
   # check for construction problems
   multigroup_sanity(groupMatrix,weights)
@@ -131,9 +132,10 @@ multigroup_sanity <- function(df, weights){
 #' library(rsegregation)
 #' entropy(bay_race$white,bay_race$hispanic,bay_race$asian,
 #' bay_race$black, weights = bay_race$total_pop)
+#'
 #' @export
 entropy <- function( ..., weights = 'sum', sumProp = 'weights', entropy_type = 'index',
-  scaled = FALSE, summed=TRUE, na.rm=TRUE){
+  scaled = FALSE, summed=FALSE, na.rm=TRUE){
 
   groupMatrix <- data.frame(...)
   if(nrow(groupMatrix) == 1) return(0) # if a single observation composes a group
@@ -144,7 +146,7 @@ entropy <- function( ..., weights = 'sum', sumProp = 'weights', entropy_type = '
   weights <- convert_weights(groupMatrix, weights, na.rm = na.rm)
   sumProp <- proc_sumProp(groupMatrix, sumProp, weights, na.rm)
   #convert to percentages if necessary
-  groupMatrix <- to_percentages(groupMatrix)
+  groupMatrix <- to_percentages(groupMatrix, na.rm)
   # check for construction problems
   multigroup_sanity(groupMatrix,weights)
   # create by-group scores
@@ -155,7 +157,7 @@ entropy <- function( ..., weights = 'sum', sumProp = 'weights', entropy_type = '
     group_large <- sumProp[[column]]
     # calculate group, substituting 0 for log(0)
     entropy[[column]] <- ifelse(group <= 0 | group_large <= 0, 0,
-      groupMatrix * log(1 / groupMatrix) )
+      group * log(1 / group) )
   }
 
   if(isTRUE(scaled)){
@@ -178,7 +180,7 @@ entropy <- function( ..., weights = 'sum', sumProp = 'weights', entropy_type = '
     #large population entropy score
     entropySum <- ifelse(sumProp <= 0, 0,
       sumProp * log(1 / sumProp) )
-    entropySum <- sum(sumProp)
+    entropySum <- sum(entropySum)
     return(entropySum)
   }
 
@@ -201,9 +203,9 @@ information_theory <- function(entropy, sumProp, weights, summed){
 # convert sums into weights if necessarty
 convert_weights <- function(df, weights, na.rm){
   #create equal weights
-  if(weights == 'none') weights = rep_len(1, nrow(df))
+  if(isTRUE(weights == 'none')) weights = rep_len(1, nrow(df))
   #create weights from summed rows
-  if(weights == 'sum') weights = rowSums(df, na.rm = na.rm)
+  if(isTRUE(weights == 'sum')) weights = rowSums(df, na.rm = na.rm)
   # else weights should be a given vector, all paths lead here:
   # divide each weight by their sum to make all sum to 1
   sumweight <- sum(weights, na.rm = na.rm)
@@ -213,7 +215,7 @@ convert_weights <- function(df, weights, na.rm){
 # create sumProp from weights if necessary
 proc_sumProp <- function(df, sumProp, weights, na.rm){
   # conversion from weights if specified
-  if(sumProp == 'weights'){
+  if(isTRUE(sumProp == 'weights')){
     popTotals <- df * weights
     popTotals <- colSums(df, na.rm = na.rm)
     sumProp <- popTotals/sum(popTotals, na.rm = na.rm)
