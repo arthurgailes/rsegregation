@@ -135,7 +135,7 @@ multigroup_sanity <- function(df, weights){
 #' bay_race$black, weights = bay_race$total_pop)
 #'
 #' @export
-entropy <- function( ..., weights = 'sum', sumProp = 'weights', entropy_type = 'index',
+entropy <- function( ..., weights = 'sum', sumProp = 'weights', entropy_type = 'entropy',
   scaled = FALSE, summed=FALSE, na.rm=TRUE){
 
   groupMatrix <- data.frame(...)
