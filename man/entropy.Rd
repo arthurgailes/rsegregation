@@ -11,7 +11,7 @@ entropy(
   ...,
   weights = "sum",
   sumProp = "weights",
-  entropy_type = "index",
+  entropy_type = "entropy",
   scaled = FALSE,
   summed = FALSE,
   na.rm = TRUE
@@ -81,7 +81,7 @@ large-scale geography. }
 \examples{
 library(rsegregation)
 entropy(bay_race$white,bay_race$hispanic,bay_race$asian,
-bay_race$black, weights = bay_race$total_pop)
+bay_race$black, bay_race$all_other, weights = bay_race$total_pop)
 
 }
 \seealso{

@@ -157,22 +157,18 @@ entropy <- function( ..., weights = 'sum', sumProp = 'weights', entropy_type = '
     group <- groupMatrix[[column]]
     group_large <- sumProp[[column]]
     # calculate group, substituting 0 for log(0)
-    prescores[[column]] <- ifelse(group <= 0 | group_large <= 0, 0,
+    prescores[[column]] <- ifelse((group <= 0 | group_large <= 0), 0,
       group * log(1 / group) )
   }
   entropy <- rowSums(prescores, na.rm = na.rm)
   if(isTRUE(scaled)){
     #scale entropy between zero and 1, where 1 represents log(number of groups)
     entropy <- scale01(entropy, 0, log(length(groupMatrix)))
-    # sanity checks
-    if(entropy_type != 'entropy' | isTRUE(summed)){
-      warning("scaled set to TRUE, ignoring entropy_type and
-        summed parameters")
-    }
-    return(entropy)
   }
 
   if(entropy_type == 'information_theory') {
+    # sanity check
+    if(isTRUE(scaled)) stop("scaled is not compatible with information_theory")
     return(information_theory(entropy, sumProp, weights, summed))
   }
 
