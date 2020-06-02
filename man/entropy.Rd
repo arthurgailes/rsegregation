@@ -12,7 +12,7 @@ entropy(
   weights = "sum",
   sumProp = "weights",
   entropy_type = "entropy",
-  scaled = FALSE,
+  scale = FALSE,
   summed = FALSE,
   na.rm = TRUE
 )
@@ -50,7 +50,7 @@ average of the percentages in each observaiton.}
 \item{"information_theory"}{Theil's information theory index}
 }}
 
-\item{scaled}{Scale entropy scores from 0-1. Setting scaled to TRUE
+\item{scale}{Scale entropy scores from 0-1. Setting scale to TRUE
 ignores the entropy_type and summed parameters}
 
 \item{summed}{If TRUE, will return a single summary statistic. (Or one value per group if specifying

@@ -103,7 +103,7 @@ multigroup_sanity <- function(df, weights){
 #' Entropy is used to measure the the extent to which multiple distributions conform to
 #' a baseline.
 #'
-#' @param scaled Scale entropy scores from 0-1. Setting scaled to TRUE
+#' @param scale Scale entropy scores from 0-1. Setting scale to TRUE
 #' ignores the entropy_type and summed parameters
 #'
 #' @param entropy_type One of: \describe{
@@ -136,7 +136,7 @@ multigroup_sanity <- function(df, weights){
 #'
 #' @export
 entropy <- function( ..., weights = 'sum', sumProp = 'weights', entropy_type = 'entropy',
-  scaled = FALSE, summed=FALSE, na.rm=TRUE){
+  scale = FALSE, summed=FALSE, na.rm=TRUE){
 
   groupMatrix <- data.frame(...)
   if(nrow(groupMatrix) == 1) return(0) # if a single observation composes a group
@@ -161,23 +161,24 @@ entropy <- function( ..., weights = 'sum', sumProp = 'weights', entropy_type = '
       group * log(1 / group) )
   }
   entropy <- rowSums(prescores, na.rm = na.rm)
-  if(isTRUE(scaled)){
+  if(isTRUE(scale)){
     #scale entropy between zero and 1, where 1 represents log(number of groups)
     entropy <- scale01(entropy, 0, log(length(groupMatrix)))
   }
 
   if(entropy_type == 'information_theory') {
     # sanity check
-    if(isTRUE(scaled)) stop("scaled is not compatible with information_theory")
+    if(isTRUE(scale)) stop("scale is not compatible with information_theory")
     return(information_theory(entropy, sumProp, weights, summed))
   }
 
   # in either entropy_type, the entropy of the larger geography is needed
-  if(summed==T & entropy_type != 'information_theory') {
+  if(summed==T) {
     #large population entropy score
     entropySum <- ifelse(sumProp <= 0, 0,
       sumProp * log(1 / sumProp) )
     entropySum <- sum(entropySum)
+    if(isTRUE(scale)) entropySum <- scale01(entropySum, 0, log(length(sumProp)))
     return(entropySum)
   }
 

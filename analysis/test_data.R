@@ -11,6 +11,7 @@ race_tots <- c("hispanic","white","black","asian","all_other")
 bay_results <- transmute(bay_race, fips,
   divergence = divergence(!!! syms(race_tots)),
   entropy = entropy(!!! syms(race_tots)),
+  entropy_scale = entropy(!!! syms(race_tots), scale=T),
   entropy_index = entropy(!!! syms(race_tots), entropy_type = 'information_index'),
   white_lq = location_quotient(white/total_pop, sum(white)/sum(total_pop))
 )
@@ -19,6 +20,7 @@ bay_results <- transmute(bay_race, fips,
 bay_results_sum <- summarize(bay_race,
   divergence = divergence(!!! syms(race_tots), summed = T),
   entropy = entropy(!!! syms(race_tots), summed = T),
+  entropy_scale = entropy(!!! syms(race_tots), summed = T, scale=T),
   entropy_index = entropy(!!! syms(race_tots), entropy_type = 'information_theory',
     summed = T),
   bw_dissim = dissimilarity(black, white,summed = T),
