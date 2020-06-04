@@ -222,10 +222,6 @@ proc_sumProp <- function(df, sumProp, weights, na.rm){
 }
 # convert matrix to percentages or normalize percentages to sum to one
 to_percentages <- function(df, na.rm){
-  # test if rows add up to whole numbers
-  for(row in rowSums(df, na.rm = T)){
-    if(!isTRUE(row %% 1 == 0)) warning("The sum of at least one row in `...` is not a whole number. `divergence` converts all rows in `...` to a percentage of their sum total.")
-  }
   df <- df/rowSums(df, na.rm = na.rm)
   return(df)
 }
