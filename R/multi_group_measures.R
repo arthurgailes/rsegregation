@@ -17,17 +17,20 @@
 #'  set of percentages summing to 1 for each row, `sum` and `none` are equivalent.}
 #'  }
 #'
-#' @param sumProp The percentage of each group in the larger population (i.e. the
+#' @param sumPercent The percentage of each group in the larger population (i.e. the
 #' population composed of the sum of groups provided in `...`). Can be any of:
 #' \describe{
 #'  \item{A numeric vector}{Each entry represents the total population of the  with one entry for each group/vector provided in `...`. (i.e.
 #'  the rowwise length of `...`).
 #'  Note that for this to work correctly, each group must be provided in the same order in
-#'  `groupSums` as in `...`}
+#'  `sumPercent` as in `...` Useful if the sum of `sumPercent` is less than 100%, as `divergence`
+#'  will otherwise force}
 #'  \item{`weights`}{Default. Uses the value of `weights` to construct total population proportions.
 #'  If weights is set to `none`, the total population proportions will be the unweighted
 #'  average of the percentages in each observaiton.}
 #'  }
+#'
+#' @param totalPop Either NULL (default, no effect), or "weights", in which case
 #'
 #' @param summed If TRUE, will return a single summary statistic. (Or one value per group if specifying
 #' `dplyr::group_by`.) If FALSE, will return a vector equaling the length
@@ -63,16 +66,18 @@
 #' @source Created by Elizabeth Roberto: <https://arxiv.org/abs/1508.01167>
 #' @export
 divergence <- function(..., weights = 'sum', na.rm=TRUE, summed=FALSE,
-  sumProp = 'weights'){
+  sumPercent = 'weights'){
 
   groupMatrix <- data.frame(...)
   if(nrow(groupMatrix) == 1) return(0) # if a single observation composes a group
   # remove NAs
   if(isTRUE(na.rm)) groupMatrix[is.na(groupMatrix)] <- 0
 
-  #deal with weights and sumProp in separate functions
+  # keep original weights in case it is a vector of populations
+
+  #deal with weights and sumPercent in separate functions
   weights <- convert_weights(groupMatrix, weights, na.rm = na.rm)
-  sumProp <- proc_sumProp(groupMatrix, sumProp, weights, na.rm)
+  sumPercent <- proc_sumPercent(groupMatrix, sumPercent, weights, na.rm)
   #convert to percentages if necessary
   groupMatrix <- to_percentages(groupMatrix, na.rm)
 
@@ -82,7 +87,7 @@ divergence <- function(..., weights = 'sum', na.rm=TRUE, summed=FALSE,
   prescores <- groupMatrix
   for(column in seq_along(groupMatrix)){
     group <- groupMatrix[[column]]
-    group_large <- sumProp[[column]]
+    group_large <- sumPercent[[column]]
     # calculate group, substituting 0 for log(0)
     prescores[[column]] <- ifelse(group <= 0 | group_large <= 0, 0,
       group * log(group / group_large) )
@@ -135,7 +140,7 @@ multigroup_sanity <- function(df, weights){
 #' bay_race$black, bay_race$all_other, weights = bay_race$total_pop)
 #'
 #' @export
-entropy <- function( ..., weights = 'sum', sumProp = 'weights', entropy_type = 'entropy',
+entropy <- function( ..., weights = 'sum', sumPercent = 'weights', entropy_type = 'entropy',
   scale = FALSE, summed=FALSE, na.rm=TRUE){
 
   groupMatrix <- data.frame(...)
@@ -143,9 +148,9 @@ entropy <- function( ..., weights = 'sum', sumProp = 'weights', entropy_type = '
   # remove NAs
   if(isTRUE(na.rm)) groupMatrix[is.na(groupMatrix)] <- 0
 
-  #deal with weights and sumProp in separate functions
+  #deal with weights and sumPercent in separate functions
   weights <- convert_weights(groupMatrix, weights, na.rm = na.rm)
-  sumProp <- proc_sumProp(groupMatrix, sumProp, weights, na.rm)
+  sumPercent <- proc_sumPercent(groupMatrix, sumPercent, weights, na.rm)
   #convert to percentages if necessary
   groupMatrix <- to_percentages(groupMatrix, na.rm)
   # check for construction problems
@@ -155,7 +160,7 @@ entropy <- function( ..., weights = 'sum', sumProp = 'weights', entropy_type = '
   # calculate entropy
   for(column in seq_along(groupMatrix)){
     group <- groupMatrix[[column]]
-    group_large <- sumProp[[column]]
+    group_large <- sumPercent[[column]]
     # calculate group, substituting 0 for log(0)
     prescores[[column]] <- ifelse((group <= 0 | group_large <= 0), 0,
       group * log(1 / group) )
@@ -169,27 +174,27 @@ entropy <- function( ..., weights = 'sum', sumProp = 'weights', entropy_type = '
   if(entropy_type == 'information_theory') {
     # sanity check
     if(isTRUE(scale)) stop("scale is not compatible with information_theory")
-    return(information_theory(entropy, sumProp, weights, summed))
+    return(information_theory(entropy, sumPercent, weights, summed))
   }
 
   # in either entropy_type, the entropy of the larger geography is needed
   if(summed==T) {
     #large population entropy score
-    entropySum <- ifelse(sumProp <= 0, 0,
-      sumProp * log(1 / sumProp) )
+    entropySum <- ifelse(sumPercent <= 0, 0,
+      sumPercent * log(1 / sumPercent) )
     entropySum <- sum(entropySum)
-    if(isTRUE(scale)) entropySum <- scale01(entropySum, 0, log(length(sumProp)))
+    if(isTRUE(scale)) entropySum <- scale01(entropySum, 0, log(length(sumPercent)))
     return(entropySum)
   }
 
   return(entropy)
 }
 # information theory
-information_theory <- function(entropy, sumProp, weights, summed){
+information_theory <- function(entropy, sumPercent, weights, summed){
   #large population entropy score
-  entropySum <- ifelse(sumProp <= 0, 0,
-    sumProp * log(1 / sumProp) )
-  entropySum <- sum(sumProp)
+  entropySum <- ifelse(sumPercent <= 0, 0,
+    sumPercent * log(1 / sumPercent) )
+  entropySum <- sum(sumPercent)
   # Information index - single observation
   index <- 1 - (entropy/entropySum)
 
@@ -210,15 +215,15 @@ convert_weights <- function(df, weights, na.rm){
   weights <- weights/sumweight
   return(weights)
 }
-# create sumProp from weights if necessary
-proc_sumProp <- function(df, sumProp, weights, na.rm){
+# create sumPercent from weights if necessary
+proc_sumPercent <- function(df, sumPercent, weights, na.rm){
   # conversion from weights if specified
-  if(isTRUE(sumProp == 'weights')){
+  if(isTRUE(sumPercent == 'weights')){
     popTotals <- df * weights
     popTotals <- colSums(df, na.rm = na.rm)
-    sumProp <- popTotals/sum(popTotals, na.rm = na.rm)
+    sumPercent <- popTotals/sum(popTotals, na.rm = na.rm)
   }
-  return(sumProp)
+  return(sumPercent)
 }
 # convert matrix to percentages or normalize percentages to sum to one
 to_percentages <- function(df, na.rm){
