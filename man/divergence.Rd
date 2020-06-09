@@ -12,7 +12,8 @@ divergence(
   weights = "sum",
   na.rm = TRUE,
   summed = FALSE,
-  sumProp = "weights"
+  sumPercent = "weights",
+  rowTotals = NA
 )
 }
 \arguments{
@@ -38,16 +39,32 @@ Used only if \code{summed} is set to TRUE.}
 \code{dplyr::group_by}.) If FALSE, will return a vector equaling the length
 of the input vectors.}
 
-\item{sumProp}{The percentage of each group in the larger population (i.e. the
+\item{sumPercent}{The percentage of each group in the larger population (i.e. the
 population composed of the sum of groups provided in \code{...}). Can be any of:
 \describe{
 \item{A numeric vector}{Each entry represents the total population of the  with one entry for each group/vector provided in \code{...}. (i.e.
 the rowwise length of \code{...}).
 Note that for this to work correctly, each group must be provided in the same order in
-\code{groupSums} as in \code{...}}
+\code{sumPercent} as in \code{...} Useful if the sum of \code{sumPercent} is less than 100\%, as \code{divergence}
+will otherwise force}
 \item{\code{weights}}{Default. Uses the value of \code{weights} to construct total population proportions.
 If weights is set to \code{none}, the total population proportions will be the unweighted
 average of the percentages in each observaiton.}
+
+}}
+
+\item{rowTotals}{By default, the rowwise sum of \code{...} is treated as 100\% of the population.
+Setting this parameter to any of the following options chagnes this behavior.
+\describe{
+\item{\code{NA}}{Default. Forces the rowwise sum of \code{...} to equal 100\% of the
+population. Works with either percentages or population totals.}
+\item{\verb{100\%}}{Uses 1 (100\%) as the row total. For this to
+work properly, each column provided to \code{...} must be percentages, not
+population totals. Useful if the rowwise sum of percentages is less than 100\%; only use if
+you know what you are doing.}
+\item{\code{weights}}{Uses the "weights" parameter as the total population.}
+\item{A numeric vector}{With length equal to each vector provided in each
+entry in \code{...} (i.e. the column-wise length of \code{...}). }
 }}
 }
 \value{

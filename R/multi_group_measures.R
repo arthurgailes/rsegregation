@@ -30,7 +30,19 @@
 #'  average of the percentages in each observaiton.}
 #'  }
 #'
-#' @param totalPop Either NULL (default, no effect), or "weights", in which case
+#' @param rowTotals By default, the rowwise sum of `...` is treated as 100% of the population.
+#' Setting this parameter to any of the following options chagnes this behavior.
+#' \describe{
+#'  \item{`NA`}{Default. Forces the rowwise sum of `...` to equal 100% of the
+#'  population. Works with either percentages or population totals.}
+#'  \item{`100%`}{Uses 1 (100%) as the row total. For this to
+#'  work properly, each column provided to `...` must be percentages, not
+#'  population totals. Useful if the rowwise sum of percentages is less than 100%; only use if
+#'  you know what you are doing.}
+#'  \item{`weights`}{Uses the "weights" parameter as the total population.}
+#'  \item{A numeric vector}{With length equal to each vector provided in each
+#'  entry in `...` (i.e. the column-wise length of `...`). }
+#'  }
 #'
 #' @param summed If TRUE, will return a single summary statistic. (Or one value per group if specifying
 #' `dplyr::group_by`.) If FALSE, will return a vector equaling the length
@@ -66,7 +78,7 @@
 #' @source Created by Elizabeth Roberto: <https://arxiv.org/abs/1508.01167>
 #' @export
 divergence <- function(..., weights = 'sum', na.rm=TRUE, summed=FALSE,
-  sumPercent = 'weights'){
+  sumPercent = 'weights', rowTotals = NA){
 
   groupMatrix <- data.frame(...)
   if(nrow(groupMatrix) == 1) return(0) # if a single observation composes a group
@@ -76,10 +88,11 @@ divergence <- function(..., weights = 'sum', na.rm=TRUE, summed=FALSE,
   # keep original weights in case it is a vector of populations
 
   #deal with weights and sumPercent in separate functions
+  if(isTRUE(rowTotals=='weights')) rowTotals <- weights
   weights <- convert_weights(groupMatrix, weights, na.rm = na.rm)
   sumPercent <- proc_sumPercent(groupMatrix, sumPercent, weights, na.rm)
   #convert to percentages if necessary
-  groupMatrix <- to_percentages(groupMatrix, na.rm)
+  groupMatrix <- to_percentages(groupMatrix, rowTotals, na.rm)
 
   # check for construction problems
   multigroup_sanity(groupMatrix,weights)
@@ -152,7 +165,7 @@ entropy <- function( ..., weights = 'sum', sumPercent = 'weights', entropy_type 
   weights <- convert_weights(groupMatrix, weights, na.rm = na.rm)
   sumPercent <- proc_sumPercent(groupMatrix, sumPercent, weights, na.rm)
   #convert to percentages if necessary
-  groupMatrix <- to_percentages(groupMatrix, na.rm)
+  groupMatrix <- to_percentages(groupMatrix, na.rm=na.rm)
   # check for construction problems
   multigroup_sanity(groupMatrix,weights)
   # create by-group scores
@@ -226,7 +239,9 @@ proc_sumPercent <- function(df, sumPercent, weights, na.rm){
   return(sumPercent)
 }
 # convert matrix to percentages or normalize percentages to sum to one
-to_percentages <- function(df, na.rm){
-  df <- df/rowSums(df, na.rm = na.rm)
+to_percentages <- function(df, rowTotals = NA, na.rm){
+  if(isTRUE(is.na(rowTotals))) rowTotals <- rowSums(df, na.rm = na.rm)
+  else if(isTRUE(rowTotals == "100%")) rowTotals <- rep(1, nrow(df))
+  df <- df/rowTotals
   return(df)
 }

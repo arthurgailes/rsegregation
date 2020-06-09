@@ -10,7 +10,7 @@ Theil, Henri. 1972. Statistical Decomposition Analysis.
 entropy(
   ...,
   weights = "sum",
-  sumProp = "weights",
+  sumPercent = "weights",
   entropy_type = "entropy",
   scale = FALSE,
   summed = FALSE,
@@ -33,16 +33,18 @@ or weights by observation}
 set of percentages summing to 1 for each row, \code{sum} and \code{none} are equivalent.}
 }}
 
-\item{sumProp}{The percentage of each group in the larger population (i.e. the
+\item{sumPercent}{The percentage of each group in the larger population (i.e. the
 population composed of the sum of groups provided in \code{...}). Can be any of:
 \describe{
 \item{A numeric vector}{Each entry represents the total population of the  with one entry for each group/vector provided in \code{...}. (i.e.
 the rowwise length of \code{...}).
 Note that for this to work correctly, each group must be provided in the same order in
-\code{groupSums} as in \code{...}}
+\code{sumPercent} as in \code{...} Useful if the sum of \code{sumPercent} is less than 100\%, as \code{divergence}
+will otherwise force}
 \item{\code{weights}}{Default. Uses the value of \code{weights} to construct total population proportions.
 If weights is set to \code{none}, the total population proportions will be the unweighted
 average of the percentages in each observaiton.}
+
 }}
 
 \item{entropy_type}{One of: \describe{
