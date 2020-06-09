@@ -7,9 +7,9 @@ data("bay_race")
 load('tests/testthat/bay_results.Rdata')
 load('tests/testthat/bay_results_sum.Rdata')
 
-
+proper_length <- nrow(bay_race)
 test_that("Default data works",{
-  expect_equal(dim(bay_race)[[1]], 1588)
+  expect_equal(proper_length, 1588)
 })
 
 #create figures from package as it is now
@@ -23,11 +23,11 @@ divergence_sum <- divergence(bay_race$white,
 divergence_inc_sum <- divergence(bay_race$white,
   bay_race$hispanic,bay_race$asian,bay_race$black, weights = bay_race$total_pop,
   summed = T, rowTotals='weights')
-expect_equal(round(divergence_inc_sum, 3), 0.219)
+expect_equal(round(divergence_inc_sum, 4), 0.2096)
 
 
 # formatting
-proper_length <- nrow(bay_race)
+
 expect_equal(proper_length, length(divergence))
 
 #scores

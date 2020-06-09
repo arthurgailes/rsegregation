@@ -44,7 +44,6 @@ will otherwise force}
 \item{\code{weights}}{Default. Uses the value of \code{weights} to construct total population proportions.
 If weights is set to \code{none}, the total population proportions will be the unweighted
 average of the percentages in each observaiton.}
-
 }}
 
 \item{entropy_type}{One of: \describe{

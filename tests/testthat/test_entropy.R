@@ -22,6 +22,5 @@ expect_equal(entropy_sum_scale, bay_results_sum$entropy_scale)
 
 # formatting
 proper_length <- nrow(bay_race)
-expect_equal(proper_length, length(divergence))
 expect_equal(proper_length, length(entropy))
 expect_equal(proper_length, length(information))

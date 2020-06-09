@@ -29,7 +29,7 @@ You can install the released version of rsegregation from [CRAN](https://CRAN.R-
 install.packages("rsegregation")
 ```
 -->
-The development version from [GitHub](https://github.com/) can be installed withwith:
+The development version from [GitHub](https://github.com/) can be installed with:
 
 ``` {r eval=FALSE}
 # install.packages("devtools")
