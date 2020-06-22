@@ -45,8 +45,11 @@
 #'  }
 #'
 #' @param summed If TRUE, will return a single summary statistic. (Or one value per group if specifying
-#' `dplyr::group_by`.) If FALSE, will return a vector equaling the length
-#' of the input vectors. If 'weighted', returns a vector as in FALSE, but d
+#' `dplyr::group_by`.) If FALSE (default), will return a vector equaling the length
+#' of the input vectors. If 'weighted' (only for divergence and information theory), returns
+#'  a vector as in FALSE, but with pre-weighted values,
+#' such that `sum(divergence(..., summed = 'weighted))` is equivalent to
+#' `divergence(..., summed = T)`.
 #'
 #' @param na.rm logical. Should missing values (including NaN) be removed?
 #' Used only if `summed` is set to TRUE.
@@ -108,8 +111,9 @@ divergence <- function(..., weights = 'sum', na.rm=TRUE, summed=FALSE,
   #sum the results for each racial group for divergence score
   results <- rowSums(prescores, na.rm = na.rm)
 
-  # create total divergence score if selected
+  # apply weights according to summed parameter
   if(isTRUE(summed)) results <- sum(results * weights, na.rm = na.rm)
+  if(isTRUE(summed == 'weighted')) results <- (results * weights)
   return(results)
 }
 # Sanity checks and warnings for divergence and entropy
@@ -213,6 +217,7 @@ information_theory <- function(entropy, sumPercent, weights, summed){
 
   #index score
   if(isTRUE(summed)) index <- sum(weights * index)
+  if(isTRUE(summed == 'weighted')) index <- (index * weights)
 
   return(index)
 }
