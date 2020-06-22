@@ -14,8 +14,11 @@ dissimilarity(group1, group2, summed = TRUE, na.rm = TRUE)
 groups to be compared.}
 
 \item{summed}{If TRUE, will return a single summary statistic. (Or one value per group if specifying
-\code{dplyr::group_by}.) If FALSE, will return a vector equaling the length
-of the input vectors.}
+\code{dplyr::group_by}.) If FALSE (default), will return a vector equaling the length
+of the input vectors. If 'weighted' (only for divergence and information theory), returns
+a vector as in FALSE, but with pre-weighted values,
+such that \verb{sum(divergence(..., summed = 'weighted))} is equivalent to
+\code{divergence(..., summed = T)}.}
 
 \item{na.rm}{logical. Should missing values (including NaN) be removed?
 Used only if \code{summed} is set to TRUE.}

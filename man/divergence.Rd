@@ -36,8 +36,11 @@ set of percentages summing to 1 for each row, \code{sum} and \code{none} are equ
 Used only if \code{summed} is set to TRUE.}
 
 \item{summed}{If TRUE, will return a single summary statistic. (Or one value per group if specifying
-\code{dplyr::group_by}.) If FALSE, will return a vector equaling the length
-of the input vectors.}
+\code{dplyr::group_by}.) If FALSE (default), will return a vector equaling the length
+of the input vectors. If 'weighted' (only for divergence and information theory), returns
+a vector as in FALSE, but with pre-weighted values,
+such that \verb{sum(divergence(..., summed = 'weighted))} is equivalent to
+\code{divergence(..., summed = T)}.}
 
 \item{sumPercent}{The percentage of each group in the larger population (i.e. the
 population composed of the sum of groups provided in \code{...}). Can be any of:

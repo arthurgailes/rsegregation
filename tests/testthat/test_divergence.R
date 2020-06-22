@@ -19,6 +19,9 @@ div_score <- divergence(bay_race$white,
 divergence_sum <- divergence(bay_race$white,
   bay_race$hispanic,bay_race$asian,bay_race$black, bay_race$all_other,
   summed = T)
+divergence_weight <- divergence(bay_race$white, bay_race$hispanic,
+  bay_race$asian,bay_race$black, bay_race$all_other,summed = 'weighted')
+expect_equal(divergence_weight, bay_results$div_weight)
 
 #try incomplete divergence, compatibility with segregation_measures
 divergence_inc_sum <- divergence(bay_race$white,
