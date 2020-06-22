@@ -90,9 +90,9 @@ divergence <- function(..., weights = 'sum', na.rm=TRUE, summed=FALSE,
   #deal with weights and sumPercent in separate functions
   if(isTRUE(rowTotals=='weights')) rowTotals <- weights
   weights <- convert_weights(groupMatrix, weights, na.rm = na.rm)
-  sumPercent <- proc_sumPercent(groupMatrix, sumPercent, weights, na.rm)
   #convert to percentages if necessary
   groupMatrix <- to_percentages(groupMatrix, rowTotals, na.rm)
+  sumPercent <- proc_sumPercent(groupMatrix, sumPercent, weights, na.rm)
 
   # check for construction problems
   multigroup_sanity(groupMatrix,weights)
@@ -157,15 +157,15 @@ entropy <- function( ..., weights = 'sum', sumPercent = 'weights', entropy_type 
   scale = FALSE, summed=FALSE, na.rm=TRUE){
 
   groupMatrix <- data.frame(...)
-  if(nrow(groupMatrix) == 1) return(0) # if a single observation composes a group
+  # if(nrow(groupMatrix) == 1) return(0) # if a single observation composes a group
   # remove NAs
   if(isTRUE(na.rm)) groupMatrix[is.na(groupMatrix)] <- 0
 
   #deal with weights and sumPercent in separate functions
   weights <- convert_weights(groupMatrix, weights, na.rm = na.rm)
-  sumPercent <- proc_sumPercent(groupMatrix, sumPercent, weights, na.rm)
   #convert to percentages if necessary
   groupMatrix <- to_percentages(groupMatrix, na.rm=na.rm)
+  sumPercent <- proc_sumPercent(groupMatrix, sumPercent, weights, na.rm)
   # check for construction problems
   multigroup_sanity(groupMatrix,weights)
   # create by-group scores
@@ -207,7 +207,7 @@ information_theory <- function(entropy, sumPercent, weights, summed){
   #large population entropy score
   entropySum <- ifelse(sumPercent <= 0, 0,
     sumPercent * log(1 / sumPercent) )
-  entropySum <- sum(sumPercent)
+  entropySum <- sum(entropySum)
   # Information index - single observation
   index <- 1 - (entropy/entropySum)
 
