@@ -1,5 +1,6 @@
 library(testthat)
 library(devtools)
+library(dplyr)
 library(here)
 setwd(here())
 load_all()
@@ -13,7 +14,7 @@ test_that("Default data works",{
 })
 
 #create figures from package as it is now
-divergence <- divergence(bay_race$white,
+div_score <- divergence(bay_race$white,
   bay_race$hispanic,bay_race$asian,bay_race$black, bay_race$all_other)
 divergence_sum <- divergence(bay_race$white,
   bay_race$hispanic,bay_race$asian,bay_race$black, bay_race$all_other,
@@ -25,9 +26,15 @@ divergence_inc_sum <- divergence(bay_race$white,
   summed = T, rowTotals='weights')
 expect_equal(round(divergence_inc_sum, 4), 0.2096)
 
+# test to make sure percentages are working
+div_percent <- mutate_at(bay_race, vars(white, black, hispanic, asian, all_other),
+  list(~(./total_pop))) %>%
+  transmute(div_pcts = divergence(white, black, hispanic, asian, all_other, weights = total_pop))
+
 
 # formatting
 
-expect_equal(proper_length, length(divergence))
+expect_equal(proper_length, length(div_score))
 
 #scores
+expect_equal(round(div_percent$div_pcts,4), round(bay_results$divergence,4))
