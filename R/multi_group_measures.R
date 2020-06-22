@@ -46,7 +46,7 @@
 #'
 #' @param summed If TRUE, will return a single summary statistic. (Or one value per group if specifying
 #' `dplyr::group_by`.) If FALSE, will return a vector equaling the length
-#' of the input vectors.
+#' of the input vectors. If 'weighted', returns a vector as in FALSE, but d
 #'
 #' @param na.rm logical. Should missing values (including NaN) be removed?
 #' Used only if `summed` is set to TRUE.
@@ -233,7 +233,7 @@ proc_sumPercent <- function(df, sumPercent, weights, na.rm){
   # conversion from weights if specified
   if(isTRUE(sumPercent == 'weights')){
     popTotals <- df * weights
-    popTotals <- colSums(df, na.rm = na.rm)
+    popTotals <- colSums(popTotals, na.rm = na.rm)
     sumPercent <- popTotals/sum(popTotals, na.rm = na.rm)
   }
   return(sumPercent)
