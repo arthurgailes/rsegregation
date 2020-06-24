@@ -24,8 +24,7 @@ data <- get_decennial(geography = 'tract',variables = racevars,state=6,county=ba
 bay_race <- transmute(data,fips=GEOID, total_pop	=	P005001, hispanic	=	P005010,
   white	=	P005003, black	=	P005004, asian	=	P005006, 
   all_other = total_pop - white-black-hispanic-asian,
-  county=gsub('^[A-z0-9 ]+, ','',NAME), county=paste0(county, ", 2010"))
-bay_long <- pivot_longer(bay_wide, cols=(total_pop:all_other), names_to = 'race',values_to = 'population')
+  county =gsub('^[^,]+, ','',NAME), county=paste0(county, ", 2010"))
 ```
 
 ## For now, I only want to save the wide format
