@@ -17,6 +17,8 @@
 #'
 #' @inheritParams divergence
 #'
+#' @importFrom stats weighted.mean
+#'
 #' @param weights Any of:
 #' \describe{
 #'  * `sum`(default) Sets `weights` to the rowwise sum of `dataframe`
@@ -25,11 +27,32 @@
 #'  * A numeric vector the length of the number of rows of `dataframe`
 #'  }
 #'
+#' @output Any of:
+#' \describe{
+#'  \item{"scores"}{Default. The individual divergence scores for each row or group.}
+#'  \item{"weighted"}{One observation per row or group, weighted by the input to the `weights`
+#'  parameter. The sum of "weighted" scores is equivalent to inputing the "summed".}
+#'  \item{"sum"}{Reports one observation of the summed divergence score for the total dataset.}
+#'  \item{"percentage"}{One row for each entry(or group) as in "scores," but scaled so each
+#'  observation reports a percentage of the total score, as would be reproted with "summed".}
+#'  \item{"scaled"}{Not yet implemented. Re-scales divergence scores the divergence index to
+#'  have a range  of 0 to 1 by dividing by its maximum value for a given population. See details.}
+#'  }
 #' @note The `divergence` parameters for each group are set to their defaults
 #' unless explicitly noted above.
 #'
+#' @details
+#' Deomposing the divergence index allows users to simultatneously examine the segregation within
+#' and between groups of a large geography. Furthermore, users can assess the percentage of
+#' segregation coming from each group.
+#'
+#' The `output` paramater "scaled" transforms the divergence index
+#' it from an absolute to a relative measure of inequality and segregation, and negates
+#' several of its desirable properties, including aggregation equivalence and independence.
+#'  (See Roberto, 2016)
+#'
 #' @return A dataframe with one row if `summed == TRUE` or else one row for each
-#' list or group in `dataframe`.
+#' group in `dataframe`.
 #'
 #' The dataframe will have three columns: 'within_divergence', equivalent to
 #'  `divergence()` for each dataframe or group in `dataframe`;
@@ -42,7 +65,7 @@
 #'
 #' @export
 decompose_divergence <- function(dataframe, groupCol = class(dataframe), weights = 'sum',
-  output = 'scores', ...){
+  output = 'scores'){
   if('grouped_df' %in% class(dataframe)){
     #for dplyr, extraxt grouping variable
     group_var = dplyr::group_vars(dataframe)
@@ -84,9 +107,6 @@ decompose_divergence <- function(dataframe, groupCol = class(dataframe), weights
   })
   withinDiv <- as.numeric(withinDiv)
 
-  # get population means
-  # totalPop <- sapply(subset(dataframe, select = -'weights'), weighted.mean,
-  #   dataframe$weights, na.rm = T)
   # summarise population by group
   groupPops <- by(dataframe, groupCol, function(group){
     #get weighted mean by column within group
