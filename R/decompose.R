@@ -68,7 +68,7 @@ decompose_divergence <- function(dataframe, groupCol = class(dataframe), weights
   # if provided as a column
   else {
     weightCol <- dataframe[[weights]]
-    dataframe <- subset(dataframe, select = -weights)
+    dataframe <- dataframe[,colnames(dataframe) != weights, drop=F ]
   }
 
   #save original dataframe and convert to percentages
@@ -84,15 +84,16 @@ decompose_divergence <- function(dataframe, groupCol = class(dataframe), weights
     divergence(subset(group, select = -weights), weights = group$weights,
       summed = T)
   })
+  withinDiv <- as.numeric(withinDiv)
 
   # get population means
-  totalPop <- sapply(subset(dataframe, select = -weights), weighted.mean,
-    dataframe$weights, na.rm = T)
+  # totalPop <- sapply(subset(dataframe, select = -'weights'), weighted.mean,
+  #   dataframe$weights, na.rm = T)
   # summarise population by group
   groupPops <- by(dataframe, groupCol, function(group){
-    #get weighted mean by column
-    groupSums <- as.data.frame(sapply(subset(group, select = -weights),
-      weighted.mean, group$weights, na.rm = T))
+    #get weighted mean by column within group
+    groupSums <- data.frame(t(sapply(subset(group, select = -weights),
+      weighted.mean, group$weights, na.rm = T)))
     #add sum of weights
     groupSums$weights <- sum(group$weights, na.rm = T)
     return(groupSums)
@@ -105,7 +106,7 @@ decompose_divergence <- function(dataframe, groupCol = class(dataframe), weights
   # check that within + between = total divergenc
   divSum <- divergence(dataframe_orig, weights = weightCol, summed = T)
   divSumGroup <- weighted.mean(withinDiv + betweenDiv, groupPops$weights, na.rm=T)
-  if(round(divSum, 5) == round(divSumGroup, 5)) warning("sum of within and between divergence is not equal to sum of total divergence. Check inputs.")
+  if(round(divSum, 5) != round(divSumGroup, 5)) warning("sum of within and between divergence is not equal to sum of total divergence. Check inputs.")
 
   #return a dataframe with within, between, and weights
   return(data.frame(within = withinDiv, between = betweenDiv,
