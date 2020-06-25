@@ -25,19 +25,17 @@
 #'  * A numeric vector the length of the number of rows of `dataframe`
 #'  }
 #'
-#' @param output Not yet implemented.
-#' @param ... passed to \code{\link{divergence}}. Not yet implemented
-#'
 #' @note The `divergence` parameters for each group are set to their defaults
 #' unless explicitly noted above.
 #'
 #' @return A dataframe with one row if `summed == TRUE` or else one row for each
 #' list or group in `dataframe`.
 #'
-#' The dataframe will have two columns: 'within_divergence', equivalent to
-#'  `divergence()` for each dataframe or group in `dataframe`; and
-#'  'between_divergence': the divergence score of each group's demographics compared
-#'  to the full population. The sum of `decompose_divergence(...,summed = T)` should
+#' The dataframe will have three columns: 'within_divergence', equivalent to
+#'  `divergence()` for each dataframe or group in `dataframe`;
+#'  'between_divergence', the divergence score of each group's demographics compared
+#'  to the full population; and `weights`, the sum of the weights for each group.
+#'  The sum of `decompose_divergence(...,summed = T)` should
 #'  equal the result of `divergence(...,summed = T)`
 #'
 #' @source Roberto, 2016. "A Decomposable Measure of Segregation and Inequality."
