@@ -32,6 +32,18 @@ to \code{dataframe}.}
 \item A numeric vector the length of the number of rows of \code{dataframe}
 }
 }}
+
+\item{output}{Any of:
+\describe{
+\item{"scores"}{Default. The individual divergence scores for each row or group.}
+\item{"weighted"}{One observation per row or group, weighted by the input to the \code{weights}
+parameter. The sum of "weighted" scores is equivalent to inputing the "summed".}
+\item{"sum"}{Reports one observation of the summed divergence score for the total dataset.}
+\item{"percentage"}{One row for each entry(or group) as in "scores," but scaled so each
+observation reports a percentage of the total score, as would be reproted with "summed".}
+\item{"scaled"}{Not yet implemented. Re-scales divergence scores the divergence index to
+have a range  of 0 to 1 by dividing by its maximum value for a given population. See details.}
+}}
 }
 \value{
 A dataframe as specified by the \code{output} parameter.

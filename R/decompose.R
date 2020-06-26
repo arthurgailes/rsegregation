@@ -15,8 +15,6 @@
 #' equalength the number of rows in dataframe. Ignored if passing a grouped_df
 #' to `dataframe`.
 #'
-#' @inheritParams divergence
-#'
 #' @importFrom stats weighted.mean
 #'
 #' @param weights Any of:
@@ -27,7 +25,7 @@
 #'  * A numeric vector the length of the number of rows of `dataframe`
 #'  }
 #'
-#' @output Any of:
+#' @param output Any of:
 #' \describe{
 #'  \item{"scores"}{Default. The individual divergence scores for each row or group.}
 #'  \item{"weighted"}{One observation per row or group, weighted by the input to the `weights`
