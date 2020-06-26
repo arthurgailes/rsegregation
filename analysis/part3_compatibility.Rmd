@@ -1,0 +1,29 @@
+---
+title: "Segregation in the Bay Part 3 Testing"
+---
+
+```{r setup}
+sapply(c('devtools','here','tidyverse'), require, character.only=T)
+knitr::opts_knit$set(root.dir = here())
+load_all()
+```
+
+
+
+
+Is the by-county sum of divergence scores calculated wrt the bay area the same as the average of their within and between scores? if weighted by population?
+
+
+First, original part 3 equation, but using bay instead of cbsa
+```{r}
+div <- bay_race %>%
+  mutate(div  = divergence(white,black,hispanic,asian)) %>% 
+  group_by(county) %>% summarize(div = sum(div * total_pop/sum(total_pop)))
+```
+
+try with decomp
+```{r}
+div2 <- bay_race %>% select(total_pop:asian, county) %>% group_by(county) %>% 
+  decompose_divergence(weights = total_pop)
+```
+

@@ -51,8 +51,7 @@
 #' several of its desirable properties, including aggregation equivalence and independence.
 #'  (See Roberto, 2016)
 #'
-#' @return A dataframe with one row if `summed == TRUE` or else one row for each
-#' group in `dataframe`.
+#' @return A dataframe as specified by the `output` parameter.
 #'
 #' The dataframe will have three columns: 'within_divergence', equivalent to
 #'  `divergence()` for each dataframe or group in `dataframe`;
@@ -69,8 +68,9 @@ decompose_divergence <- function(dataframe, groupCol = class(dataframe), weights
   if('grouped_df' %in% class(dataframe)){
     #for dplyr, extraxt grouping variable
     group_var = dplyr::group_vars(dataframe)
-    groupCol = dplyr::group_indicies(dataframe)
+    groupCol = dplyr::group_indices(dataframe)
     dataframe = as.data.frame(dataframe)
+    dataframe = dplyr::select(dataframe, -group_var)
   }
   # if a column name is provided for groupCol
   else if(length(groupCol) == 1){
@@ -81,7 +81,6 @@ decompose_divergence <- function(dataframe, groupCol = class(dataframe), weights
     dataframe <- dataframe[, !colnames(dataframe) %in% group_var, drop=F]
   }
 
-
   # create weights from rowsums if specified
   if(isTRUE(weights == 'sum')) weightCol = rowSums(dataframe, na.rm=T)
   # if provided as a vector, add to dataframe
@@ -91,6 +90,8 @@ decompose_divergence <- function(dataframe, groupCol = class(dataframe), weights
     weightCol <- dataframe[[weights]]
     dataframe <- dataframe[,colnames(dataframe) != weights, drop=F ]
   }
+  # ensure sum of weights == 1 (i.e. convert if weights is provided as raw population stats)
+  weightCol <- weightCol/sum(weightCol, na.rm=T)
 
   #save original dataframe and convert to percentages
   dataframe_orig <- dataframe
@@ -126,8 +127,19 @@ decompose_divergence <- function(dataframe, groupCol = class(dataframe), weights
   divSumGroup <- weighted.mean(withinDiv + betweenDiv, groupPops$weights, na.rm=T)
   if(round(divSum, 5) != round(divSumGroup, 5)) warning("sum of within and between divergence is not equal to sum of total divergence. Check inputs.")
 
-  #return a dataframe with within, between, and weights
-  return(data.frame(within = withinDiv, between = betweenDiv,
-    weights = groupPops$weights))
+  # process output parameter
+  if(output == 'scores') result <- data.frame(within = withinDiv, between = betweenDiv,
+    weights = groupPops$weights)
+  else if(output == 'weighted') {
+    result <- data.frame(within = withinDiv*groupPops$weights,
+    between = betweenDiv * groupPops$weights)
+  } else if(output == 'sum') {
+    result <- data.frame(within = weighted.mean(withinDiv,groupPops$weights, na.rm=T),
+      between = weighted.mean(betweenDiv, groupPops$weights, na.rm = T))
+  } else if(output == 'percentage'){
+    result <- data.frame(within = (withinDiv*groupPops$weights)/divSum,
+      between = (betweenDiv * groupPops$weights)/divSum)
+  } else stop("output parameter is invalid")
 
+  return(result)
 }

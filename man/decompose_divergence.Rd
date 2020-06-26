@@ -11,8 +11,7 @@ decompose_divergence(
   dataframe,
   groupCol = class(dataframe),
   weights = "sum",
-  output = "scores",
-  ...
+  output = "scores"
 )
 }
 \arguments{
@@ -33,13 +32,9 @@ to \code{dataframe}.}
 \item A numeric vector the length of the number of rows of \code{dataframe}
 }
 }}
-
-\item{...}{Population vectors for every group included in the divergence
-calculation.}
 }
 \value{
-A dataframe with one row if \code{summed == TRUE} or else one row for each
-list or group in \code{dataframe}.
+A dataframe as specified by the \code{output} parameter.
 
 The dataframe will have three columns: 'within_divergence', equivalent to
 \code{divergence()} for each dataframe or group in \code{dataframe};
@@ -56,6 +51,15 @@ divergence score within those groups and between those groups.
 \details{
 The sum of the scores reported in \code{decompose_divergence} when setting summed==TRUE
 should always be equal to the
+
+Deomposing the divergence index allows users to simultatneously examine the segregation within
+and between groups of a large geography. Furthermore, users can assess the percentage of
+segregation coming from each group.
+
+The \code{output} paramater "scaled" transforms the divergence index
+it from an absolute to a relative measure of inequality and segregation, and negates
+several of its desirable properties, including aggregation equivalence and independence.
+(See Roberto, 2016)
 }
 \note{
 The \code{divergence} parameters for each group are set to their defaults
