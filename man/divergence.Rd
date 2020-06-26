@@ -20,8 +20,7 @@ divergence(
 \item{...}{Population vectors for every group included in the divergence
 calculation.}
 
-\item{weights}{Only used if \code{summed} or \code{weighted} is set to \code{TRUE}.
-This can be either a vector of weights summing to one, or the total
+\item{weights}{Either a vector of weights summing to one, or the total
 population for each observation in \code{...}. Can be any of:
 \describe{
 \item{A numeric vector}{The length of each vector provided in each
@@ -52,7 +51,7 @@ Note that for this to work correctly, each group must be provided in the same or
 will otherwise force}
 \item{\code{weights}}{Default. Uses the value of \code{weights} to construct total population proportions.
 If weights is set to \code{none}, the total population proportions will be the unweighted
-average of the percentages in each observaiton.}
+average of the percentages in each observation.}
 }}
 
 \item{rowTotals}{By default, the rowwise sum of \code{...} is treated as 100\% of the population.

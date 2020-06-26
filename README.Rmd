@@ -1,5 +1,7 @@
 ---
-output: github_document
+output: 
+  github_document:
+    toc: true
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -19,7 +21,7 @@ knitr::opts_chunk$set(
 [![Travis build status](https://travis-ci.org/arthurgailes/rsegregation.svg?branch=master)](https://travis-ci.org/arthurgailes/rsegregation)
 <!-- badges: end -->
 
-This package is designed to fit into the tidyverse framework, particularly dplyr.
+rsegregation is designed to fit into the tidyverse framework, particularly dplyr.
 
 ## Installation
 <!--
@@ -32,9 +34,9 @@ install.packages("rsegregation")
 The development version from [GitHub](https://github.com/) can be installed with:
 
 ``` {r eval=FALSE}
-# install.packages("devtools")
-devtools::install_github("arthurgailes/rsegregation")
-# dplyr is also recommended
+  # install.packages("devtools")
+  devtools::install_github("arthurgailes/rsegregation")
+# dplyr is also suggested
 # install.packages('dplyr')
 ```
 
@@ -42,22 +44,36 @@ devtools::install_github("arthurgailes/rsegregation")
 
 Return a single divergence score for bay County:
 
-```{r example, eval=FALSE}
+```{r example, results='hide}
 library(rsegregation)
 library(dplyr)
 ## basic example code
 bay_divergence <- bay_race %>% 
-  mutate(bay_divergence = divergence(white,black,asian))
-  
+  mutate(bay_divergence = divergence(white,black,asian, hispanic, all_other), summed = T)
 ```
 
-## Base R Example
+### Base R Example
 
 The same operation can be achieved in base R with:
 
-```{r baser}
-summary(cars)
+```{r baser1}
+bay_divergence <- divergence(bay_race[c('white','black','asian', 'hispanic', 'all_other')], 
+  summed = T)
 ```
+
+or
+
+```{r baser2}
+bay_divergence <- divergence(bay_race$white,bay_race$black,bay_race$asian, 
+  bay_race$hispanic, bay_race$all_other, summed = T)
+```
+
+```{r echo=FALSE, results=TRUE}
+print(bay_divergence)
+```
+
+
+
 
 ### Misc
 

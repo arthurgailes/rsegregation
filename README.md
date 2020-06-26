@@ -23,12 +23,12 @@ install.packages("rsegregation")
 -->
 
 The development version from [GitHub](https://github.com/) can be
-installed withwith:
+installed with:
 
 ``` r
 # install.packages("devtools")
 devtools::install_github("arthurgailes/rsegregation")
-# dplyr is also recommended
+# dplyr is also suggested
 # install.packages('dplyr')
 ```
 
@@ -39,25 +39,34 @@ Return a single divergence score for bay County:
 ``` r
 library(rsegregation)
 library(dplyr)
+#> 
+#> Attaching package: 'dplyr'
+#> The following objects are masked from 'package:stats':
+#> 
+#>     filter, lag
+#> The following objects are masked from 'package:base':
+#> 
+#>     intersect, setdiff, setequal, union
 ## basic example code
 bay_divergence <- bay_race %>% 
-  mutate(bay_divergence = divergence(white,black,asian))
-  
+  mutate(bay_divergence = divergence(white,black,asian, hispanic, all_other), summed = T)
 ```
 
-## Base R Example
+### Base R Example
 
-The same operation can be achieved in base R with:
+The same operation can be achieved in base R
+with:
 
 ``` r
-summary(cars)
-#>      speed           dist       
-#>  Min.   : 4.0   Min.   :  2.00  
-#>  1st Qu.:12.0   1st Qu.: 26.00  
-#>  Median :15.0   Median : 36.00  
-#>  Mean   :15.4   Mean   : 42.98  
-#>  3rd Qu.:19.0   3rd Qu.: 56.00  
-#>  Max.   :25.0   Max.   :120.00
+bay_divergence <- divergence(bay_race[c('white','black','asian', 'hispanic', 'all_other')], 
+  summed = T)
+```
+
+or
+
+``` r
+bay_divergence <- divergence(bay_race$white,bay_race$black,bay_race$asian, 
+  bay_race$hispanic, bay_race$all_other, summed = T)
 ```
 
 ### Misc

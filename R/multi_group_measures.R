@@ -5,8 +5,7 @@
 #' @param ... Population vectors for every group included in the divergence
 #' calculation.
 #'
-#' @param weights Only used if `summed` or `weighted` is set to `TRUE`.
-#' This can be either a vector of weights summing to one, or the total
+#' @param weights Either a vector of weights summing to one, or the total
 #' population for each observation in `...`. Can be any of:
 #' \describe{
 #'  \item{A numeric vector}{The length of each vector provided in each
@@ -27,7 +26,7 @@
 #'  will otherwise force}
 #'  \item{`weights`}{Default. Uses the value of `weights` to construct total population proportions.
 #'  If weights is set to `none`, the total population proportions will be the unweighted
-#'  average of the percentages in each observaiton.}
+#'  average of the percentages in each observation.}
 #'  }
 #'
 #' @param rowTotals By default, the rowwise sum of `...` is treated as 100% of the population.
