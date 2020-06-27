@@ -5,6 +5,6 @@
 ^analysis/*
 ^tests/*
 ^\.travis\.yml$
-^\.git/*
+^\.git$
 .*desktop\.ini
 documentation/*

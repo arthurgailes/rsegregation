@@ -11,9 +11,7 @@
 #' of a column named in `groupCol`. All columns are used in the divergence calculation
 #' except for those specified in `groupCol` and `weights`(optional)
 #'
-#' @param groupCol Name of the column in the dataframe used for grouping or a vector of groups
-#' equalength the number of rows in dataframe. Ignored if passing a grouped_df
-#' to `dataframe`.
+#' @param groupCol Name of the column(s) in the dataframe used for grouping.
 #'
 #' @importFrom stats weighted.mean
 #'
@@ -63,21 +61,18 @@
 #' @export
 decompose_divergence <- function(dataframe, groupCol = class(dataframe), weights = 'sum',
   output = 'scores'){
-  if('grouped_df' %in% class(dataframe)){
-    #for dplyr, extraxt grouping variable
-    group_var = dplyr::group_vars(dataframe)
-    groupCol = dplyr::group_indices(dataframe)
-    dataframe = as.data.frame(dataframe)
-    dataframe = dplyr::select(dataframe, -group_var)
-  }
-  # if a column name is provided for groupCol
-  else if(length(groupCol) == 1){
-    #save name
+    #save goupname
     group_var <- groupCol
     # collect columns and subset
     groupCol <- dataframe[group_var]
+    #order by each row
+    for(col in groupCol) dataframe = dataframe[order(col),]
+    #refresh groupCol so it matches sorting
+    groupCol <- dataframe[group_var]
+    # flip groupcol order so by() will sort to match its un
+    # groupCol <- groupCol[length(groupCol):1]
+    # remove group columns
     dataframe <- dataframe[, !colnames(dataframe) %in% group_var, drop=F]
-  }
 
   # create weights from rowsums if specified
   if(isTRUE(weights == 'sum')) weightCol = rowSums(dataframe, na.rm=T)
@@ -103,7 +98,7 @@ decompose_divergence <- function(dataframe, groupCol = class(dataframe), weights
   withinDiv <- by(dataframe, groupCol, function(group){
     divergence(subset(group, select = -weights), weights = group$weights,
       summed = T)
-  })
+  }, simplify = F)
   withinDiv <- as.numeric(withinDiv)
 
   # summarise population by group
@@ -120,14 +115,16 @@ decompose_divergence <- function(dataframe, groupCol = class(dataframe), weights
   betweenDiv <- divergence(subset(groupPops, select = -weights),
     weights = groupPops$weights)
 
-  # check that within + between = total divergenc
+  #return unique grouping pairs with the order flipped to match by() resutls
+  uniqueGroup <- unique(groupCol[length(groupCol):1])
+  # check that within + between = total divergence
   divSum <- divergence(dataframe_orig, weights = weightCol, summed = T)
   divSumGroup <- weighted.mean(withinDiv + betweenDiv, groupPops$weights, na.rm=T)
   if(round(divSum, 5) != round(divSumGroup, 5)) warning("sum of within and between divergence is not equal to sum of total divergence. Check inputs.")
 
   # process output parameter
   if(output == 'scores') result <- data.frame(within = withinDiv, between = betweenDiv,
-    weights = groupPops$weights)
+    weights = groupPops$weights, uniqueGroup)
   else if(output == 'weighted') {
     result <- data.frame(within = withinDiv*groupPops$weights,
     between = betweenDiv * groupPops$weights)
