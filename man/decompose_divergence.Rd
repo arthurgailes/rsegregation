@@ -19,9 +19,7 @@ decompose_divergence(
 of a column named in \code{groupCol}. All columns are used in the divergence calculation
 except for those specified in \code{groupCol} and \code{weights}(optional)}
 
-\item{groupCol}{Name of the column in the dataframe used for grouping or a vector of groups
-equalength the number of rows in dataframe. Ignored if passing a grouped_df
-to \code{dataframe}.}
+\item{groupCol}{Name of the column(s) in the dataframe used for grouping.}
 
 \item{weights}{Any of:
 \describe{

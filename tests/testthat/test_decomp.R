@@ -8,32 +8,37 @@ data("bay_race")
 load('tests/testthat/bay_results.Rdata')
 load('tests/testthat/bay_results_sum.Rdata')
 
-#test that base and dplyr work equivalently
-decomp_dplyr <- bay_race %>% select(total_pop:all_other, county) %>%
-  decompose_divergence('county',weights = 'total_pop')
+#test that the vector of scores lines up
 decomp_base <- decompose_divergence(subset(bay_race,
-  select=c(hispanic:all_other)), groupCol = bay_race$county)
+  select=c(hispanic:county)), groupCol = 'county') %>%
+  mutate(sum = within + between)
 
-
-decomp_dplyr_sum <- weighted.mean(decomp_dplyr$within + decomp_dplyr$between,
-  decomp_dplyr$weights)
-decomp_base_sum <- weighted.mean(decomp_base$within + decomp_base$between,
-  decomp_base$weights)
-
-expect_equal(round(decomp_base_sum, 5),round(decomp_dplyr_sum, 5))
-expect_equal(decomp_base_sum,bay_results_sum$divergence)
+expect_equal(sum(decomp_base$sum*decomp_base$weights),bay_results_sum$divergence)
 
 
 ## output parameter testing
 # 'sum'
 decomp_summed <- decompose_divergence(subset(bay_race,
-  select=c(hispanic:all_other)), groupCol = bay_race$county, output='sum')
+  select=c(hispanic:county)), groupCol = 'county', output='sum')
 expect_equal(round(sum(decomp_summed),5), round(bay_results_sum$divergence, 5))
 # percentage
 decomp_perc <- decompose_divergence(subset(bay_race,
-  select=c(hispanic:all_other)), groupCol = bay_race$county, output='percentage')
+  select=c(hispanic:county)), groupCol = 'county', output='percentage')
 expect_equal(sum(decomp_perc), 1)
 # weights
 decomp_weight <- decompose_divergence(subset(bay_race,
-  select=c(hispanic:all_other)), groupCol = bay_race$county, output='weighted')
+  select=c(hispanic:county)), groupCol = 'county', output='weighted')
 expect_equal(sum(decomp_weight), bay_results_sum$divergence)
+
+## test that multiple groups work
+bay_race2 <- mutate(bay_race, dumb = rep(1:4,1588/4))
+decomp_2gr <- decompose_divergence(subset(bay_race2,
+  select=c(hispanic:dumb)), groupCol = c('county','dumb')) %>%
+  mutate(sum = within + between) %>%
+  filter(county == 'Contra Costa County, California, 2010', dumb == 3)
+div_2gr <- mutate(bay_race2, div = divergence(hispanic,white,black,asian,all_other)) %>%
+  filter(county == 'Contra Costa County, California, 2010', dumb == 3) %>%
+  summarize(div = sum(div*total_pop/sum(total_pop)))
+
+
+expect_equal(decomp_2gr$sum, sum(div_2gr))

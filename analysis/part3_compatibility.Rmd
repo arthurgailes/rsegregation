@@ -18,12 +18,14 @@ First, original part 3 equation, but using bay instead of cbsa
 ```{r}
 div <- bay_race %>%
   mutate(div  = divergence(white,black,hispanic,asian)) %>% 
-  group_by(county) %>% summarize(div = sum(div * total_pop/sum(total_pop)))
+  group_by(county) %>% summarize(div = sum(div * (white+black+hispanic+asian)/
+      sum(white+black+hispanic+asian)))
 ```
 
 try with decomp
 ```{r}
-div2 <- bay_race %>% select(total_pop:asian, county) %>% group_by(county) %>% 
-  decompose_divergence(weights = total_pop)
+div2 <- bay_race %>% select(hispanic:asian, county) %>% group_by(county) %>% 
+  decompose_divergence() %>% 
+  mutate(sum = within + between)
 ```
 
