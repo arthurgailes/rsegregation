@@ -19,7 +19,10 @@ decompose_divergence(
 of a column named in \code{groupCol}. All columns are used in the divergence calculation
 except for those specified in \code{groupCol} and \code{weights}(optional)}
 
-\item{groupCol}{Name of the column(s) in the dataframe used for grouping.}
+\item{groupCol}{Name of the column(s) in the dataframe used for grouping. Note that
+\code{decompose_divergence} calculates divergenec across the entire dataframe, so groups that
+should be calculated separately (such as multiple years) should not be included in the same
+function call.}
 
 \item{weights}{Any of:
 \describe{

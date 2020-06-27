@@ -11,7 +11,10 @@
 #' of a column named in `groupCol`. All columns are used in the divergence calculation
 #' except for those specified in `groupCol` and `weights`(optional)
 #'
-#' @param groupCol Name of the column(s) in the dataframe used for grouping.
+#' @param groupCol Name of the column(s) in the dataframe used for grouping. Note that
+#' `decompose_divergence` calculates divergenec across the entire dataframe, so groups that
+#' should be calculated separately (such as multiple years) should not be included in the same
+#' function call.
 #'
 #' @importFrom stats weighted.mean
 #'
@@ -127,13 +130,13 @@ decompose_divergence <- function(dataframe, groupCol = class(dataframe), weights
     weights = groupPops$weights, uniqueGroup)
   else if(output == 'weighted') {
     result <- data.frame(within = withinDiv*groupPops$weights,
-    between = betweenDiv * groupPops$weights)
+    between = betweenDiv * groupPops$weights, uniqueGroup)
   } else if(output == 'sum') {
     result <- data.frame(within = weighted.mean(withinDiv,groupPops$weights, na.rm=T),
       between = weighted.mean(betweenDiv, groupPops$weights, na.rm = T))
   } else if(output == 'percentage'){
     result <- data.frame(within = (withinDiv*groupPops$weights)/divSum,
-      between = (betweenDiv * groupPops$weights)/divSum)
+      between = (betweenDiv * groupPops$weights)/divSum, uniqueGroup)
   } else stop("output parameter is invalid")
 
   return(result)

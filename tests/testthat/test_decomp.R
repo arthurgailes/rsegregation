@@ -20,15 +20,15 @@ expect_equal(sum(decomp_base$sum*decomp_base$weights),bay_results_sum$divergence
 # 'sum'
 decomp_summed <- decompose_divergence(subset(bay_race,
   select=c(hispanic:county)), groupCol = 'county', output='sum')
-expect_equal(round(sum(decomp_summed),5), round(bay_results_sum$divergence, 5))
+expect_equal(round(sum(decomp_summed[1:2]),5), round(bay_results_sum$divergence, 5))
 # percentage
 decomp_perc <- decompose_divergence(subset(bay_race,
   select=c(hispanic:county)), groupCol = 'county', output='percentage')
-expect_equal(sum(decomp_perc), 1)
+expect_equal(sum(decomp_perc[1:2]), 1)
 # weights
 decomp_weight <- decompose_divergence(subset(bay_race,
   select=c(hispanic:county)), groupCol = 'county', output='weighted')
-expect_equal(sum(decomp_weight), bay_results_sum$divergence)
+expect_equal(sum(decomp_weight[1:2]), bay_results_sum$divergence)
 
 ## test that multiple groups work
 bay_race2 <- mutate(bay_race, dumb = rep(1:4,1588/4))
