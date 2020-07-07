@@ -61,50 +61,54 @@ decompose_divergence <- function(dataframe, groupCol = NULL, weightCol = NA,
   #save original dataframe
   dataframe_orig <- dataframe
   #group the dataframe if groupCol is provided
-  if(!dplyr::is.grouped_df(dataframe)){
-    if(is.null(groupCol)) stop('groupCol must be specified')
-    # group by the grouping variables
-    dataframe <- dplyr::group_by(dataframe, {{groupCol}})
+  if(!dplyr::is.grouped_df(dataframe) & is.null(groupCol)) stop('groupCol must be specified')
+  else if(dplyr::is.grouped_df(dataframe)){
+    #extract grouping vars and ungroup
+    groupCol <- dplyr::group_vars(dataframe)
+    dataframe <- dplyr::ungroup(dataframe)
   }
-  #save goupnames
-  group_var <- dplyr::group_vars(dataframe)
-  groupCol <- dplyr::group_cols(dataframe)
   # create weights from rowsums if specified
   if(is.na(weightCol)) {
     dataframe$weightCol = rowSums(
-      dplyr::select(dataframe, !dplyr::all_of(group_var)), na.rm=T)
+      dplyr::select(dataframe, !dplyr::all_of(groupCol)), na.rm=T)
   } else { # if provided as a column, rename column to weightCol
-    dataframe <- dplyr::rename(dataframe, weightCol = {{weightCol}})
+    dataframe <- dplyr::rename(dataframe, 'weightCol' := {{weightCol}})
+    rm(weightCol)
   }
-  # ensure sum of weights == 1 (i.e. convert if weights is provided as raw population stats)
+  # ensure sum of weights == 1 (convert to % if weights is provided as raw population stats)
   dataframe$weightCol <- dataframe$weightCol/sum(dataframe$weightCol, na.rm=T)
 
   # save names of the population variables (i.e. not grouping or weights)
-  calcNames <- names(dplyr::select(dataframe, !all_of(group_var),!weightCol))
+  calcNames <- names(dplyr::select(dataframe, !dplyr::all_of(groupCol), -'weightCol'))
+
   # convert dataframe to percentages
-  dataframe <- dplyr::mutate(dataframe, dplyr::across({{calcNames}},
+  dataframe <- dplyr::mutate(dataframe, dplyr::across(calcNames,
     ~(.x/rowSums(dataframe[calcNames]))))
+
+  # group by the grouping variables
+  dataframe <- dplyr::group_by(dataframe, dplyr::across(groupCol))
 
   # get "within' divergence for each group
   withinDiv <- dplyr::summarize(dataframe,
-    within = rsegregation::divergence({{calcNames}}, weights = weightCol,
-      summed = T), .groups = 'keep'
+    within = rsegregation::divergence(dplyr::across(calcNames),
+      weights = weightCol,summed = T), .groups = 'drop'
     )
 
   # sum population and weights by group
-  groupPops <- dplyr::summarize(dataframe, across({{calcNames}},
+  groupPops <- dplyr::summarize(dataframe, dplyr::across(calcNames,
     ~stats::weighted.mean(.x, weightCol, na.rm = T)),
-    weightCol = sum(weightCol, na.rm = T), .groups = 'keep')
+    weightCol = sum(weightCol, na.rm = T), .groups = 'drop')
 
   # get divergence "between" group and total
-  betweenDiv <- dplyr::transmute(groupPops, {{group_var}}, weightCol,
-    between = divergence({{calcNames}}, weights = weightCol))
+  betweenDiv <- dplyr::transmute(groupPops,
+    between = divergence(dplyr::across(calcNames), weights = weightCol),
+    dplyr::across(c(groupCol, weightCol)))
 
   # join within and between together
-  result <- dplyr::inner_join(withinDiv, betweenDiv, by = group_var)
+  result <- dplyr::inner_join(withinDiv, betweenDiv, by = groupCol)
 
   # check that within + between = total divergence
-  divSum <- divergence(dataframe_orig[calcNames], weights = weightCol, summed = T)
+  divSum <- divergence(dataframe_orig[calcNames], weights = dataframe$weightCol, summed = T)
   divSumGroup <- stats::weighted.mean(result$within + result$between,
     result$weightCol, na.rm=T)
   if(round(divSum, 5) != round(divSumGroup, 5)) warning("sum of within and between divergence is not equal to sum of total divergence. Check inputs.")
@@ -113,13 +117,13 @@ decompose_divergence <- function(dataframe, groupCol = NULL, weightCol = NA,
   if(output == 'scores') return(result)
   else if(output == 'weighted') {
     result <- dplyr::transmute(result, within = within*weightCol,
-    between = between * weightCol, {{group_var}})
+    between = between * weightCol, {{groupCol}})
   } else if(output == 'sum') {
-    result <- dplyr::summarize(result, dplyr::across(within,between),
-      ~stats::weighted.mean(.x, weightCol, na.rm=T))
+    result <- dplyr::summarize(result, dplyr::across(c('within','between'),
+      ~stats::weighted.mean(.x, weightCol, na.rm=T)))
   } else if(output == 'percentage'){
     result <- dplyr::transmute(result, within = (within*weightCol)/divSum,
-      between = (between*weightCol)/divSum, {{group_var}})
+      between = (between*weightCol)/divSum, {{groupCol}})
   } else stop("output parameter is invalid")
 
   return(result)

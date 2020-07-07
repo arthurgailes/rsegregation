@@ -11,9 +11,9 @@ load('tests/testthat/bay_results_sum.Rdata')
 #test that the vector of scores lines up
 decomp_base <- decompose_divergence(subset(bay_race,
   select=c(hispanic:county)), groupCol = 'county') %>%
-  mutate(sum = within + between)
+  dplyr::mutate(sum = within + between)
 
-expect_equal(sum(decomp_base$sum*decomp_base$weights),bay_results_sum$divergence)
+expect_equal(sum(decomp_base$sum*decomp_base$weightCol),bay_results_sum$divergence)
 
 
 ## output parameter testing
