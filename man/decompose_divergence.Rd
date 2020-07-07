@@ -9,8 +9,8 @@ Roberto, 2016. "A Decomposable Measure of Segregation and Inequality."
 \usage{
 decompose_divergence(
   dataframe,
-  groupCol = class(dataframe),
-  weights = "sum",
+  groupCol = NULL,
+  weightCol = NA,
   output = "scores"
 )
 }
@@ -19,25 +19,17 @@ decompose_divergence(
 of a column named in \code{groupCol}. All columns are used in the divergence calculation
 except for those specified in \code{groupCol} and \code{weights}(optional)}
 
-\item{groupCol}{Name of the column(s) in the dataframe used for grouping. Note that
-\code{decompose_divergence} calculates divergenec across the entire dataframe, so groups that
-should be calculated separately (such as multiple years) should not be included in the same
-function call.}
+\item{groupCol}{Name of the column(s) in the dataframe used for grouping.
+if passing a \code{grouped_df} to \code{dataframe}, this parameter is ignored.}
 
-\item{weights}{Any of:
-\describe{
-\itemize{
-\item \code{sum}(default) Sets \code{weights} to the rowwise sum of \code{dataframe}
-\item A character string of the column to use as the column of weights in
-\code{dataframe}.
-\item A numeric vector the length of the number of rows of \code{dataframe}
-}
-}}
+\item{weightCol}{Either NA (default), which sets \code{weightCol} to the rowwise
+sum of \code{dataframe}; or a character string of the column name in \code{dataframe}
+that should be used for weightCol.}
 
 \item{output}{Any of:
 \describe{
 \item{"scores"}{Default. The individual divergence scores for each row or group.}
-\item{"weighted"}{One observation per row or group, weighted by the input to the \code{weights}
+\item{"weighted"}{One observation per row or group, weighted by the input to the \code{weightCol}
 parameter. The sum of "weighted" scores is equivalent to inputing the "summed".}
 \item{"sum"}{Reports one observation of the summed divergence score for the total dataset.}
 \item{"percentage"}{One row for each entry(or group) as in "scores," but scaled so each
@@ -52,7 +44,7 @@ A dataframe as specified by the \code{output} parameter.
 The dataframe will have three columns: 'within_divergence', equivalent to
 \code{divergence()} for each dataframe or group in \code{dataframe};
 'between_divergence', the divergence score of each group's demographics compared
-to the full population; and \code{weights}, the sum of the weights for each group.
+to the full population; and \code{weightCol}, the sum of the weights for each group.
 The sum of \code{decompose_divergence(...,summed = T)} should
 equal the result of \code{divergence(...,summed = T)}
 }

@@ -54,7 +54,6 @@
 #'  equal the result of `divergence(...,summed = T)`
 #'
 #' @source Roberto, 2016. "A Decomposable Measure of Segregation and Inequality."
-#'
 #' @export
 decompose_divergence <- function(dataframe, groupCol = NULL, weightCol = NA,
   output = 'scores'){
@@ -72,7 +71,7 @@ decompose_divergence <- function(dataframe, groupCol = NULL, weightCol = NA,
     dataframe$weightCol = rowSums(
       dplyr::select(dataframe, !dplyr::all_of(groupCol)), na.rm=T)
   } else { # if provided as a column, rename column to weightCol
-    dataframe <- dplyr::rename(dataframe, 'weightCol' := {{weightCol}})
+    dataframe <- dplyr::rename(dataframe, 'weightCol' = dplyr::all_of(weightCol))
     rm(weightCol)
   }
   # ensure sum of weights == 1 (convert to % if weights is provided as raw population stats)
@@ -107,7 +106,7 @@ decompose_divergence <- function(dataframe, groupCol = NULL, weightCol = NA,
   # join within and between together
   result <- dplyr::inner_join(withinDiv, betweenDiv, by = groupCol)
 
-  # check that within + between = total divergence
+  # sanity check that within + between = total divergence
   divSum <- divergence(dataframe_orig[calcNames], weights = dataframe$weightCol, summed = T)
   divSumGroup <- stats::weighted.mean(result$within + result$between,
     result$weightCol, na.rm=T)
@@ -116,14 +115,14 @@ decompose_divergence <- function(dataframe, groupCol = NULL, weightCol = NA,
   # process output parameter
   if(output == 'scores') return(result)
   else if(output == 'weighted') {
-    result <- dplyr::transmute(result, within = within*weightCol,
-    between = between * weightCol, {{groupCol}})
+    result <- data.frame(within = result$within*result$weightCol,
+      between = result$between * result$weightCol, result[groupCol])
   } else if(output == 'sum') {
     result <- dplyr::summarize(result, dplyr::across(c('within','between'),
       ~stats::weighted.mean(.x, weightCol, na.rm=T)))
   } else if(output == 'percentage'){
-    result <- dplyr::transmute(result, within = (within*weightCol)/divSum,
-      between = (between*weightCol)/divSum, {{groupCol}})
+    result <- data.frame(within = (result$within*result$weightCol)/divSum,
+      between = (result$between*result$weightCol)/divSum, result[groupCol])
   } else stop("output parameter is invalid")
 
   return(result)
