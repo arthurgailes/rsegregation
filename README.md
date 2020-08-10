@@ -9,7 +9,7 @@
 status](https://travis-ci.org/arthurgailes/rsegregation.svg?branch=master)](https://travis-ci.org/arthurgailes/rsegregation)
 <!-- badges: end -->
 
-This package is designed to fit into the tidyverse framework,
+rsegregation is designed to fit into the tidyverse framework,
 particularly dplyr.
 
 ## Installation
@@ -26,36 +26,26 @@ The development version from [GitHub](https://github.com/) can be
 installed with:
 
 ``` r
-# install.packages("devtools")
-devtools::install_github("arthurgailes/rsegregation")
-# dplyr is also suggested
-# install.packages('dplyr')
+  # install.packages("devtools")
+  devtools::install_github("arthurgailes/rsegregation")
 ```
 
 ## Usage
 
-Return a single divergence score for bay County:
+rsegregation depends upon dplyr (\>1.0.0), and can be used with it. To
+return a single divergence score for Bay Area County:
+
+#### Using dplyr
 
 ``` r
 library(rsegregation)
 library(dplyr)
-#> 
-#> Attaching package: 'dplyr'
-#> The following objects are masked from 'package:stats':
-#> 
-#>     filter, lag
-#> The following objects are masked from 'package:base':
-#> 
-#>     intersect, setdiff, setequal, union
-## basic example code
+## included dataset of Bay Area Census tracts
 bay_divergence <- bay_race %>% 
-  mutate(bay_divergence = divergence(white,black,asian, hispanic, all_other), summed = T)
+  summarize(bay_divergence = divergence(white,black,asian, hispanic, all_other), summed = T)
 ```
 
-### Base R Example
-
-The same operation can be achieved in base R
-with:
+#### Using Base r
 
 ``` r
 bay_divergence <- divergence(bay_race[c('white','black','asian', 'hispanic', 'all_other')], 
@@ -69,17 +59,37 @@ bay_divergence <- divergence(bay_race$white,bay_race$black,bay_race$asian,
   bay_race$hispanic, bay_race$all_other, summed = T)
 ```
 
-### Misc
+    #> [1] 0.2575266
+
+### Miscellaneous
 
 Dataframes should be formatted as long on geographic observations
 (e.g. tracts), but wide on group observations (e.g. races), as in the
-included dataset of bay County, CA
+included dataset of bay County,
+CA
 
 ``` r
-head(bay_wide)
+head(bay_race)
 ```
 
-### Split-Apply-Combine
+<div class="kable-table">
 
-rsegregation supports group\_by %\>% summarize operations from the dplyr
-package.
+| fips        | total\_pop | hispanic | white | black | asian | all\_other | county                           |
+| :---------- | ---------: | -------: | ----: | ----: | ----: | ---------: | :------------------------------- |
+| 06001400100 |       2937 |      117 |  2078 |   140 |   456 |        146 | Alameda County, California, 2010 |
+| 06001400200 |       1974 |      151 |  1546 |    31 |   146 |        100 | Alameda County, California, 2010 |
+| 06001400300 |       4865 |      399 |  3256 |   512 |   419 |        279 | Alameda County, California, 2010 |
+| 06001400400 |       3703 |      332 |  2424 |   448 |   270 |        229 | Alameda County, California, 2010 |
+| 06001400500 |       3517 |      340 |  1778 |   933 |   208 |        258 | Alameda County, California, 2010 |
+| 06001400600 |       1571 |      126 |   671 |   615 |    80 |         79 | Alameda County, California, 2010 |
+
+</div>
+
+## Future development:
+
+  - decomposition of entropy index
+  - more measures of segregation
+
+## License
+
+This package is free and open source software, licensed under GPL-3.

@@ -1,7 +1,7 @@
 ---
 output: 
   github_document:
-    toc: true
+    df_print: kable
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -9,6 +9,7 @@ output:
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
+  message = FALSE,
   comment = "#>",
   fig.path = "man/figures/README-",
   out.width = "100%"
@@ -36,25 +37,22 @@ The development version from [GitHub](https://github.com/) can be installed with
 ``` {r eval=FALSE}
   # install.packages("devtools")
   devtools::install_github("arthurgailes/rsegregation")
-# dplyr is also suggested
-# install.packages('dplyr')
 ```
 
 ## Usage
 
-Return a single divergence score for bay County:
+rsegregation depends upon dplyr (>1.0.0), and can be used with it. To return a single divergence score for Bay Area County:
 
-```{r example, results='hide}
+#### Using dplyr
+```{r example, results='hide'}
 library(rsegregation)
 library(dplyr)
-## basic example code
+## included dataset of Bay Area Census tracts
 bay_divergence <- bay_race %>% 
-  mutate(bay_divergence = divergence(white,black,asian, hispanic, all_other), summed = T)
+  summarize(bay_divergence = divergence(white,black,asian, hispanic, all_other), summed = T)
 ```
 
-### Base R Example
-
-The same operation can be achieved in base R with:
+#### Using Base r
 
 ```{r baser1}
 bay_divergence <- divergence(bay_race[c('white','black','asian', 'hispanic', 'all_other')], 
@@ -68,25 +66,24 @@ bay_divergence <- divergence(bay_race$white,bay_race$black,bay_race$asian,
   bay_race$hispanic, bay_race$all_other, summed = T)
 ```
 
-```{r echo=FALSE, results=TRUE}
+```{r echo=FALSE}
 print(bay_divergence)
 ```
 
 
-
-
-### Misc
+### Miscellaneous
 
 Dataframes should be formatted as long on geographic observations (e.g. tracts), but wide on group observations (e.g. races), as in the included dataset of bay County, CA
 
-```{r bay, eval=FALSE}
-head(bay_wide)
+```{r bay}
+head(bay_race)
 ```
 
-### Split-Apply-Combine
 
-rsegregation supports group_by %>% summarize operations from the dplyr package.
-```{r}
+## Future development:
+ 
+* decomposition of entropy index
+* more measures of segregation
 
-```
-
+## License
+This package is free and open source software, licensed under GPL-3. 
