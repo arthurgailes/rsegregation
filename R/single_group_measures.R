@@ -50,28 +50,28 @@ isolation <- function(group, totalPop, summed=TRUE, na.rm=TRUE){
 #' specialized in mining; while an LQ of 1.8 means that the region has a
 #' higher concentration in mining than the nation.
 #'
-#' @details A simple wrapper for group/groupSum, which must both be given as percentages.
+#' @details LQ is equivalent to the percentage of a group in a single observation divided
+#' by the percentage of that group in the population of all observations, i.e.
+#' \eqn{ (group/totalPop)/(\sigma(group)/\sigma(totalPop))}
 #'
-#' @param group a numeric vector giving either a group's percentage of the population in
-#' the observation.
-#'
-#' @param groupSum a number or vector the length of group, the percentage of a group in
-#' the overall population.
-#'
+#' @inheritParams isolation
+#' @inheritParams base::sum
 #' @source U.S. Bureau of Economic Analysis: https://www.bea.gov/help/faq/478
 #'
 #' @examples
 #' data("bay_race")
 #' # calculate the location quotient for Hispanic people in each tract in the bay area
-#' location_quotient(group = bay_race$hispanic/bay_race$total_pop,
-#' groupSum = sum(bay_race$hispanic)/sum(bay_race$total_pop))
+#' location_quotient(group = bay_race$hispanic,
+#' totalPop = bay_race$total_pop)
 #'
-#' #alternatively, calculate the location quotient for each tract against an
-#' # arbitrary theshold
-#'
-#'
+#' @name location_quotient
 #' @export
-location_quotient <- function(group, groupSum){
-  lq <- group/groupSum
+NULL
+#' @rdname location_quotient
+location_quotient <- function(group, totalPop, na.rm = FALSE){
+  overall_pct <- sum(group,na.rm=na.rm)/sum(totalPop, na.rm=na.rm)
+  lq <- (group/totalPop) / overall_pct
   return(lq)
 }
+#' @rdname location_quotient
+lq <- location_quotient

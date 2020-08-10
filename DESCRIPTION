@@ -1,12 +1,12 @@
 Package: rsegregation
 Type: Package
 Title: Calculate Empirical Measures of Segregation
-Version: 0.2.5
+Version: 0.2.6
 Author: Arthur Gailes
 Maintainer: Arthur Gailes <arthurgailes@berkeley.edu>
 Description: Provides functions for several empirical measures of racial segregation within a tidy framework.
     Includes divergence, entropy, dissimilarity, exposure, isolation, and location quotient.
-    This packages was inspired by work done by Othering & Belonging Institute at UC Berkeley.
+    This packages was inspired by work done by the Othering & Belonging Institute at UC Berkeley.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
