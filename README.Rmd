@@ -43,37 +43,50 @@ The development version from [GitHub](https://github.com/) can be installed with
 
 rsegregation depends upon dplyr (>1.0.0), and can be used with it. To return a single divergence score for Bay Area County:
 
-#### Using dplyr
-```{r example, results='hide'}
+### Divergence and Entropy
+
+#### Calculate the divergence score for the entire dataset
+
+rsegregation can work with base r, or within several dplyr verbs:
+```{r bay_divergence, results='hide'}
 library(rsegregation)
 library(dplyr)
 ## included dataset of Bay Area Census tracts
+# Using dplyr
 bay_divergence <- bay_race %>% 
   summarize(bay_divergence = divergence(white,black,asian, hispanic, all_other), summed = T)
-```
 
-#### Using Base r
-
-```{r baser1}
+# Using base r
 bay_divergence <- divergence(bay_race[c('white','black','asian', 'hispanic', 'all_other')], 
   summed = T)
-```
-
-or
-
-```{r baser2}
+# or
 bay_divergence <- divergence(bay_race$white,bay_race$black,bay_race$asian, 
   bay_race$hispanic, bay_race$all_other, summed = T)
+# all return the same result:
+bay_divergence
 ```
 
-```{r echo=FALSE}
-print(bay_divergence)
+#### Calculate divergence by group
+
+Using the included Bay Area dataset of 2010 racial groups, divergence can be calculated by county using `dplyr::group_by()`.
+```{r by_county}
+#library(dplyr)
+group_by(bay_race, county) %>% 
+  summarize(bay_divergence = divergence(white,black,asian, hispanic, all_other, summed = T))
 ```
 
+#### By-observation divergence scores
+Divergence and entropy are both calculated rowwise by default (summed = FALSE).
+```{r by_tract}
+bay_entropy <- bay_race
+bay_entropy$entropy <- entropy(bay_race[c('white','black','asian',
+  'hispanic','all_other')], summed = F)
+head(bay_entropy)
+```
 
 ### Miscellaneous
 
-Dataframes should be formatted as long on geographic observations (e.g. tracts), but wide on group observations (e.g. races), as in the included dataset of bay County, CA
+Dataframes should be formatted as long on geographic observations (e.g. tracts), but wide on group observations (e.g. races), as in the included dataset of the San Francisco Bay Area.
 
 ```{r bay}
 head(bay_race)
