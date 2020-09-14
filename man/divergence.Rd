@@ -55,7 +55,7 @@ average of the percentages in each observation.}
 }}
 
 \item{rowTotals}{By default, the rowwise sum of \code{...} is treated as 100\% of the population.
-Setting this parameter to any of the following options chagnes this behavior.
+Setting this parameter to any of the following options changes this behavior.
 \describe{
 \item{\code{NA}}{Default. Forces the rowwise sum of \code{...} to equal 100\% of the
 population. Works with either percentages or population totals.}
@@ -81,8 +81,6 @@ data("bay_race")
 divergence(bay_race$white,bay_race$hispanic,bay_race$asian,
 bay_race$black, bay_race$all_other)
 
-
-\dontrun{
 # Using dplyr
 require(dplyr)
 mutate(bay_race, divergence_score = divergence(white, hispanic,
@@ -94,6 +92,5 @@ bay_race \%>\%
   mutate_at(vars(hispanic:all_other), list(~(./total_pop))) \%>\%
   mutate(divergence_score = divergence(white, hispanic, asian,
   black, all_other, weights = total_pop))
-}
 
 }
