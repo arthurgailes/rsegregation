@@ -5,6 +5,8 @@
 
 <!-- badges: start -->
 
+[![Travis build
+status](https://travis-ci.org/arthurgailes/rsegregation.svg?branch=master)](https://travis-ci.org/arthurgailes/rsegregation)
 [![Codecov test
 coverage](https://codecov.io/gh/arthurgailes/rsegregation/branch/master/graph/badge.svg)](https://codecov.io/gh/arthurgailes/rsegregation?branch=master)
 [![R build
