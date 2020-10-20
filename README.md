@@ -5,8 +5,10 @@
 
 <!-- badges: start -->
 
-[![Travis build
-status](https://travis-ci.org/arthurgailes/rsegregation.svg?branch=master)](https://travis-ci.org/arthurgailes/rsegregation)
+[![Codecov test
+coverage](https://codecov.io/gh/arthurgailes/rsegregation/branch/master/graph/badge.svg)](https://codecov.io/gh/arthurgailes/rsegregation?branch=master)
+[![R build
+status](https://github.com/arthurgailes/rsegregation/workflows/R-CMD-check/badge.svg)](https://github.com/arthurgailes/rsegregation/actions)
 <!-- badges: end -->
 
 rsegregation is designed to fit into the tidyverse framework,
@@ -115,7 +117,8 @@ head(bay_entropy)
 
 Dataframes should be formatted as long on geographic observations
 (e.g. tracts), but wide on group observations (e.g. races), as in the
-included dataset of the San Francisco Bay Area.
+included dataset of the San Francisco Bay
+Area.
 
 ``` r
 head(bay_race)
