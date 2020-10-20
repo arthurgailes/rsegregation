@@ -18,3 +18,5 @@ Imports:
 RoxygenNote: 7.1.0
 Suggests: 
     covr
+URL: https://github.com/arthurgailes/rsegregation
+BugReports: https://github.com/arthurgailes/rsegregation/issues
