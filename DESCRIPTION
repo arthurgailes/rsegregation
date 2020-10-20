@@ -16,4 +16,5 @@ Depends: R (>= 3.3.0),
 Imports:
   dplyr(>= 1.0.0)
 RoxygenNote: 7.1.0
-  
+Suggests: 
+    covr

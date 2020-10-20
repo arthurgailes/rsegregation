@@ -20,6 +20,8 @@ knitr::opts_chunk$set(
 
 <!-- badges: start -->
 [![Travis build status](https://travis-ci.org/arthurgailes/rsegregation.svg?branch=master)](https://travis-ci.org/arthurgailes/rsegregation)
+[![Codecov test coverage](https://codecov.io/gh/arthurgailes/rsegregation/branch/master/graph/badge.svg)](https://codecov.io/gh/arthurgailes/rsegregation?branch=master)
+[![R build status](https://github.com/arthurgailes/rsegregation/workflows/R-CMD-check/badge.svg)](https://github.com/arthurgailes/rsegregation/actions)
 <!-- badges: end -->
 
 rsegregation is designed to fit into the tidyverse framework, particularly dplyr.

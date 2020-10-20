@@ -8,3 +8,5 @@
 ^\.git$
 .*desktop\.ini
 documentation/*
+^codecov\.yml$
+^\.github$
