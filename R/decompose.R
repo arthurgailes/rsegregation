@@ -12,7 +12,9 @@
 #' except for those specified in `groupCol` and `weights`(optional)
 #'
 #' @param groupCol Name of the column(s) in the dataframe used for grouping.
-#' if passing a `grouped_df` to `dataframe`, this parameter is ignored.
+#' if passing a `grouped_df` to `dataframe`, this parameter is ignored. If using multiple
+#' groups, divergence will be aggregated by all unique combinations of all groups, and compared
+#' to the total datafame.
 #'
 #' @importFrom stats weighted.mean
 #'
@@ -110,8 +112,9 @@ decompose_divergence <- function(dataframe, groupCol = NULL, weightCol = NA,
 
   # sanity check that within + between = total divergence
   divSum <- divergence(dataframe_orig[calcNames], weights = dataframe$weightCol, summed = T)
-  divSumGroup <- stats::weighted.mean(result$within + result$between,
-    result$weightCol, na.rm=T)
+  divSumGroup <- ifelse(sum(result$weightCol)==0, 0,
+    stats::weighted.mean(result$within + result$between, result$weightCol, na.rm=T)
+  )
   if(round(divSum, 5) != round(divSumGroup, 5)) warning("sum of within and between divergence is not equal to sum of total divergence. Check inputs.")
 
   # process output parameter
