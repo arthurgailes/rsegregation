@@ -20,7 +20,9 @@ of a column named in \code{groupCol}. All columns are used in the divergence cal
 except for those specified in \code{groupCol} and \code{weights}(optional)}
 
 \item{groupCol}{Name of the column(s) in the dataframe used for grouping.
-if passing a \code{grouped_df} to \code{dataframe}, this parameter is ignored.}
+if passing a \code{grouped_df} to \code{dataframe}, this parameter is ignored. If using multiple
+groups, divergence will be aggregated by all unique combinations of all groups, and compared
+to the total datafame.}
 
 \item{weightCol}{Either NA (default), which sets \code{weightCol} to the rowwise
 sum of \code{dataframe}; or a character string of the column name in \code{dataframe}

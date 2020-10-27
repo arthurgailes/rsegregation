@@ -1,5 +1,5 @@
-load('tests/testthat/bay_results.Rdata')
-load('tests/testthat/bay_results_sum.Rdata')
+load('bay_results.Rdata')
+load('bay_results_sum.Rdata')
 
 
 test_that("The sum of decomposed divergence equals the sum of total divergence",{
@@ -12,10 +12,6 @@ test_that("The sum of decomposed divergence equals the sum of total divergence",
 
 })
 
-test_that("Sum of decomposed divergence equals the sum of divergence")
-
-
-
 ## output parameter testing
 test_that("the summed parameter works as expected",{
   decomp_summed <- decompose_divergence(subset(bay_race,
@@ -24,13 +20,13 @@ test_that("the summed parameter works as expected",{
     round(bay_results_sum$divergence, 5))
 })
 
-test_that("the sum of divergence percentage equals 1"{
+test_that("the sum of divergence percentage equals 1",{
   decomp_perc <- decompose_divergence(subset(bay_race,
     select=c(hispanic:county)), groupCol = 'county', output='percentage')
   expect_equal(sum(decomp_perc[1:2]), 1)
 })
 
-test_that("the sum of weighted divergence equals the sum of total divergence"{
+test_that("the sum of weighted divergence equals the sum of total divergence",{
 
   decomp_weight <- decompose_divergence(subset(bay_race,
     select=c(hispanic:county)), groupCol = 'county', output='weighted')

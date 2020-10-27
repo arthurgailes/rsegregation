@@ -15,7 +15,7 @@ Roxygen: list(markdown = TRUE)
 Depends: R (>= 3.3.0),
 Imports:
   dplyr(>= 1.0.0)
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
 Suggests: 
     covr
 URL: https://github.com/arthurgailes/rsegregation
