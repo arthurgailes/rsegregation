@@ -25,13 +25,12 @@
 #' @param output Any of:
 #' \describe{
 #'  \item{"scores"}{Default. The individual within and between divergence scores for each
-#'  row or group, and a column of weights to use if summing them both across the entire
-#'  dataset.}
-#'  \item{"weighted"}{One observation per row or group, weighted by the input to the `weightCol`
-#'  parameter. The sum of "weighted" scores is equivalent to the output of "summed".}
-#'  \item{"sum"}{Reports one observation of the summed divergence score for the total dataset.}
+#'  row or group, plus the total score.}
+#'  \item{"weighted"}{As summed, but includinga column of weights to use if summing them both
+#'  across the entire dataset.}
 #'  \item{"percentage"}{One row for each entry(or group) as in "scores," but scaled so each
 #'  observation reports a percentage of the total score that would be reproted with "summed".}
+#'  \item{"all"}{The output from `summed`, `weighted`, and `percentage.`}
 #'  \item{"scaled"}{Not yet implemented. Re-scales divergence scores the divergence index to
 #'  have a range  of 0 to 1 by dividing by its maximum value for a given population. See details.}
 #'  }
@@ -56,6 +55,8 @@
 #'  to the full population; and `weightCol`, the sum of the weights for each group.
 #'  The sum of `decompose_divergence(...,summed = T)` should
 #'  equal the result of `divergence(...,summed = T)`
+#'
+#' @importFrom rlang .data
 #'
 #' @source Roberto, 2016. "A Decomposable Measure of Segregation and Inequality."
 #' @export
@@ -107,8 +108,9 @@ decompose_divergence <- function(dataframe, groupCol = NULL, weightCol = NA,
     between = divergence(dplyr::across(calcNames), weights = weightCol),
     dplyr::across(c(groupCol, weightCol)))
 
-  # join within and between together
+  # join within and between together and sum
   result <- dplyr::inner_join(withinDiv, betweenDiv, by = groupCol)
+  result$total <- result$within+result$between
 
   # sanity check that within + between = total divergence
   divSum <- divergence(dataframe_orig[calcNames], weights = dataframe$weightCol, summed = T)
@@ -118,16 +120,14 @@ decompose_divergence <- function(dataframe, groupCol = NULL, weightCol = NA,
   if(round(divSum, 5) != round(divSumGroup, 5)) warning("sum of within and between divergence is not equal to sum of total divergence. Check inputs.")
 
   # process output parameter
-  if(output == 'scores') return(result)
-  else if(output == 'weighted') {
-    result <- data.frame(within = result$within*result$weightCol,
-      between = result$between * result$weightCol, result[groupCol])
-  } else if(output == 'sum') {
-    result <- dplyr::summarize(result, dplyr::across(c('within','between'),
-      ~stats::weighted.mean(.x, weightCol, na.rm=T)))
-  } else if(output == 'percentage'){
-    result <- data.frame(within = (result$within*result$weightCol)/divSum,
-      between = (result$between*result$weightCol)/divSum, result[groupCol])
+  if(output == 'scores') result <- subset(result, select = -weightCol)
+  else if(output == 'weighted') return(result)
+  else if(output == 'percentage'){
+    result <- dplyr::transmute(result, within = (.data$within*.data$weightCol)/divSum,
+      between = (.data$between*.data$weightCol)/divSum, groupCol)
+  } else if (output=='all') {
+    result <- dplyr::mutate(result, within_pct = (.data$within*.data$weightCol)/divSum,
+      between_pct = (.data$between*.data$weightCol)/divSum)
   } else stop("output parameter is invalid")
 
   return(result)

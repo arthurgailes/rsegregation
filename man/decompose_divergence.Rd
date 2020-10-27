@@ -31,13 +31,12 @@ that should be used for weightCol.}
 \item{output}{Any of:
 \describe{
 \item{"scores"}{Default. The individual within and between divergence scores for each
-row or group, and a column of weights to use if summing them both across the entire
-dataset.}
-\item{"weighted"}{One observation per row or group, weighted by the input to the \code{weightCol}
-parameter. The sum of "weighted" scores is equivalent to the output of "summed".}
-\item{"sum"}{Reports one observation of the summed divergence score for the total dataset.}
+row or group, plus the total score.}
+\item{"weighted"}{As summed, but includinga column of weights to use if summing them both
+across the entire dataset.}
 \item{"percentage"}{One row for each entry(or group) as in "scores," but scaled so each
 observation reports a percentage of the total score that would be reproted with "summed".}
+\item{"all"}{The output from \code{summed}, \code{weighted}, and \code{percentage.}}
 \item{"scaled"}{Not yet implemented. Re-scales divergence scores the divergence index to
 have a range  of 0 to 1 by dividing by its maximum value for a given population. See details.}
 }}

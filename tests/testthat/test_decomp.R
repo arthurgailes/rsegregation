@@ -2,22 +2,13 @@ load('bay_results.Rdata')
 load('bay_results_sum.Rdata')
 
 
-test_that("The sum of decomposed divergence equals the sum of total divergence",{
+test_that("The sum of decomposed divergence equals the sum of total divergence", {
 
   decomp_base <- decompose_divergence(subset(bay_race,
-    select=c(hispanic:county)), groupCol = 'county') %>%
-    dplyr::mutate(sum = within + between)
+    select=c(hispanic:county)), groupCol = 'county', output = 'weighted')
 
-  expect_equal(sum(decomp_base$sum*decomp_base$weightCol),bay_results_sum$divergence)
+  expect_equal(sum(decomp_base$total*decomp_base$weightCol),bay_results_sum$divergence)
 
-})
-
-## output parameter testing
-test_that("the summed parameter works as expected",{
-  decomp_summed <- decompose_divergence(subset(bay_race,
-    select=c(hispanic:county)), groupCol = 'county', output='sum')
-  expect_equal(round(sum(decomp_summed[1:2]),5),
-    round(bay_results_sum$divergence, 5))
 })
 
 test_that("the sum of divergence percentage equals 1",{
@@ -26,16 +17,8 @@ test_that("the sum of divergence percentage equals 1",{
   expect_equal(sum(decomp_perc[1:2]), 1)
 })
 
-test_that("the sum of weighted divergence equals the sum of total divergence",{
-
-  decomp_weight <- decompose_divergence(subset(bay_race,
-    select=c(hispanic:county)), groupCol = 'county', output='weighted')
-  expect_equal(sum(decomp_weight[1:2]), bay_results_sum$divergence)
-})
-
-
-
 test_that("multiple groups work",{
+  library(dplyr)
   bay_race2 <- mutate(bay_race, dumb = rep(1:4,1588/4))
   decomp_2gr <- decompose_divergence(subset(bay_race2,
     select=c(hispanic:dumb)), groupCol = c('county','dumb')) %>%
