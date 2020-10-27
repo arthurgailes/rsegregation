@@ -74,7 +74,7 @@ divergence score within those groups and between those groups." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rsegregation</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0</span>
       </span>
     </div>
 
@@ -154,13 +154,12 @@ that should be used for weightCol.</p></td>
       <th>output</th>
       <td><p>Any of:</p><dl>
 <dt>"scores"</dt><dd><p>Default. The individual within and between divergence scores for each
-row or group, and a column of weights to use if summing them both across the entire
-dataset.</p></dd>
-<dt>"weighted"</dt><dd><p>One observation per row or group, weighted by the input to the <code>weightCol</code>
-parameter. The sum of "weighted" scores is equivalent to the output of "summed".</p></dd>
-<dt>"sum"</dt><dd><p>Reports one observation of the summed divergence score for the total dataset.</p></dd>
+row or group, plus the total score.</p></dd>
+<dt>"weighted"</dt><dd><p>As summed, but includinga column of weights to use if summing them both
+across the entire dataset.</p></dd>
 <dt>"percentage"</dt><dd><p>One row for each entry(or group) as in "scores," but scaled so each
 observation reports a percentage of the total score that would be reproted with "summed".</p></dd>
+<dt>"all"</dt><dd><p>The output from <code>summed</code>, <code>weighted</code>, and <code>percentage.</code></p></dd>
 <dt>"scaled"</dt><dd><p>Not yet implemented. Re-scales divergence scores the divergence index to
 have a range  of 0 to 1 by dividing by its maximum value for a given population. See details.</p></dd>
 
