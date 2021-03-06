@@ -13,8 +13,9 @@ coverage](https://codecov.io/gh/arthurgailes/rsegregation/branch/master/graph/ba
 status](https://github.com/arthurgailes/rsegregation/workflows/R-CMD-check/badge.svg)](https://github.com/arthurgailes/rsegregation/actions)
 <!-- badges: end -->
 
-rsegregation is designed to fit into the tidyverse framework,
-particularly dplyr.
+A shortcut package with formulas for several different indices of
+segregation. rsegregation is designed to fit into the tidyverse
+framework, particularly dplyr.
 
 ## Installation
 
@@ -36,7 +37,7 @@ installed with:
 
 ## Usage
 
-rsegregation depends upon dplyr (\>1.0.0), and can be used with it. To
+rsegregation depends upon dplyr (&gt;1.0.0), and can be used with it. To
 return a single divergence score for Bay Area County:
 
 ### Divergence and Entropy
@@ -77,7 +78,7 @@ group_by(bay_race, county) %>%
 <div class="kable-table">
 
 | county                                 | bay\_divergence |
-| :------------------------------------- | --------------: |
+|:---------------------------------------|----------------:|
 | Alameda County, California, 2010       |       0.2450583 |
 | Contra Costa County, California, 2010  |       0.2129913 |
 | Marin County, California, 2010         |       0.1304815 |
@@ -105,7 +106,7 @@ head(bay_entropy)
 <div class="kable-table">
 
 | fips        | total\_pop | hispanic | white | black | asian | all\_other | county                           |   entropy |
-| :---------- | ---------: | -------: | ----: | ----: | ----: | ---------: | :------------------------------- | --------: |
+|:------------|-----------:|---------:|------:|------:|------:|-----------:|:---------------------------------|----------:|
 | 06001400100 |       2937 |      117 |  2078 |   140 |   456 |        146 | Alameda County, California, 2010 | 0.9566644 |
 | 06001400200 |       1974 |      151 |  1546 |    31 |   146 |        100 | Alameda County, California, 2010 | 0.7969746 |
 | 06001400300 |       4865 |      399 |  3256 |   512 |   419 |        279 | Alameda County, California, 2010 | 1.0859266 |
@@ -119,8 +120,7 @@ head(bay_entropy)
 
 Dataframes should be formatted as long on geographic observations
 (e.g. tracts), but wide on group observations (e.g. races), as in the
-included dataset of the San Francisco Bay
-Area.
+included dataset of the San Francisco Bay Area.
 
 ``` r
 head(bay_race)
@@ -129,7 +129,7 @@ head(bay_race)
 <div class="kable-table">
 
 | fips        | total\_pop | hispanic | white | black | asian | all\_other | county                           |
-| :---------- | ---------: | -------: | ----: | ----: | ----: | ---------: | :------------------------------- |
+|:------------|-----------:|---------:|------:|------:|------:|-----------:|:---------------------------------|
 | 06001400100 |       2937 |      117 |  2078 |   140 |   456 |        146 | Alameda County, California, 2010 |
 | 06001400200 |       1974 |      151 |  1546 |    31 |   146 |        100 | Alameda County, California, 2010 |
 | 06001400300 |       4865 |      399 |  3256 |   512 |   419 |        279 | Alameda County, California, 2010 |
@@ -141,8 +141,8 @@ head(bay_race)
 
 ## Future development:
 
-  - decomposition of entropy index
-  - more measures of segregation
+-   decomposition of entropy index
+-   more measures of segregation
 
 ## License
 

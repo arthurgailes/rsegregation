@@ -24,7 +24,7 @@ knitr::opts_chunk$set(
 [![R build status](https://github.com/arthurgailes/rsegregation/workflows/R-CMD-check/badge.svg)](https://github.com/arthurgailes/rsegregation/actions)
 <!-- badges: end -->
 
-rsegregation is designed to fit into the tidyverse framework, particularly dplyr.
+A shortcut package with formulas for several different indices of segregation. rsegregation is designed to fit into the tidyverse framework, particularly dplyr.
 
 ## Installation
 <!--
