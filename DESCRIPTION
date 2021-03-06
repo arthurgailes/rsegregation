@@ -1,7 +1,7 @@
 Package: rsegregation
 Type: Package
 Title: Calculate Empirical Measures of Segregation
-Version: 0.3.0
+Version: 0.3.1
 Authors@R: person("Arthur", "Gailes", email = "arthurgailes@berkeley.edu",
   role = c("aut","cre"))
 Description: Provides functions for several empirical measures of racial segregation within a tidy framework.

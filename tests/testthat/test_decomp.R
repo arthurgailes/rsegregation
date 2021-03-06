@@ -32,3 +32,21 @@ test_that("multiple groups work",{
   expect_equal(decomp_2gr$sum, sum(div_2gr))
 })
 
+test_that("'all' parameter returns the correct columns",{
+  all_decomp <- decomp_perc <- decompose_divergence(subset(bay_race,
+    select=c(hispanic:county)), groupCol = 'county', output='all')
+
+  expect_true(all(c('within','between','within_pct','between_pct','weightCol')
+    %in% names(all_decomp)))
+})
+
+test_that("decomposition works with an NA column",{
+  decomp_base <- decompose_divergence(subset(bay_race,
+    select=c(hispanic:county)), groupCol = 'county', output = 'weighted')
+
+  bayNA <- dplyr::mutate(bay_race, new=NA)
+  decompNA <- decompose_divergence(subset(bayNA,
+    select=c(hispanic:new)), groupCol = 'county', output = 'weighted')
+  expect_equal(decomp_base, decompNA)
+})
+

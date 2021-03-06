@@ -14,7 +14,7 @@
 #' @param groupCol Name of the column(s) in the dataframe used for grouping.
 #' if passing a `grouped_df` to `dataframe`, this parameter is ignored. If using multiple
 #' groups, divergence will be aggregated by all unique combinations of all groups, and compared
-#' to the total datafame.
+#' to the total datafame
 #'
 #' @importFrom stats weighted.mean
 #'
@@ -46,6 +46,11 @@
 #' it from an absolute to a relative measure of inequality and segregation, and negates
 #' several of its desirable properties, including aggregation equivalence and independence.
 #'  (See Roberto, 2016)
+#'
+#' @note `decompose_divergence` treats the entire dataset its given as the total population,
+#' which may not be desirable in some contexts, for example, when trying to return divergence
+#' scores across years. In that context, it's helpful to split the dataframe into a list of
+#' dataframes and use `decompose_divergence` inside a sapply function.
 #'
 #' @return A dataframe as specified by the `output` parameter.
 #'
@@ -87,7 +92,7 @@ decompose_divergence <- function(dataframe, groupCol = NULL, weightCol = NA,
 
   # convert dataframe to percentages
   dataframe <- dplyr::mutate(dataframe, dplyr::across(calcNames,
-    ~(.x/rowSums(dataframe[calcNames]))))
+    ~(.x/rowSums(dataframe[calcNames], na.rm=T))))
 
   # group by the grouping variables
   dataframe <- dplyr::group_by(dataframe, dplyr::across(groupCol))
