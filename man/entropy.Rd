@@ -46,12 +46,14 @@ average of the percentages in each observation.}
 }}
 
 \item{entropy_type}{One of: \describe{
-\item{"entropy"}{Default. t index in wiki aka entropy score}
+\item{"entropy"}{Default.
+\eqn{E_{i} = \Sigma (X_{im} * ln(1/X_{im})}{Ei = \Sigma (Xim \* ln(1/X_{im}))}
+where Xim is the proportion of racial group within the geography i.}
 \item{"information_theory"}{Theil's information theory index}
 }}
 
 \item{scale}{Scale entropy scores from 0-1. Setting scale to TRUE
-ignores the entropy_type and summed parameters}
+ignores the entropy_type (set to "entropy") and summed parameters.}
 
 \item{summed}{If TRUE, will return a single summary statistic. (Or one value per group if specifying
 \code{dplyr::group_by}.) If FALSE (default), will return a vector equaling the length
@@ -72,15 +74,6 @@ population
 Entropy is used to measure the the extent to which multiple distributions conform to
 a baseline.
 }
-\details{
-\describe{
-\item{\code{entropy}}{Entropy score (Ei). \eqn{E_{i} = \Sigma (X_{im} * ln(1/X_{im})}{Ei = \Sigma (Xim \* ln(1/X_{im}))}
-where Xim is the
-proportion of racial group within the geography. }
-\item{\code{entropy_score}}{Calculates the value of H (entropy index) for
-large-scale geography. }
-}
-}
 \examples{
 library(rsegregation)
 entropy(bay_race$white,bay_race$hispanic,bay_race$asian,
@@ -88,5 +81,5 @@ bay_race$black, bay_race$all_other, weights = bay_race$total_pop)
 
 }
 \seealso{
-\url{https://en.wikipedia.org/wiki/Theil_index}
+\url{https://en.wikipedia.org/wiki/Generalized_entropy_index}
 }

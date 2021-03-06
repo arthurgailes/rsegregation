@@ -15,7 +15,7 @@
 #' was close to zero.
 #'
 #' @details The isolation formula is
-#' \eqn{\sigma ((group/sum(group))*(group/totalPop))}
+#' \eqn{\Sigma ((group/sum(group))*(group/totalPop))}
 #'
 #' @inheritParams divergence
 #' @inheritParams dissimilarity
@@ -52,7 +52,7 @@ isolation <- function(group, totalPop, summed=TRUE, na.rm=TRUE){
 #'
 #' @details LQ is equivalent to the percentage of a group in a single observation divided
 #' by the percentage of that group in the population of all observations, i.e.
-#' \eqn{ (group/totalPop)/(\sigma(group)/\sigma(totalPop))}
+#' \eqn{ (group/totalPop)/(\Sigma(group)/\Sigma(totalPop))}
 #'
 #' @inheritParams isolation
 #' @inheritParams base::sum

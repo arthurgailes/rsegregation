@@ -35,7 +35,7 @@ higher concentration in mining than the nation.
 \details{
 LQ is equivalent to the percentage of a group in a single observation divided
 by the percentage of that group in the population of all observations, i.e.
-\eqn{ (group/totalPop)/(\sigma(group)/\sigma(totalPop))}
+\eqn{ (group/totalPop)/(\Sigma(group)/\Sigma(totalPop))}
 }
 \examples{
 data("bay_race")

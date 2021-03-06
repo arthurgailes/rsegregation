@@ -22,7 +22,7 @@ except for those specified in \code{groupCol} and \code{weights}(optional)}
 \item{groupCol}{Name of the column(s) in the dataframe used for grouping.
 if passing a \code{grouped_df} to \code{dataframe}, this parameter is ignored. If using multiple
 groups, divergence will be aggregated by all unique combinations of all groups, and compared
-to the total datafame.}
+to the total datafame}
 
 \item{weightCol}{Either NA (default), which sets \code{weightCol} to the rowwise
 sum of \code{dataframe}; or a character string of the column name in \code{dataframe}
@@ -72,4 +72,9 @@ several of its desirable properties, including aggregation equivalence and indep
 \note{
 The \code{divergence} parameters for each group are set to their defaults
 unless explicitly noted above.
+
+\code{decompose_divergence} treats the entire dataset its given as the total population,
+which may not be desirable in some contexts, for example, when trying to return divergence
+scores across years. In that context, it's helpful to split the dataframe into a list of
+dataframes and use \code{decompose_divergence} inside a sapply function.
 }

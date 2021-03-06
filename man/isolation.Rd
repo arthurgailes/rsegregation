@@ -43,7 +43,7 @@ he or she would live in a geographic unit in which the percent white
 was close to zero.
 
 The isolation formula is
-\eqn{\sigma ((group/sum(group))*(group/totalPop))}
+\eqn{\Sigma ((group/sum(group))*(group/totalPop))}
 }
 \note{
 Setting summed == FALSE will return by-observation measures, but this

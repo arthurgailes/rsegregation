@@ -122,22 +122,17 @@ multigroup_sanity <- function(df, weights){
 #' a baseline.
 #'
 #' @param scale Scale entropy scores from 0-1. Setting scale to TRUE
-#' ignores the entropy_type and summed parameters
+#' ignores the entropy_type (set to "entropy") and summed parameters.
 #'
 #' @param entropy_type One of: \describe{
-#' \item{"entropy"}{Default. t index in wiki aka entropy score}
+#' \item{"entropy"}{Default.
+#'  \eqn{E_{i} = \Sigma (X_{im} * ln(1/X_{im})}{Ei = \Sigma (Xim \* ln(1/X_{im}))}
+#'  where Xim is the proportion of racial group within the geography i.}
 #' \item{"information_theory"}{Theil's information theory index}
 #' }
 #'
 #' @inheritParams divergence
 #'
-#' @details \describe{
-#'  \item{`entropy`}{Entropy score (Ei). \eqn{E_{i} = \Sigma (X_{im} * ln(1/X_{im})}{Ei = \Sigma (Xim \* ln(1/X_{im}))}
-#'  where Xim is the
-#'  proportion of racial group within the geography. }
-#'  \item{`entropy_score`}{Calculates the value of H (entropy index) for
-#'  large-scale geography. }
-#'  }
 #'
 #' @return A single value if summed==TRUE, or a vector equaling the length of the inputs. Note that if
 #' `entropy_type` == "index", and summed is FALSE, then the returned vector will be entropy index, unweighted by
@@ -145,7 +140,7 @@ multigroup_sanity <- function(df, weights){
 #'
 #' @source Theil, Henri. 1972. Statistical Decomposition Analysis.
 #'
-#' @seealso \url{https://en.wikipedia.org/wiki/Theil_index}
+#' @seealso \url{https://en.wikipedia.org/wiki/Generalized_entropy_index}
 #'
 #' @examples
 #' library(rsegregation)
