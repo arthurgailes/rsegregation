@@ -74,7 +74,7 @@ divergence score within those groups and between those groups." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rsegregation</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.1</span>
       </span>
     </div>
 
@@ -82,7 +82,7 @@ divergence score within those groups and between those groups." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -93,7 +93,7 @@ divergence score within those groups and between those groups." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/arthurgailes/rsegregation/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -142,7 +142,7 @@ except for those specified in <code>groupCol</code> and <code>weights</code>(opt
       <td><p>Name of the column(s) in the dataframe used for grouping.
 if passing a <code>grouped_df</code> to <code>dataframe</code>, this parameter is ignored. If using multiple
 groups, divergence will be aggregated by all unique combinations of all groups, and compared
-to the total datafame.</p></td>
+to the total datafame</p></td>
     </tr>
     <tr>
       <th>weightCol</th>
@@ -194,6 +194,10 @@ several of its desirable properties, including aggregation equivalence and indep
 
     <p>The <code>divergence</code> parameters for each group are set to their defaults
 unless explicitly noted above.</p>
+<p><code>decompose_divergence</code> treats the entire dataset its given as the total population,
+which may not be desirable in some contexts, for example, when trying to return divergence
+scores across years. In that context, it's helpful to split the dataframe into a list of
+dataframes and use <code>decompose_divergence</code> inside a sapply function.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
