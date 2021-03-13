@@ -2,46 +2,14 @@
 #'
 #' Elizabeth Roberto's Divergence index for calculating and decomposing segregation.
 #'
-#' @param ... Population vectors for every group included in the divergence
-#' calculation.
+#' @param ... Vectors containing proportions of each group, or a dataframe containing only those vectors.
 #'
-#' @param weights Either a vector of weights summing to one, or the total
-#' population for each observation in `...`. Can be any of:
-#' \describe{
-#'  \item{A numeric vector}{The length of each vector provided in each
-#'  entry in `...` (i.e. the column-wise length of `...`). Can be either population
-#'  or weights by observation}
-#'  \item{`sum`}{Sets `weights` to the rowwise sum of `...`}
-#'  \item{`none`}{Weighs each observation evenly (1/length). Note that if `...` is a
-#'  set of percentages summing to 1 for each row, `sum` and `none` are equivalent.}
-#'  }
+#' @param population A vector of population totals for each row, or weights summing to a total of
+#' one. If NA, will assume all populations/weights are equal. Set to 1 to silence warning.
+#' If a string, will use the string as the named column of the dataframe provided in ...
 #'
-#' @param sumPercent The percentage of each group in the larger population (i.e. the
-#' population composed of the sum of groups provided in `...`). Can be any of:
-#' \describe{
-#'  \item{A numeric vector}{Each entry represents the total population of the  with one entry for each group/vector provided in `...`. (i.e.
-#'  the rowwise length of `...`).
-#'  Note that for this to work correctly, each group must be provided in the same order in
-#'  `sumPercent` as in `...` Useful if the sum of `sumPercent` is less than 100%, as `divergence`
-#'  will otherwise force}
-#'  \item{`weights`}{Default. Uses the value of `weights` to construct total population proportions.
-#'  If weights is set to `none`, the total population proportions will be the unweighted
-#'  average of the percentages in each observation.}
-#'  }
-#'
-#' @param rowTotals By default, the rowwise sum of `...` is treated as 100% of the population.
-#' Setting this parameter to any of the following options changes this behavior.
-#' \describe{
-#'  \item{`NA`}{Default. Forces the rowwise sum of `...` to equal 100% of the
-#'  population. Works with either percentages or population totals.}
-#'  \item{`100%`}{Uses 1 (100%) as the row total. For this to
-#'  work properly, each column provided to `...` must be percentages, not
-#'  population totals. Useful if the rowwise sum of percentages is less than 100%; only use if
-#'  you know what you are doing.}
-#'  \item{`weights`}{Uses the "weights" parameter as the total population.}
-#'  \item{A numeric vector}{With length equal to each vector provided in each
-#'  entry in `...` (i.e. the column-wise length of `...`). }
-#'  }
+#' @param weights deprecated, use population.
+#' @param rowTotals,sumPercent deprecated, will throw error.
 #'
 #' @param summed If TRUE, will return a single summary statistic. (Or one value per group if specifying
 #' `dplyr::group_by`.) If FALSE (default), will return a vector equaling the length
@@ -76,30 +44,36 @@
 #'
 #' @source Created by Elizabeth Roberto: <https://arxiv.org/abs/1508.01167>
 #' @export
-divergence <- function(..., weights = 'sum', na.rm=TRUE, summed=FALSE,
-  sumPercent = 'weights', rowTotals = NA){
-
+divergence <- function(..., population=NA, na.rm=TRUE, summed=FALSE,
+  sumPercent = NA, weights = NA, rowTotals = NA){
+  #sanity checks
+  if(!is.na(rowTotals) | !is.na(sumPercent)) stop('One of your parameters has been deprecated.')
+  if(!isTRUE(is.na(weights))){
+    warning('parameter `weights` is deprecated, use `population`')
+    population <- weights
+  }
+  # process population inputs if not actual population/weights
+  if(isTRUE(is.na(population))){
+    population <- 1
+    warning("Population parameter not set; assuming equal populations.")
+  } else if (is.character(population)){
+    popChar <- population
+    population <- groupMatrix[popChar]
+    groupMatrix[popChar] <- NULL
+  }
   groupMatrix <- data.frame(...)
+  if(isTRUE(any(rowSums(groupMatrix)>1.05))) warning("Some of the provided rows sum to more than 1; check input values.")
   if(nrow(groupMatrix) == 1) return(0) # if a single observation composes a group
   # remove NAs
   if(isTRUE(na.rm)) groupMatrix[is.na(groupMatrix)] <- 0
 
-  # keep original weights in case it is a vector of populations
-
-  #deal with weights and sumPercent in separate functions
-  if(isTRUE(rowTotals=='weights')) rowTotals <- weights
-  weights <- convert_weights(groupMatrix, weights, na.rm = na.rm)
-  #convert to percentages if necessary
-  groupMatrix <- to_percentages(groupMatrix, rowTotals, na.rm)
-  sumPercent <- proc_sumPercent(groupMatrix, sumPercent, weights, na.rm)
-
   # check for construction problems
-  multigroup_sanity(groupMatrix,weights)
+  multigroup_sanity(groupMatrix,population)
   # create by-group scores
   prescores <- groupMatrix
   for(column in seq_along(groupMatrix)){
     group <- groupMatrix[[column]]
-    group_large <- sumPercent[[column]]
+    group_large <- stats::weighted.mean(group, population)
     # calculate group, substituting 0 for log(0)
     prescores[[column]] <- ifelse(group <= 0 | group_large <= 0, 0,
       group * log(group / group_large) )
@@ -108,12 +82,12 @@ divergence <- function(..., weights = 'sum', na.rm=TRUE, summed=FALSE,
   results <- rowSums(prescores, na.rm = na.rm)
 
   # apply weights according to summed parameter
-  if(isTRUE(summed)) results <- sum(results * weights, na.rm = na.rm)
-  if(isTRUE(summed == 'weighted')) results <- (results * weights)
+  if(isTRUE(summed)) results <- stats::weighted.mean(results, population, na.rm = na.rm)
+  if(isTRUE(summed == 'weighted')) results <- (results * population)/sum(population, na.rm=na.rm)
   return(results)
 }
 # Sanity checks and warnings for divergence and entropy
-multigroup_sanity <- function(df, weights){
+multigroup_sanity <- function(df, population){
   if(isTRUE(any(df<0))) warning("Negative numbers detected; may skew results")
 }
 #' Theil's Index of Entropy
