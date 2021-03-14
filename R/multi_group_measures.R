@@ -8,6 +8,10 @@
 #' one. If NA, will assume all populations/weights are equal. Set to 1 to silence warning.
 #' If a string, will use the string as the named column of the dataframe provided in ...
 #'
+#' @param comparison A vector of percentages that must equal the length of the
+#' number of vectors or columns in `...`, representing the percentages of each
+#' group in the larger (comparison) geography.
+#'
 #' @param weights deprecated, use population.
 #' @param rowTotals,sumPercent deprecated, will throw error.
 #'
@@ -18,8 +22,15 @@
 #' such that `sum(divergence(..., summed = 'weighted))` is equivalent to
 #' `divergence(..., summed = T)`.
 #'
+#' @param logBase Specify the base for the logathirm used in the equation. Natural logarithm by default.
+#'
 #' @param na.rm logical. Should missing values (including NaN) be removed?
 #' Used only if `summed` is set to TRUE.
+#'
+#' @details The demographics of each observation are compared to that of their
+#'  larger geography, which is inferred from the combination of the percentages in
+#'  `...` and the population totals in `population`, or can be directly provided with
+#'  `comparison`.
 #'
 #' @return A single value if summed==TRUE, or a vector equaling the length of the inputs.
 #'
@@ -44,10 +55,12 @@
 #'
 #' @source Created by Elizabeth Roberto: <https://arxiv.org/abs/1508.01167>
 #' @export
-divergence <- function(..., population=NA, na.rm=TRUE, summed=FALSE,
-  sumPercent = NA, weights = NA, rowTotals = NA){
+divergence <- function(..., population=NA, na.rm=TRUE, summed=FALSE, logBase=exp(1),
+  comparison=NULL, sumPercent = NA, weights = NA, rowTotals = NA){
+  groupMatrix <- data.frame(...)
   #sanity checks
-  if(!is.na(rowTotals) | !is.na(sumPercent)) stop('One of your parameters has been deprecated.')
+  divergence_sanity(rowTotals=rowTotals,sumPercent=sumPercent,comparison=comparison,
+    groupMatrix=groupMatrix)
   if(!isTRUE(is.na(weights))){
     warning('parameter `weights` is deprecated, use `population`')
     population <- weights
@@ -61,9 +74,8 @@ divergence <- function(..., population=NA, na.rm=TRUE, summed=FALSE,
     population <- groupMatrix[popChar]
     groupMatrix[popChar] <- NULL
   }
-  groupMatrix <- data.frame(...)
   if(isTRUE(any(rowSums(groupMatrix)>1.05))) warning("Some of the provided rows sum to more than 1; check input values.")
-  if(nrow(groupMatrix) == 1) return(0) # if a single observation composes a group
+  # if(nrow(groupMatrix) == 1) return(0) # if a single observation composes a group
   # remove NAs
   if(isTRUE(na.rm)) groupMatrix[is.na(groupMatrix)] <- 0
 
@@ -73,10 +85,12 @@ divergence <- function(..., population=NA, na.rm=TRUE, summed=FALSE,
   prescores <- groupMatrix
   for(column in seq_along(groupMatrix)){
     group <- groupMatrix[[column]]
-    group_large <- stats::weighted.mean(group, population)
+    # use `population` or `comparison` for large group stats
+    group_large <- ifelse(is.null(comparison),
+      stats::weighted.mean(group, population), comparison[column])
     # calculate group, substituting 0 for log(0)
     prescores[[column]] <- ifelse(group <= 0 | group_large <= 0, 0,
-      group * log(group / group_large) )
+      group * log(group / group_large, base=logBase) )
   }
   #sum the results for each racial group for divergence score
   results <- rowSums(prescores, na.rm = na.rm)
@@ -214,4 +228,10 @@ to_percentages <- function(df, rowTotals = NA, na.rm){
   else if(isTRUE(rowTotals == "100%")) rowTotals <- rep(1, nrow(df))
   df <- df/rowTotals
   return(df)
+}
+# sanity checks for divergence
+divergence_sanity <- function(...){
+  list2env(list(...), envir = environment())
+  if(!is.na(rowTotals) | !is.na(sumPercent)) stop('One of your parameters has been deprecated.')
+  if(!is.null(comparison) & length(comparison) != length(groupMatrix)) stop("`comparison` must be the same length the number of columns in `...`")
 }
