@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Function reference • rsegregation</title>
+<title>Detroit Metro Area tract demographics — detroit_race • rsegregation</title>
 
 
 <!-- jquery -->
@@ -39,7 +39,8 @@
 
 
 
-<meta property="og:title" content="Function reference" />
+<meta property="og:title" content="Detroit Metro Area tract demographics — detroit_race" />
+<meta property="og:description" content="Data by race for each tract in the Detroit Metro Area. Tracts allocated to place using centroids." />
 
 
 
@@ -58,7 +59,7 @@
   </head>
 
   <body data-spy="scroll" data-target="#toc">
-    <div class="container template-reference-index">
+    <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -105,90 +106,40 @@
       </header>
 
 <div class="row">
-  <div class="contents col-md-9">
+  <div class="col-md-9 contents">
     <div class="page-header">
-      <h1>Reference</h1>
+    <h1>Detroit Metro Area tract demographics</h1>
+    <small class="dont-index">Source: <a href='https://github.com/arthurgailes/rsegregation/blob/master/R/data.R'><code>R/data.R</code></a></small>
+    <div class="hidden name"><code>detroit_race.Rd</code></div>
     </div>
 
-    <table class="ref-index">
+    <div class="ref-description">
+    <p>Data by race for each tract in the Detroit Metro Area. Tracts allocated to place using centroids.</p>
+    </div>
 
-    <colgroup>
-      
-      <col class="alias" />
-      <col class="title" />
-    </colgroup>
+    <pre class="usage"><span class='va'>detroit_race</span></pre>
 
-    <tbody>
-      <tr>
-        <th colspan="2">
-          <h2 id="section-all-functions" class="hasAnchor"><a href="#section-all-functions" class="anchor"></a>All functions</h2>
-          <p class="section-desc"></p>
-        </th>
-      </tr>
-      
-      
-    </tbody><tbody>
-      
-      
-      <tr>
-        
-        <td>
-          <p><code><a href="bay_race.html">bay_race</a></code> </p>
-        </td>
-        <td><p>bay county tract demographics</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="decompose_divergence.html">decompose_divergence()</a></code> </p>
-        </td>
-        <td><p>Additively decompose divergence scores by and within groups</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="detroit_race.html">detroit_race</a></code> </p>
-        </td>
-        <td><p>Detroit Metro Area tract demographics</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dissimilarity.html">dissimilarity()</a></code> </p>
-        </td>
-        <td><p>Dissimilarity Score</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="divergence.html">divergence()</a></code> </p>
-        </td>
-        <td><p>Divergence Index</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="entropy.html">entropy()</a></code> </p>
-        </td>
-        <td><p>Theil's Index of Entropy</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="exposure.html">exposure()</a></code> </p>
-        </td>
-        <td><p>Exposure Index</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="isolation.html">isolation()</a></code> </p>
-        </td>
-        <td><p>Isolation Index</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="location_quotient.html">location_quotient()</a></code> <code><a href="location_quotient.html">lq()</a></code> </p>
-        </td>
-        <td><p>Location Quotient</p></td>
-      </tr>
-    </tbody>
-    </table>
+
+    <h2 class="hasAnchor" id="format"><a class="anchor" href="#format"></a>Format</h2>
+
+    <p>A data frame with columns:</p><dl>
+<dt>tract</dt><dd><p>U.S. tract FIPS code</p></dd>
+<dt>population</dt><dd><p>Total tract population in 2010</p></dd>
+<dt>place_name</dt><dd><p>Place name</p></dd>
+<dt>asian,black,hispanic,white,other,nhpi, natam</dt><dd><p>Columns by race/ethnicity. All races except hispanic exclude hispanics (i.e. white_2010 is the subset of non-hispanic white people.)</p></dd>
+
+</dl>
+
+    <h2 class="hasAnchor" id="source"><a class="anchor" href="#source"></a>Source</h2>
+
+    <p>U.S. Census Bureau, 2010 tables P005001, P005003:P005006, P005010. Compiled with tidycensus prackage.</p>
+
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+ <span class='va'>bay_race</span>
+<span class='op'>}</span>
+</div></pre>
   </div>
-
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
       <h2 data-toc-skip>Contents</h2>
