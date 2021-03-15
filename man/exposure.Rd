@@ -7,16 +7,16 @@
 Wendell Bell, A Probability Model for the Measurement of Ecological Segregation, Social Forces, Volume 32, Issue 4, May 1954, Pages 357–364, https://doi.org/10.2307/2574118
 }
 \usage{
-exposure(group1, group2, totalPop, summed = TRUE, na.rm = TRUE)
+exposure(group1, group2, population = NA, summed = TRUE, na.rm = TRUE)
 }
 \arguments{
-\item{group1}{Numeric vectors representing the popuplation of the
-groups to be compared.}
+\item{group1}{Numeric vectors representing the proportions of each group in each observation}
 
-\item{group2}{Numeric vectors representing the popuplation of the
-groups to be compared.}
+\item{group2}{Numeric vectors representing the proportions of each group in each observation}
 
-\item{totalPop}{A numeric vector the length of \code{group} with overall population totals.}
+\item{population}{A vector of population totals for each row, or weights summing to a total of
+one. If NA, will assume all populations/weights are equal. Set to 1 to silence warning.
+If a string, will use the string as the named column of the dataframe provided in ...}
 
 \item{summed}{If TRUE, will return a single summary statistic. (Or one value per group if specifying
 \code{dplyr::group_by}.) If FALSE (default), will return a vector equaling the length

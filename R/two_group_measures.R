@@ -11,8 +11,11 @@
 #'
 #' @inheritParams divergence
 #'
-#' @param group1,group2 Numeric vectors representing the popuplation of the
-#' groups to be compared.
+#' @param group1,group2 Numeric vectors representing the proportions of each group in each observation
+#'
+#' @param population if `group1` and `group2` are proportions, this parameter gives the population weights.
+#'  Set to 1 to avoid a warning measure if using population
+#'
 #'
 #' @return A scalar value, see note.
 #'
@@ -23,8 +26,10 @@
 #' purposes only.
 #'
 #' @export
-dissimilarity <- function(group1, group2, summed=TRUE, na.rm=TRUE){
-  dissim <- 0.5 * abs(group1/sum(group1, na.rm=na.rm) - group2/sum(group2, na.rm=na.rm))
+dissimilarity <- function(group1, group2, population = NA, summed=TRUE, na.rm=TRUE){
+  population <- multigroup_population(groupMatrix=matrix(group1), population=population, na.rm=na.rm)
+  dissim <- 0.5 * abs(group1*population/sum(group1*population, na.rm=na.rm) -
+      group2*population/sum(group2*population, na.rm=na.rm))
   if(summed==T) dissim <- sum(dissim, na.rm=na.rm)
   return(dissim)
 }
@@ -57,9 +62,10 @@ dissimilarity <- function(group1, group2, summed=TRUE, na.rm=TRUE){
 #' purposes only.
 #'
 #' @export
-exposure <- function(group1, group2, totalPop, summed=TRUE, na.rm=TRUE){
-  expo <- ifelse(totalPop == 0, 0,
-    ( (group1/sum(group1, na.rm=na.rm)) * (group2/totalPop) )
+exposure <- function(group1, group2, population=NA, summed=TRUE, na.rm=TRUE){
+  population <- multigroup_population(groupMatrix=matrix(group1), population=population, na.rm=na.rm)
+  expo <- ifelse(population*group1 == 0, 0,
+    ( (group1*population/sum(group1*population, na.rm=na.rm)) * group2 )
   )
   if(summed==T) expo <- sum(expo, na.rm=na.rm)
   return(expo)

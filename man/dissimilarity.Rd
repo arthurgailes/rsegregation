@@ -7,11 +7,13 @@
 Duncan, Otis Dudley, and Beverly Duncan. A Methodological Analysis of Segregation Indexes.” American Sociological Review, vol. 20, no. 2, 1955, pp. 210–217. JSTOR, www.jstor.org/stable/2088328. Accessed 14 Mar. 2020.
 }
 \usage{
-dissimilarity(group1, group2, summed = TRUE, na.rm = TRUE)
+dissimilarity(group1, group2, population = NA, summed = TRUE, na.rm = TRUE)
 }
 \arguments{
-\item{group1, group2}{Numeric vectors representing the popuplation of the
-groups to be compared.}
+\item{group1, group2}{Numeric vectors representing the proportions of each group in each observation}
+
+\item{population}{if \code{group1} and \code{group2} are proportions, this parameter gives the population weights.
+Set to 1 to avoid a warning measure if using population}
 
 \item{summed}{If TRUE, will return a single summary statistic. (Or one value per group if specifying
 \code{dplyr::group_by}.) If FALSE (default), will return a vector equaling the length

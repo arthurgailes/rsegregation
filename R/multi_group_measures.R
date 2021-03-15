@@ -221,7 +221,7 @@ divergence_sanity <- function(rowTotals, sumPercent){
   if(!is.na(rowTotals) | !is.na(sumPercent)) stop('One of your parameters has been deprecated.')
 }
 # handle population/weight inputs
-multigroup_population <- function(groupMatrix, population, weights, na.rm){
+multigroup_population <- function(groupMatrix, population, weights=NA, na.rm){
   # throw warning if weights are provided
   if(!isTRUE(is.na(weights))){
     warning('parameter `weights` is deprecated, use `population`')
