@@ -31,6 +31,20 @@ decompose_divergence(t, groupCol='place_name',popCol='population', output='all',
 
 ```
 
-When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+Test whether adding a new group that is completely uniform changes the scores
+```{r}
+detroit_new <- detroit_race %>% 
+  mutate(across(black:nhpi, ~(.x*.8),), newRace = 0.2) %>% 
+  summarize(
+    divln = divergence(across(black:nhpi), population=population, summed=T),
+    divln1 = divergence(across(black:newRace), population=population, summed=T),
+    divbase = divergence(across(black:nhpi), population=population, logBase=6, summed=T),
+    divbase1 = divergence(across(black:newRace),  population=population, logBase=7, summed=T))
 
-The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+detroit_new
+```
+
+##### Intuition
+Using ln means that adding a completely desgregated group does nothing to the score - the total amount of measured segregation is still there. Using base (group) diminishes the segregation - the average segregation has gone down.
+
+
