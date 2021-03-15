@@ -119,7 +119,7 @@ geographic entity for which the isolation index is calculated." />
 geographic entity for which the isolation index is calculated.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>isolation</span><span class='op'>(</span><span class='va'>group</span>, <span class='va'>totalPop</span>, summed <span class='op'>=</span> <span class='cn'>TRUE</span>, na.rm <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>isolation</span><span class='op'>(</span><span class='va'>group</span>, <span class='va'>population</span>, summed <span class='op'>=</span> <span class='cn'>TRUE</span>, na.rm <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -129,8 +129,8 @@ geographic entity for which the isolation index is calculated.</p>
       <td><p>A numeric vector of the proportion of the population</p></td>
     </tr>
     <tr>
-      <th>totalPop</th>
-      <td><p>A numeric vector the length of <code>group</code> with overall population totals.</p></td>
+      <th>population</th>
+      <td><p>A numeric vector the length of <code>group</code> with its proportion of <code>population</code>.</p></td>
     </tr>
     <tr>
       <th>summed</th>
@@ -166,7 +166,7 @@ That is, if there is only one white person in a metropolis of 100,000,
 he or she would live in a geographic unit in which the percent white
 was close to zero.</p>
 <p>The isolation formula is
-\(\Sigma ((group/sum(group))*(group/totalPop))\)</p>
+\(\Sigma ((group/sum(group))*(group/population))\)</p>
     <h2 class="hasAnchor" id="note"><a class="anchor" href="#note"></a>Note</h2>
 
     <p>Setting summed == FALSE will return by-observation measures, but this

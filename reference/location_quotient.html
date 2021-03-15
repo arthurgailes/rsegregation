@@ -135,9 +135,9 @@ specialized in mining; while an LQ of 1.8 means that the region has a
 higher concentration in mining than the nation.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>location_quotient</span><span class='op'>(</span><span class='va'>group</span>, <span class='va'>totalPop</span>, na.rm <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
+    <pre class="usage"><span class='fu'>location_quotient</span><span class='op'>(</span><span class='va'>group</span>, <span class='va'>population</span>, na.rm <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
 
-<span class='fu'>lq</span><span class='op'>(</span><span class='va'>group</span>, <span class='va'>totalPop</span>, na.rm <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></pre>
+<span class='fu'>lq</span><span class='op'>(</span><span class='va'>group</span>, <span class='va'>population</span>, na.rm <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -147,8 +147,8 @@ higher concentration in mining than the nation.</p>
       <td><p>A numeric vector of the proportion of the population</p></td>
     </tr>
     <tr>
-      <th>totalPop</th>
-      <td><p>A numeric vector the length of <code>group</code> with overall population totals.</p></td>
+      <th>population</th>
+      <td><p>A numeric vector the length of <code>group</code> with its proportion of <code>population</code>.</p></td>
     </tr>
     <tr>
       <th>na.rm</th>
@@ -164,13 +164,13 @@ Used only if <code>summed</code> is set to TRUE.</p></td>
 
     <p>LQ is equivalent to the percentage of a group in a single observation divided
 by the percentage of that group in the population of all observations, i.e.
-\( (group/totalPop)/(\Sigma(group)/\Sigma(totalPop))\)</p>
+\( (group/population)/(\Sigma(group)/\Sigma(population))\)</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"bay_race"</span><span class='op'>)</span>
 <span class='co'># calculate the location quotient for Hispanic people in each tract in the bay area</span>
 <span class='fu'>location_quotient</span><span class='op'>(</span>group <span class='op'>=</span> <span class='va'>bay_race</span><span class='op'>$</span><span class='va'>hispanic</span>,
-totalPop <span class='op'>=</span> <span class='va'>bay_race</span><span class='op'>$</span><span class='va'>total_pop</span><span class='op'>)</span>
+population <span class='op'>=</span> <span class='va'>bay_race</span><span class='op'>$</span><span class='va'>total_pop</span><span class='op'>)</span>
 </div><div class='output co'>#&gt;    [1] 0.16937858 0.32524182 0.34871179 0.38120707 0.41103909 0.34101300
 #&gt;    [7] 0.44378419 0.43417476 0.56703470 0.60355414 0.53403724 0.39772976
 #&gt;   [13] 0.58812254 0.89787280 0.65636719 0.88260503 1.08886557 0.82140592
