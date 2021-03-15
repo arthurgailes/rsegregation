@@ -41,13 +41,11 @@ test_that("Current divergence matches previous divergence",{
 
 test_that("incomplete divergence works",{
   # maintains compatibility with segregation_measures; segregation report
-  t <- bay_race$white+bay_race$hispanic+bay_race$black+bay_race$asian
-  bay_race2 <- mutate(bay_race, across(hispanic:asian, ~(.x/t)), total_pop=total_pop*t)
-  divergence_inc_sum <- summarize(bay_race2,
+  divergence_inc_sum <- summarize(bay_race,
     div=divergence(across(hispanic:asian), population=total_pop, summed=T,
       comparison = c(0.24657102 , 0.44465809, 0.06746733, 0.24130356 )),
     across(hispanic:asian, weighted.mean, total_pop, na.rm=T))
-  expect_equal(round(divergence_inc_sum, 4), 0.2096)
+  expect_equal(round(divergence_inc_sum$div, 4), 0.2096)
 })
 
 
