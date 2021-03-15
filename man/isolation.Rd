@@ -7,12 +7,12 @@
 Wendell Bell, A Probability Model for the Measurement of Ecological Segregation, Social Forces, Volume 32, Issue 4, May 1954, Pages 357–364, https://doi.org/10.2307/2574118
 }
 \usage{
-isolation(group, totalPop, summed = TRUE, na.rm = TRUE)
+isolation(group, population, summed = TRUE, na.rm = TRUE)
 }
 \arguments{
 \item{group}{A numeric vector of the proportion of the population}
 
-\item{totalPop}{A numeric vector the length of \code{group} with overall population totals.}
+\item{population}{A numeric vector the length of \code{group} with its proportion of \code{population}.}
 
 \item{summed}{If TRUE, will return a single summary statistic. (Or one value per group if specifying
 \code{dplyr::group_by}.) If FALSE (default), will return a vector equaling the length
@@ -43,7 +43,7 @@ he or she would live in a geographic unit in which the percent white
 was close to zero.
 
 The isolation formula is
-\eqn{\Sigma ((group/sum(group))*(group/totalPop))}
+\eqn{\Sigma ((group/sum(group))*(group/population))}
 }
 \note{
 Setting summed == FALSE will return by-observation measures, but this

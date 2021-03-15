@@ -8,14 +8,14 @@
 U.S. Bureau of Economic Analysis: https://www.bea.gov/help/faq/478
 }
 \usage{
-location_quotient(group, totalPop, na.rm = FALSE)
+location_quotient(group, population, na.rm = FALSE)
 
-lq(group, totalPop, na.rm = FALSE)
+lq(group, population, na.rm = FALSE)
 }
 \arguments{
 \item{group}{A numeric vector of the proportion of the population}
 
-\item{totalPop}{A numeric vector the length of \code{group} with overall population totals.}
+\item{population}{A numeric vector the length of \code{group} with its proportion of \code{population}.}
 
 \item{na.rm}{logical. Should missing values (including NaN) be removed?
 Used only if \code{summed} is set to TRUE.}
@@ -35,12 +35,12 @@ higher concentration in mining than the nation.
 \details{
 LQ is equivalent to the percentage of a group in a single observation divided
 by the percentage of that group in the population of all observations, i.e.
-\eqn{ (group/totalPop)/(\Sigma(group)/\Sigma(totalPop))}
+\eqn{ (group/population)/(\Sigma(group)/\Sigma(population))}
 }
 \examples{
 data("bay_race")
 # calculate the location quotient for Hispanic people in each tract in the bay area
 location_quotient(group = bay_race$hispanic,
-totalPop = bay_race$total_pop)
+population = bay_race$total_pop)
 
 }
