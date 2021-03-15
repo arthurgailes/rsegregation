@@ -20,8 +20,8 @@
 #' @inheritParams divergence
 #' @inheritParams dissimilarity
 #'
-#' @param group A numeric vector of subpopulation totals
-#' @param totalPop A numeric vector the length of `group` with population totals.
+#' @param group A numeric vector of the proportion of the population
+#' @param totalPop A numeric vector the length of `group` with overall population totals.
 #'
 #' @source Wendell Bell, A Probability Model for the Measurement of Ecological Segregation, Social Forces, Volume 32, Issue 4, May 1954, Pages 357–364, https://doi.org/10.2307/2574118
 #' @return A scalar value, see note.
@@ -31,8 +31,9 @@
 #' purposes only.
 #' @export
 isolation <- function(group, totalPop, summed=TRUE, na.rm=TRUE){
+  superGroup <- sum(group * totalPop, na.rm=na.rm)
   iso <- ifelse(totalPop == 0, 0,
-    (group / sum(group, na.rm=na.rm)) * (group / totalPop)
+    (group * totalPop / superGroup) * (group)
   )
   if(summed==T) iso <- sum(iso, na.rm=na.rm)
   return(iso)
@@ -69,9 +70,9 @@ isolation <- function(group, totalPop, summed=TRUE, na.rm=TRUE){
 NULL
 #' @rdname location_quotient
 location_quotient <- function(group, totalPop, na.rm = FALSE){
-  overall_pct <- sum(group,na.rm=na.rm)/sum(totalPop, na.rm=na.rm)
-  lq <- (group/totalPop) / overall_pct
-  return(lq)
+  # calculate the percentage of the group in the total sample
+  superGroup <- stats::weighted.mean(group, totalPop, na.rm=na.rm)
+  return(group/superGroup)
 }
 #' @rdname location_quotient
 lq <- location_quotient
