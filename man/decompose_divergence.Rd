@@ -10,36 +10,38 @@ Roberto, 2016. "A Decomposable Measure of Segregation and Inequality."
 decompose_divergence(
   dataframe,
   groupCol = NULL,
+  popCol = NA,
   weightCol = NA,
-  output = "scores"
+  output = "scores",
+  ...
 )
 }
 \arguments{
-\item{dataframe}{A dataframe composed of numeric/integer columns, with the exception
-of a column named in \code{groupCol}. All columns are used in the divergence calculation
-except for those specified in \code{groupCol} and \code{weights}(optional)}
+\item{dataframe}{A dataframe composed of numeric/integer columns representing percentages of each
+population group. All columns are used in the divergence calculation
+except for those specified in \code{groupCol} and \code{popCol}(optional), and no other columns should
+be included.}
 
 \item{groupCol}{Name of the column(s) in the dataframe used for grouping.
 if passing a \code{grouped_df} to \code{dataframe}, this parameter is ignored. If using multiple
 groups, divergence will be aggregated by all unique combinations of all groups, and compared
 to the total datafame}
 
-\item{weightCol}{Either NA (default), which sets \code{weightCol} to the rowwise
-sum of \code{dataframe}; or a character string of the column name in \code{dataframe}
-that should be used for weightCol.}
+\item{popCol}{Either NA (default), which sets the population of each row to 1,
+or a character string of the column name in \code{dataframe}.}
+
+\item{weightCol}{alias for popCol}
 
 \item{output}{Any of:
 \describe{
 \item{"scores"}{Default. The individual within and between divergence scores for each
 row or group, plus the total score.}
-\item{"weighted"}{As summed, but includinga column of weights to use if summing them both
-across the entire dataset.}
 \item{"percentage"}{One row for each entry(or group) as in "scores," but scaled so each
 observation reports a percentage of the total score that would be reproted with "summed".}
 \item{"all"}{The output from \code{summed}, \code{weighted}, and \code{percentage.}}
-\item{"scaled"}{Not yet implemented. Re-scales divergence scores the divergence index to
-have a range  of 0 to 1 by dividing by its maximum value for a given population. See details.}
 }}
+
+\item{...}{options passed through to \code{divergence}}
 }
 \value{
 A dataframe as specified by the \code{output} parameter.

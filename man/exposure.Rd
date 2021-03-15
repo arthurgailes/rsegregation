@@ -16,7 +16,7 @@ groups to be compared.}
 \item{group2}{Numeric vectors representing the popuplation of the
 groups to be compared.}
 
-\item{totalPop}{A numeric vector the length of \code{group} with population totals.}
+\item{totalPop}{A numeric vector the length of \code{group} with overall population totals.}
 
 \item{summed}{If TRUE, will return a single summary statistic. (Or one value per group if specifying
 \code{dplyr::group_by}.) If FALSE (default), will return a vector equaling the length

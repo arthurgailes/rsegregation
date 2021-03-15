@@ -9,27 +9,22 @@ Created by Elizabeth Roberto: \url{https://arxiv.org/abs/1508.01167}
 \usage{
 divergence(
   ...,
-  weights = "sum",
+  population = NA,
   na.rm = TRUE,
   summed = FALSE,
-  sumPercent = "weights",
+  logBase = exp(1),
+  comparison = NULL,
+  sumPercent = NA,
+  weights = NA,
   rowTotals = NA
 )
 }
 \arguments{
-\item{...}{Population vectors for every group included in the divergence
-calculation.}
+\item{...}{Vectors containing proportions of each group, or a dataframe containing only those vectors.}
 
-\item{weights}{Either a vector of weights summing to one, or the total
-population for each observation in \code{...}. Can be any of:
-\describe{
-\item{A numeric vector}{The length of each vector provided in each
-entry in \code{...} (i.e. the column-wise length of \code{...}). Can be either population
-or weights by observation}
-\item{\code{sum}}{Sets \code{weights} to the rowwise sum of \code{...}}
-\item{\code{none}}{Weighs each observation evenly (1/length). Note that if \code{...} is a
-set of percentages summing to 1 for each row, \code{sum} and \code{none} are equivalent.}
-}}
+\item{population}{A vector of population totals for each row, or weights summing to a total of
+one. If NA, will assume all populations/weights are equal. Set to 1 to silence warning.
+If a string, will use the string as the named column of the dataframe provided in ...}
 
 \item{na.rm}{logical. Should missing values (including NaN) be removed?
 Used only if \code{summed} is set to TRUE.}
@@ -41,38 +36,27 @@ a vector as in FALSE, but with pre-weighted values,
 such that \verb{sum(divergence(..., summed = 'weighted))} is equivalent to
 \code{divergence(..., summed = T)}.}
 
-\item{sumPercent}{The percentage of each group in the larger population (i.e. the
-population composed of the sum of groups provided in \code{...}). Can be any of:
-\describe{
-\item{A numeric vector}{Each entry represents the total population of the  with one entry for each group/vector provided in \code{...}. (i.e.
-the rowwise length of \code{...}).
-Note that for this to work correctly, each group must be provided in the same order in
-\code{sumPercent} as in \code{...} Useful if the sum of \code{sumPercent} is less than 100\%, as \code{divergence}
-will otherwise force}
-\item{\code{weights}}{Default. Uses the value of \code{weights} to construct total population proportions.
-If weights is set to \code{none}, the total population proportions will be the unweighted
-average of the percentages in each observation.}
-}}
+\item{logBase}{Specify the base for the logathirm used in the equation. Natural logarithm by default.}
 
-\item{rowTotals}{By default, the rowwise sum of \code{...} is treated as 100\% of the population.
-Setting this parameter to any of the following options changes this behavior.
-\describe{
-\item{\code{NA}}{Default. Forces the rowwise sum of \code{...} to equal 100\% of the
-population. Works with either percentages or population totals.}
-\item{\verb{100\%}}{Uses 1 (100\%) as the row total. For this to
-work properly, each column provided to \code{...} must be percentages, not
-population totals. Useful if the rowwise sum of percentages is less than 100\%; only use if
-you know what you are doing.}
-\item{\code{weights}}{Uses the "weights" parameter as the total population.}
-\item{A numeric vector}{With length equal to each vector provided in each
-entry in \code{...} (i.e. the column-wise length of \code{...}). }
-}}
+\item{comparison}{A vector of percentages that must equal the length of the
+number of vectors or columns in \code{...}, representing the percentages of each
+group in the larger (comparison) geography.}
+
+\item{weights}{deprecated, use population.}
+
+\item{rowTotals, sumPercent}{deprecated, will throw error.}
 }
 \value{
 A single value if summed==TRUE, or a vector equaling the length of the inputs.
 }
 \description{
 Elizabeth Roberto's Divergence index for calculating and decomposing segregation.
+}
+\details{
+The demographics of each observation are compared to that of their
+larger geography, which is inferred from the combination of the percentages in
+\code{...} and the population totals in \code{population}, or can be directly provided with
+\code{comparison}.
 }
 \examples{
 library(rsegregation)

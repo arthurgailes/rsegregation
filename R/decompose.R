@@ -71,6 +71,7 @@ decompose_divergence <- function(dataframe, groupCol=NULL, popCol = NA, weightCo
   #save original dataframe
   dataframe_orig <- dataframe
   if(!is.na(weightCol)& is.na(popCol)) popCol <- weightCol
+  if(is.na(popCol)) stop("`popCol` must be specified")
   # convert popCol to weights
 
   #group the dataframe if groupCol is provided
@@ -78,9 +79,8 @@ decompose_divergence <- function(dataframe, groupCol=NULL, popCol = NA, weightCo
   else if(!dplyr::is.grouped_df(dataframe)) stop("`groupCol` must be specified")
   else groupCol <- dplyr::group_vars(dataframe)
 
-  # create equivalent weights if not provided, rename column to popCol for consistency
-  if(is.na(popCol)) dataframe$popCol = 1
-  else dataframe <- dplyr::rename(dataframe, popCol = {{popCol}})
+  # rename column to popCol for consistency
+  dataframe <- dplyr::rename(dataframe, popCol = {{popCol}})
   # convert popCol to weights
   dataframe$popCol <- dataframe$popCol/sum(dataframe$popCol, na.rm=T)
   # get overall divergence
@@ -112,7 +112,7 @@ decompose_divergence <- function(dataframe, groupCol=NULL, popCol = NA, weightCo
   divSumGroup <- ifelse(sum(result$popCol)==0, 0,
     stats::weighted.mean(result$total, result$popCol, na.rm=T)
   )
-  if(round(divSum, 5) != round(divSumGroup, 5)) warning("sum of within and between divergence is not equal to sum of total divergence. Check inputs.")
+  if(round(divSum, 4) != round(divSumGroup, 4)) warning("sum of within and between divergence is not equal to sum of total divergence. Check inputs.")
 
   # process output parameter
   if(output == 'scores') result <- subset(result, select = -popCol)

@@ -10,9 +10,9 @@ Wendell Bell, A Probability Model for the Measurement of Ecological Segregation,
 isolation(group, totalPop, summed = TRUE, na.rm = TRUE)
 }
 \arguments{
-\item{group}{A numeric vector of subpopulation totals}
+\item{group}{A numeric vector of the proportion of the population}
 
-\item{totalPop}{A numeric vector the length of \code{group} with population totals.}
+\item{totalPop}{A numeric vector the length of \code{group} with overall population totals.}
 
 \item{summed}{If TRUE, will return a single summary statistic. (Or one value per group if specifying
 \code{dplyr::group_by}.) If FALSE (default), will return a vector equaling the length

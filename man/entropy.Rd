@@ -18,32 +18,11 @@ entropy(
 )
 }
 \arguments{
-\item{...}{Population vectors for every group included in the divergence
-calculation.}
+\item{...}{Vectors containing proportions of each group, or a dataframe containing only those vectors.}
 
-\item{weights}{Either a vector of weights summing to one, or the total
-population for each observation in \code{...}. Can be any of:
-\describe{
-\item{A numeric vector}{The length of each vector provided in each
-entry in \code{...} (i.e. the column-wise length of \code{...}). Can be either population
-or weights by observation}
-\item{\code{sum}}{Sets \code{weights} to the rowwise sum of \code{...}}
-\item{\code{none}}{Weighs each observation evenly (1/length). Note that if \code{...} is a
-set of percentages summing to 1 for each row, \code{sum} and \code{none} are equivalent.}
-}}
+\item{weights}{deprecated, use population.}
 
-\item{sumPercent}{The percentage of each group in the larger population (i.e. the
-population composed of the sum of groups provided in \code{...}). Can be any of:
-\describe{
-\item{A numeric vector}{Each entry represents the total population of the  with one entry for each group/vector provided in \code{...}. (i.e.
-the rowwise length of \code{...}).
-Note that for this to work correctly, each group must be provided in the same order in
-\code{sumPercent} as in \code{...} Useful if the sum of \code{sumPercent} is less than 100\%, as \code{divergence}
-will otherwise force}
-\item{\code{weights}}{Default. Uses the value of \code{weights} to construct total population proportions.
-If weights is set to \code{none}, the total population proportions will be the unweighted
-average of the percentages in each observation.}
-}}
+\item{sumPercent}{deprecated, will throw error.}
 
 \item{entropy_type}{One of: \describe{
 \item{"entropy"}{Default.

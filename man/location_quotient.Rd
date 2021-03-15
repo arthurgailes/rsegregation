@@ -13,9 +13,9 @@ location_quotient(group, totalPop, na.rm = FALSE)
 lq(group, totalPop, na.rm = FALSE)
 }
 \arguments{
-\item{group}{A numeric vector of subpopulation totals}
+\item{group}{A numeric vector of the proportion of the population}
 
-\item{totalPop}{A numeric vector the length of \code{group} with population totals.}
+\item{totalPop}{A numeric vector the length of \code{group} with overall population totals.}
 
 \item{na.rm}{logical. Should missing values (including NaN) be removed?
 Used only if \code{summed} is set to TRUE.}
