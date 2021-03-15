@@ -70,12 +70,11 @@ divergence <- function(..., population=NA, na.rm=TRUE, summed=FALSE, logBase=exp
   #process population
   population <- multigroup_population(g=groupMatrix, p=population, w=weights, n=na.rm)
 
-  # ensure that percentages sum to about 1
-  if(isTRUE(any(rowSums(groupMatrix)>1.05))) warning("Some of the provided rows sum to more than 1; check input values.")
-
   # remove NAs
   if(isTRUE(na.rm)) groupMatrix[is.na(groupMatrix)] <- 0
 
+  # get summary proportions for the full dataset
+  largeGroup <- sumProportion(g=groupMatrix, p=population,c=comparison)
   # check for construction problems
   multigroup_sanity(groupMatrix,population)
   # create by-group scores
@@ -83,8 +82,7 @@ divergence <- function(..., population=NA, na.rm=TRUE, summed=FALSE, logBase=exp
   for(column in seq_along(groupMatrix)){
     group <- groupMatrix[[column]]
     # use `population` or `comparison` for large group stats
-    group_large <- ifelse(is.null(comparison),
-      stats::weighted.mean(group, population, na.rm=na.rm), comparison[column])
+    group_large <- largeGroup[[column]]
     # calculate group, substituting 0 for log(0)
     prescores[[column]] <- ifelse(group <= 0 | group_large <= 0, 0,
       group * log(group / group_large, base=logBase) )
@@ -98,8 +96,10 @@ divergence <- function(..., population=NA, na.rm=TRUE, summed=FALSE, logBase=exp
   return(results)
 }
 # Sanity checks and warnings for divergence and entropy
-multigroup_sanity <- function(df, population){
-  if(isTRUE(any(df<0))) warning("Negative numbers detected; may skew results")
+multigroup_sanity <- function(groupMatrix, population){
+  if(isTRUE(any(groupMatrix<0))) warning("Negative numbers detected; may skew results")
+  # ensure that percentages sum to about 1
+  if(isTRUE(any(rowSums(groupMatrix)>1.05))) warning("Some of the provided rows sum to more than 1; check that input values are proportions.")
 }
 #' Theil's Index of Entropy
 #'
@@ -133,7 +133,7 @@ multigroup_sanity <- function(df, population){
 #' bay_race$black, bay_race$all_other, weights = bay_race$total_pop)
 #'
 #' @export
-entropy <- function( ..., population=NA, comparison=NA, entropy_type = 'entropy',
+entropy <- function( ..., population=NA, comparison=NA, entropy_type = 'entropy', logBase=exp(1),
   scale = FALSE, summed=FALSE, na.rm=TRUE, weights = NA, sumPercent = NA){
 
   groupMatrix <- data.frame(...)
@@ -141,27 +141,27 @@ entropy <- function( ..., population=NA, comparison=NA, entropy_type = 'entropy'
   # remove NAs
   if(isTRUE(na.rm)) groupMatrix[is.na(groupMatrix)] <- 0
 
-  #deal with population and sumPercent in separate functions
+  #process population/weights
   population <- multigroup_population(g=groupMatrix, p=population, w=weights, n=na.rm)
-  #convert to percentages if necessary
-  groupMatrix <- to_percentages(groupMatrix, na.rm=na.rm)
-  sumPercent <- proc_sumPercent(groupMatrix, sumPercent, population, na.rm)
+
   # check for construction problems
   multigroup_sanity(groupMatrix,population)
   # create by-group scores
   prescores <- groupMatrix
+  # get summary proportions for the full dataset
+  largeGroup <- sumProportion(g=groupMatrix, p=population,c=comparison)
   # calculate entropy
   for(column in seq_along(groupMatrix)){
     group <- groupMatrix[[column]]
-    group_large <- sumPercent[[column]]
+    group_large <- largeGroup[[column]]
     # calculate group, substituting 0 for log(0)
     prescores[[column]] <- ifelse((group <= 0 | group_large <= 0), 0,
-      group * log(1 / group) )
+      group * log(1 / group, base=logBase) )
   }
   entropy <- rowSums(prescores, na.rm = na.rm)
   if(isTRUE(scale)){
     #scale entropy between zero and 1, where 1 represents log(number of groups)
-    entropy <- scale01(entropy, 0, log(length(groupMatrix)))
+    entropy <- scale01(entropy, 0, log(length(groupMatrix), base=logBase))
   }
 
   if(entropy_type == 'information_theory') {
@@ -232,7 +232,7 @@ divergence_sanity <- function(...){
   if(!is.na(rowTotals) | !is.na(sumPercent)) stop('One of your parameters has been deprecated.')
   if(!is.null(comparison) & length(comparison) != length(groupMatrix)) stop("`comparison` must be the same length the number of columns in `...`")
 }
-# weight deprecation
+# handle population/weight inputs
 multigroup_population <- function(groupMatrix, population, weights, na.rm){
   # throw warning if weights are provided
   if(!isTRUE(is.na(weights))){
@@ -249,4 +249,10 @@ multigroup_population <- function(groupMatrix, population, weights, na.rm){
   # convert population from numbers to weights
   population <- population/sum(population)
   return(population)
+}
+# summarize group inputs into their full population proportions
+sumProportion <- function(groupMatrix, population, comparison){
+  if(!is.null(comparison)) largeGroup <- comparison
+  else largeGroup <- sapply(groupMatrix, stats::weighted.mean, population)
+  return(largeGroup)
 }
