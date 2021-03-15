@@ -1,4 +1,5 @@
 load('bay_results.Rdata')
+load('bay_results_sum.Rdata')
 
 test_that("Default data works",{
   proper_length <- nrow(bay_race)
