@@ -73,7 +73,7 @@ a baseline." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rsegregation</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.0</span>
       </span>
     </div>
 
@@ -121,12 +121,15 @@ a baseline.</p>
 
     <pre class="usage"><span class='fu'>entropy</span><span class='op'>(</span>
   <span class='va'>...</span>,
-  weights <span class='op'>=</span> <span class='st'>"sum"</span>,
-  sumPercent <span class='op'>=</span> <span class='st'>"weights"</span>,
+  population <span class='op'>=</span> <span class='cn'>NA</span>,
+  comparison <span class='op'>=</span> <span class='cn'>NULL</span>,
   entropy_type <span class='op'>=</span> <span class='st'>"entropy"</span>,
+  logBase <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>)</span>,
   scale <span class='op'>=</span> <span class='cn'>FALSE</span>,
   summed <span class='op'>=</span> <span class='cn'>FALSE</span>,
-  na.rm <span class='op'>=</span> <span class='cn'>TRUE</span>
+  na.rm <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  weights <span class='op'>=</span> <span class='cn'>NA</span>,
+  sumPercent <span class='op'>=</span> <span class='cn'>NA</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -137,12 +140,16 @@ a baseline.</p>
       <td><p>Vectors containing proportions of each group, or a dataframe containing only those vectors.</p></td>
     </tr>
     <tr>
-      <th>weights</th>
-      <td><p>deprecated, use population.</p></td>
+      <th>population</th>
+      <td><p>A vector of population totals for each row, or weights summing to a total of
+one. If NA, will assume all populations/weights are equal. Set to 1 to silence warning.
+If a string, will use the string as the named column of the dataframe provided in ...</p></td>
     </tr>
     <tr>
-      <th>sumPercent</th>
-      <td><p>deprecated, will throw error.</p></td>
+      <th>comparison</th>
+      <td><p>A vector of percentages that must equal the length of the
+number of vectors or columns in <code>...</code>, representing the percentages of each
+group in the larger (comparison) geography.</p></td>
     </tr>
     <tr>
       <th>entropy_type</th>
@@ -151,8 +158,14 @@ a baseline.</p>
 \(E_{i} = \Sigma (X_{im} * ln(1/X_{im})\)
 where Xim is the proportion of racial group within the geography i.</p></dd>
 <dt>"information_theory"</dt><dd><p>Theil's information theory index</p></dd>
+<dt>"overall_entropy"</dt><dd><p>Overall entropy for the summarized dataset. Reports one score for the
+entire dataset, as when setting <code>summed</code>=TRUE.</p></dd>
 
 </dl></td>
+    </tr>
+    <tr>
+      <th>logBase</th>
+      <td><p>Specify the base for the logathirm used in the equation. Natural logarithm by default.</p></td>
     </tr>
     <tr>
       <th>scale</th>
@@ -173,6 +186,14 @@ such that <code>sum(divergence(..., summed = 'weighted))</code> is equivalent to
       <td><p>logical. Should missing values (including NaN) be removed?
 Used only if <code>summed</code> is set to TRUE.</p></td>
     </tr>
+    <tr>
+      <th>weights</th>
+      <td><p>deprecated, use population.</p></td>
+    </tr>
+    <tr>
+      <th>sumPercent</th>
+      <td><p>deprecated, will throw error.</p></td>
+    </tr>
     </table>
 
     <h2 class="hasAnchor" id="source"><a class="anchor" href="#source"></a>Source</h2>
@@ -191,7 +212,7 @@ population</p>
     <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://github.com/arthurgailes/rsegregation'>rsegregation</a></span><span class='op'>)</span>
 <span class='fu'>entropy</span><span class='op'>(</span><span class='va'>bay_race</span><span class='op'>$</span><span class='va'>white</span>,<span class='va'>bay_race</span><span class='op'>$</span><span class='va'>hispanic</span>,<span class='va'>bay_race</span><span class='op'>$</span><span class='va'>asian</span>,
 <span class='va'>bay_race</span><span class='op'>$</span><span class='va'>black</span>, <span class='va'>bay_race</span><span class='op'>$</span><span class='va'>all_other</span>, weights <span class='op'>=</span> <span class='va'>bay_race</span><span class='op'>$</span><span class='va'>total_pop</span><span class='op'>)</span>
-</div><div class='output co'>#&gt;    [1] 0.9566644 0.7969746 1.0859266 1.1121719 1.2816122 1.2348325 1.2624260
+</div><div class='output co'>#&gt; <span class='warning'>Warning: parameter `weights` is deprecated, use `population`</span></div><div class='output co'>#&gt;    [1] 0.9566644 0.7969746 1.0859266 1.1121719 1.2816122 1.2348325 1.2624260
 #&gt;    [8] 1.3773304 1.3313959 1.3177736 1.3787653 1.2199007 1.4615506 1.3515930
 #&gt;   [15] 1.2757467 1.3737796 1.4518171 1.1817099 1.4368619 1.2489296 1.0412827
 #&gt;   [22] 1.2220339 1.2663997 1.4051752 1.3755270 0.5085328 1.4338626 1.2123693

@@ -74,7 +74,7 @@ is being calculated." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rsegregation</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.0</span>
       </span>
     </div>
 
@@ -121,24 +121,24 @@ comprising the larger geographic entity for which the exposure index
 is being calculated.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>exposure</span><span class='op'>(</span><span class='va'>group1</span>, <span class='va'>group2</span>, <span class='va'>totalPop</span>, summed <span class='op'>=</span> <span class='cn'>TRUE</span>, na.rm <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>exposure</span><span class='op'>(</span><span class='va'>group1</span>, <span class='va'>group2</span>, population <span class='op'>=</span> <span class='cn'>NA</span>, summed <span class='op'>=</span> <span class='cn'>TRUE</span>, na.rm <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>group1</th>
-      <td><p>Numeric vectors representing the popuplation of the
-groups to be compared.</p></td>
+      <td><p>Numeric vectors representing the proportions of each group in each observation</p></td>
     </tr>
     <tr>
       <th>group2</th>
-      <td><p>Numeric vectors representing the popuplation of the
-groups to be compared.</p></td>
+      <td><p>Numeric vectors representing the proportions of each group in each observation</p></td>
     </tr>
     <tr>
-      <th>totalPop</th>
-      <td><p>A numeric vector the length of <code>group</code> with overall population totals.</p></td>
+      <th>population</th>
+      <td><p>A vector of population totals for each row, or weights summing to a total of
+one. If NA, will assume all populations/weights are equal. Set to 1 to silence warning.
+If a string, will use the string as the named column of the dataframe provided in ...</p></td>
     </tr>
     <tr>
       <th>summed</th>

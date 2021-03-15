@@ -76,7 +76,7 @@ Its minimum value is zero and its maximum value is 100." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rsegregation</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.0</span>
       </span>
     </div>
 
@@ -125,15 +125,19 @@ whites across the census tracts that make up a metropolis.
 Its minimum value is zero and its maximum value is 100.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>dissimilarity</span><span class='op'>(</span><span class='va'>group1</span>, <span class='va'>group2</span>, summed <span class='op'>=</span> <span class='cn'>TRUE</span>, na.rm <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>dissimilarity</span><span class='op'>(</span><span class='va'>group1</span>, <span class='va'>group2</span>, population <span class='op'>=</span> <span class='cn'>NA</span>, summed <span class='op'>=</span> <span class='cn'>TRUE</span>, na.rm <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>group1, group2</th>
-      <td><p>Numeric vectors representing the popuplation of the
-groups to be compared.</p></td>
+      <td><p>Numeric vectors representing the proportions of each group in each observation</p></td>
+    </tr>
+    <tr>
+      <th>population</th>
+      <td><p>if <code>group1</code> and <code>group2</code> are proportions, this parameter gives the population weights.
+Set to 1 to avoid a warning measure if using population</p></td>
     </tr>
     <tr>
       <th>summed</th>
