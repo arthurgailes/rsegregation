@@ -67,7 +67,7 @@ divergence <- function(..., population=NA, na.rm=TRUE, summed=FALSE, logBase=exp
   }
   # process population inputs if not actual population/weights
   if(isTRUE(is.na(population))){
-    population <- 1
+    population <- rep(1, nrow(groupMatrix))
     warning("Population parameter not set; assuming equal populations.")
   } else if (is.character(population)){
     popChar <- population

@@ -57,7 +57,7 @@ test_that("decompostition matches Roberto results",{
     select(-tract) %>%
     transmute(place_name = ifelse(grepl('Detroit',place_name), place_name, 'Suburbs'),
       population=population*(white+black), white=white/(white+black), black=black/(white+black)) %>%
-    decompose_divergence(groupCol='place_name', weightCol = 'population', output='percentage',
+    decompose_divergence(groupCol='place_name', popCol = 'population', output='percentage',
       logBase=2) %>%
     select(-place_name) %>% as.data.frame()
   rob_result <- data.frame(within=c(0.05,0.32), between=c(0.5,0.14))
