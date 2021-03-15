@@ -91,7 +91,7 @@ decompose_divergence <- function(dataframe, groupCol=NULL, popCol = NA, weightCo
   # get "within' divergence for each group
   withinDiv <- dplyr::summarize(dataframe,
     within = rsegregation::divergence(dplyr::across(calcNames),
-      population = popCol,summed = T), .groups = 'drop'
+      population = popCol,summed = T,...), .groups = 'drop'
     )
 
   # sum population and weights by group
@@ -101,7 +101,7 @@ decompose_divergence <- function(dataframe, groupCol=NULL, popCol = NA, weightCo
 
   # get divergence "between" group and total
   betweenDiv <- dplyr::transmute(groupPops,
-    between = divergence(dplyr::across(calcNames), population = popCol),
+    between = divergence(dplyr::across(calcNames), population = popCol, ...),
     dplyr::across(c(groupCol, popCol)))
 
   # join within and between together and sum
@@ -110,7 +110,7 @@ decompose_divergence <- function(dataframe, groupCol=NULL, popCol = NA, weightCo
 
   # sanity check that within + between = total divergence
   divSumGroup <- ifelse(sum(result$popCol)==0, 0,
-    stats::weighted.mean(result$within + result$between, result$popCol, na.rm=T)
+    stats::weighted.mean(result$total, result$popCol, na.rm=T)
   )
   if(round(divSum, 5) != round(divSumGroup, 5)) warning("sum of within and between divergence is not equal to sum of total divergence. Check inputs.")
 

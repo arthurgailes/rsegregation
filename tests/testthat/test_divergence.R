@@ -30,17 +30,19 @@ test_that("Results match Roberto in Detroit",{
 
 test_that("Current divergence matches previous divergence",{
   div_score <- divergence(bay_race$white,
-    bay_race$hispanic,bay_race$asian,bay_race$black, bay_race$all_other)
+    bay_race$hispanic,bay_race$asian,bay_race$black, bay_race$all_other, population=bay_race$total_pop)
   divergence_sum <- divergence(bay_race$white,
-    bay_race$hispanic,bay_race$asian,bay_race$black, bay_race$all_other,
+    bay_race$hispanic,bay_race$asian,bay_race$black, bay_race$all_other, population=bay_race$total_pop,
     summed = T)
-  divergence_weight <- divergence(bay_race$white, bay_race$hispanic,
-    bay_race$asian,bay_race$black, bay_race$all_other,summed = 'weighted')
-  expect_equal(divergence_weight, bay_results$div_weight)
+  expect_equal(div_score, bay_results$divergence)
+  expect_equal(divergence_sum, bay_results_sum$divergence)
 })
 
 test_that("incomplete divergence works",{
   # maintains compatibility with segregation_measures; segregation report
+  # test divergence with incomplete (groups<100%) summation
+  mod_pop <- bay_race$total_pop*(bay_race$white+bay_race$hispanic+bay_race$black+bay_race$asian)
+  # note: i weighted observations by total pop, but compared them to the total of the race populations.
   divergence_inc_sum <- summarize(bay_race,
     div=divergence(across(hispanic:asian), population=total_pop, summed=T,
       comparison = c(0.24657102 , 0.44465809, 0.06746733, 0.24130356 )),
