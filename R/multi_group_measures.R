@@ -61,10 +61,7 @@ divergence <- function(..., population=NA, na.rm=TRUE, summed=FALSE, logBase=exp
   #sanity checks
   divergence_sanity(rowTotals=rowTotals,sumPercent=sumPercent,comparison=comparison,
     groupMatrix=groupMatrix)
-  if(!isTRUE(is.na(weights))){
-    warning('parameter `weights` is deprecated, use `population`')
-    population <- weights
-  }
+  population <- deprecate_weights(p=population, w=weights)
   # process population inputs if not actual population/weights
   if(isTRUE(is.na(population))){
     population <- rep(1, nrow(groupMatrix))
@@ -138,8 +135,8 @@ multigroup_sanity <- function(df, population){
 #' bay_race$black, bay_race$all_other, weights = bay_race$total_pop)
 #'
 #' @export
-entropy <- function( ..., weights = 'sum', sumPercent = 'weights', entropy_type = 'entropy',
-  scale = FALSE, summed=FALSE, na.rm=TRUE){
+entropy <- function( ..., population=NA, comparison=NA, entropy_type = 'entropy',
+  scale = FALSE, summed=FALSE, na.rm=TRUE, weights = NA, sumPercent = NA){
 
   groupMatrix <- data.frame(...)
   # if(nrow(groupMatrix) == 1) return(0) # if a single observation composes a group
@@ -147,7 +144,7 @@ entropy <- function( ..., weights = 'sum', sumPercent = 'weights', entropy_type 
   if(isTRUE(na.rm)) groupMatrix[is.na(groupMatrix)] <- 0
 
   #deal with weights and sumPercent in separate functions
-  weights <- convert_weights(groupMatrix, weights, na.rm = na.rm)
+  population <- deprecate_weights(p=population, w=weights)
   #convert to percentages if necessary
   groupMatrix <- to_percentages(groupMatrix, na.rm=na.rm)
   sumPercent <- proc_sumPercent(groupMatrix, sumPercent, weights, na.rm)
@@ -236,4 +233,12 @@ divergence_sanity <- function(...){
   list2env(list(...), envir = environment())
   if(!is.na(rowTotals) | !is.na(sumPercent)) stop('One of your parameters has been deprecated.')
   if(!is.null(comparison) & length(comparison) != length(groupMatrix)) stop("`comparison` must be the same length the number of columns in `...`")
+}
+# weight deprecation
+deprecate_weights <- function(population, weights){
+  if(!isTRUE(is.na(weights))){
+    warning('parameter `weights` is deprecated, use `population`')
+    population <- weights
+  }
+  return(population)
 }
