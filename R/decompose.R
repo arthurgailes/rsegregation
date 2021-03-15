@@ -7,9 +7,10 @@
 #' The sum of the scores reported in `decompose_divergence` when setting summed==TRUE
 #' should always be equal to the
 #'
-#' @param dataframe A dataframe composed of numeric/integer columns, with the exception
-#' of a column named in `groupCol`. All columns are used in the divergence calculation
-#' except for those specified in `groupCol` and `weights`(optional)
+#' @param dataframe A dataframe composed of numeric/integer columns representing percentages of each
+#' population group. All columns are used in the divergence calculation
+#' except for those specified in `groupCol` and `popCol`(optional), and no other columns should
+#' be included.
 #'
 #' @param groupCol Name of the column(s) in the dataframe used for grouping.
 #' if passing a `grouped_df` to `dataframe`, this parameter is ignored. If using multiple
@@ -18,24 +19,24 @@
 #'
 #' @importFrom stats weighted.mean
 #'
-#' @param weightCol Either NA (default), which sets `weightCol` to the rowwise
-#' sum of `dataframe`; or a character string of the column name in `dataframe`
-#' that should be used for weightCol.
+#' @param popCol Either NA (default), which sets the population of each row to 1,
+#'  or a character string of the column name in `dataframe`.
+#'
+#' @param weightCol alias for popCol
 #'
 #' @param output Any of:
 #' \describe{
 #'  \item{"scores"}{Default. The individual within and between divergence scores for each
 #'  row or group, plus the total score.}
-#'  \item{"weighted"}{As summed, but includinga column of weights to use if summing them both
-#'  across the entire dataset.}
 #'  \item{"percentage"}{One row for each entry(or group) as in "scores," but scaled so each
 #'  observation reports a percentage of the total score that would be reproted with "summed".}
 #'  \item{"all"}{The output from `summed`, `weighted`, and `percentage.`}
-#'  \item{"scaled"}{Not yet implemented. Re-scales divergence scores the divergence index to
-#'  have a range  of 0 to 1 by dividing by its maximum value for a given population. See details.}
 #'  }
+#'
+#' @param ... options passed through to `divergence`
 #' @note The `divergence` parameters for each group are set to their defaults
 #' unless explicitly noted above.
+#'
 #'
 #' @details
 #' Deomposing the divergence index allows users to simultatneously examine the segregation within
@@ -65,74 +66,62 @@
 #'
 #' @source Roberto, 2016. "A Decomposable Measure of Segregation and Inequality."
 #' @export
-decompose_divergence <- function(dataframe, groupCol = NULL, weightCol = NA,
-  output = 'scores'){
+decompose_divergence <- function(dataframe, groupCol=NULL, popCol = NA, weightCol = NA,
+  output = 'scores', ...){
   #save original dataframe
   dataframe_orig <- dataframe
+  if(!is.na(weightCol)& is.na(popCol)) popCol <- weightCol
+  # convert popCol to weights
+
   #group the dataframe if groupCol is provided
-  if(!dplyr::is.grouped_df(dataframe) & is.null(groupCol)) stop('groupCol must be specified')
-  else if(dplyr::is.grouped_df(dataframe)){
-    #extract grouping vars and ungroup
-    groupCol <- dplyr::group_vars(dataframe)
-    dataframe <- dplyr::ungroup(dataframe)
-  }
-  # create weights from rowsums if specified
-  if(is.na(weightCol)) {
-    dataframe$weightCol = rowSums(
-      dplyr::select(dataframe, !dplyr::all_of(groupCol)), na.rm=T)
-  } else { # if provided as a column, rename column to weightCol
-    dataframe <- dplyr::rename(dataframe, 'weightCol' = dplyr::all_of(weightCol))
-    rm(weightCol)
-  }
-  # ensure sum of weights == 1 (convert to % if weights is provided as raw population stats)
-  dataframe$weightCol <- dataframe$weightCol/sum(dataframe$weightCol, na.rm=T)
+  if(!is.null(groupCol)) dataframe <- dplyr::group_by(dataframe, dplyr::across(groupCol))
+  else if(!dplyr::is.grouped_df(dataframe)) stop("`groupCol` must be specified")
+  else groupCol <- dplyr::group_vars(dataframe)
 
-  # save names of the population variables (i.e. not grouping or weights)
-  calcNames <- names(dplyr::select(dataframe, !dplyr::all_of(groupCol), -'weightCol'))
-
-  # convert dataframe to percentages
-  dataframe <- dplyr::mutate(dataframe, dplyr::across(calcNames,
-    ~(.x/rowSums(dataframe[calcNames], na.rm=T))))
-
-  # group by the grouping variables
-  dataframe <- dplyr::group_by(dataframe, dplyr::across(groupCol))
+  # create equivalent weights if not provided, rename column to popCol for consistency
+  if(is.na(popCol)) dataframe$popCol = 1
+  else dataframe <- dplyr::rename(dataframe, popCol = {{popCol}})
+  # convert popCol to weights
+  dataframe$popCol <- dataframe$popCol/sum(dataframe$popCol, na.rm=T)
+  # get overall divergence
+  divSum <- dplyr::select(dplyr::ungroup(dataframe), -dplyr::all_of(groupCol))
+  calcNames <- names(dplyr::select(divSum, -popCol))
+  divSum <- rsegregation::divergence(divSum, population='popCol', summed=T,  ...)
 
   # get "within' divergence for each group
   withinDiv <- dplyr::summarize(dataframe,
     within = rsegregation::divergence(dplyr::across(calcNames),
-      weights = weightCol,summed = T), .groups = 'drop'
+      population = popCol,summed = T), .groups = 'drop'
     )
 
   # sum population and weights by group
   groupPops <- dplyr::summarize(dataframe, dplyr::across(calcNames,
-    ~stats::weighted.mean(.x, weightCol, na.rm = T)),
-    weightCol = sum(weightCol, na.rm = T), .groups = 'drop')
+    ~stats::weighted.mean(.x, popCol, na.rm = T)),
+    popCol = sum(popCol, na.rm = T), .groups = 'drop')
 
   # get divergence "between" group and total
   betweenDiv <- dplyr::transmute(groupPops,
-    between = divergence(dplyr::across(calcNames), weights = weightCol),
-    dplyr::across(c(groupCol, weightCol)))
+    between = divergence(dplyr::across(calcNames), population = popCol),
+    dplyr::across(c(groupCol, popCol)))
 
   # join within and between together and sum
   result <- dplyr::inner_join(withinDiv, betweenDiv, by = groupCol)
   result$total <- result$within+result$between
 
   # sanity check that within + between = total divergence
-  divSum <- divergence(dataframe_orig[calcNames], weights = dataframe$weightCol, summed = T)
-  divSumGroup <- ifelse(sum(result$weightCol)==0, 0,
-    stats::weighted.mean(result$within + result$between, result$weightCol, na.rm=T)
+  divSumGroup <- ifelse(sum(result$popCol)==0, 0,
+    stats::weighted.mean(result$within + result$between, result$popCol, na.rm=T)
   )
   if(round(divSum, 5) != round(divSumGroup, 5)) warning("sum of within and between divergence is not equal to sum of total divergence. Check inputs.")
 
   # process output parameter
-  if(output == 'scores') result <- subset(result, select = -weightCol)
-  else if(output == 'weighted') return(result)
+  if(output == 'scores') result <- subset(result, select = -popCol)
   else if(output == 'percentage'){
-    result <- dplyr::transmute(result, within = (.data$within*.data$weightCol)/divSum,
-      between = (.data$between*.data$weightCol)/divSum, groupCol)
+    result <- dplyr::transmute(result, within = (.data$within*.data$popCol)/divSum,
+      between = (.data$between*.data$popCol)/divSum, .data[[groupCol]])
   } else if (output=='all') {
-    result <- dplyr::mutate(result, within_pct = (.data$within*.data$weightCol)/divSum,
-      between_pct = (.data$between*.data$weightCol)/divSum)
+    result <- dplyr::mutate(result, within_pct = (.data$within*.data$popCol)/divSum,
+      between_pct = (.data$between*.data$popCol)/divSum)
   } else stop("output parameter is invalid")
 
   return(result)

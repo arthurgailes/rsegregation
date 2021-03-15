@@ -71,9 +71,11 @@ divergence <- function(..., population=NA, na.rm=TRUE, summed=FALSE, logBase=exp
     warning("Population parameter not set; assuming equal populations.")
   } else if (is.character(population)){
     popChar <- population
-    population <- groupMatrix[popChar]
+    population <- groupMatrix[[popChar]]
     groupMatrix[popChar] <- NULL
   }
+  #remove population NAs
+  if(isTRUE(na.rm)) population[which(is.na(population))] <- 0
   if(isTRUE(any(rowSums(groupMatrix)>1.05))) warning("Some of the provided rows sum to more than 1; check input values.")
   # if(nrow(groupMatrix) == 1) return(0) # if a single observation composes a group
   # remove NAs
@@ -87,7 +89,7 @@ divergence <- function(..., population=NA, na.rm=TRUE, summed=FALSE, logBase=exp
     group <- groupMatrix[[column]]
     # use `population` or `comparison` for large group stats
     group_large <- ifelse(is.null(comparison),
-      stats::weighted.mean(group, population), comparison[column])
+      stats::weighted.mean(group, population, na.rm=na.rm), comparison[column])
     # calculate group, substituting 0 for log(0)
     prescores[[column]] <- ifelse(group <= 0 | group_large <= 0, 0,
       group * log(group / group_large, base=logBase) )
