@@ -40,24 +40,16 @@ test_that("Current divergence matches previous divergence",{
 })
 
 test_that("incomplete divergence works",{
-  # maintins compatibility with segregation_measures; segregation report
-  divergence_inc_sum <- divergence(bay_race$white,
-    bay_race$hispanic,bay_race$asian,bay_race$black, weights = bay_race$total_pop,
-    summed = T, rowTotals='weights')
+  # maintains compatibility with segregation_measures; segregation report
+  t <- bay_race$white+bay_race$hispanic+bay_race$black+bay_race$asian
+  divergence_inc_sum <- divergence(bay_race$white/t,
+    bay_race$hispanic/t,bay_race$asian/t,bay_race$black/t, population = t*bay_race$total_pop,
+    summed = T)
   expect_equal(round(divergence_inc_sum, 4), 0.2096)
 })
 
-test_that("divergence works with population percentages",{
-  library(dplyr)
-  div_percent <- mutate(bay_race, across(c(white, black, hispanic, asian, all_other)),
-    list(~(./total_pop))) %>%
-    transmute(div_pcts = divergence(white, black, hispanic, asian, all_other, weights = total_pop))
-
-  #scores
-  expect_equal(round(div_percent$div_pcts,4), round(bay_results$divergence,4))
-})
 
 test_that("A one-row entry returns zero",{
-  z <- divergence(bay_race$black[1], bay_race$white[1], population=bay_race$total_pop)
+  z <- suppressWarnings(divergence(bay_race$black[1], bay_race$white[1], population=bay_race$total_pop[1]))
   expect_equal(z, 0)
 })
