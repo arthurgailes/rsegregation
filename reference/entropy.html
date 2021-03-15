@@ -134,36 +134,15 @@ a baseline.</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>...</th>
-      <td><p>Population vectors for every group included in the divergence
-calculation.</p></td>
+      <td><p>Vectors containing proportions of each group, or a dataframe containing only those vectors.</p></td>
     </tr>
     <tr>
       <th>weights</th>
-      <td><p>Either a vector of weights summing to one, or the total
-population for each observation in <code>...</code>. Can be any of:</p><dl>
-<dt>A numeric vector</dt><dd><p>The length of each vector provided in each
-entry in <code>...</code> (i.e. the column-wise length of <code>...</code>). Can be either population
-or weights by observation</p></dd>
-<dt><code>sum</code></dt><dd><p>Sets <code>weights</code> to the rowwise sum of <code>...</code></p></dd>
-<dt><code>none</code></dt><dd><p>Weighs each observation evenly (1/length). Note that if <code>...</code> is a
-set of percentages summing to 1 for each row, <code>sum</code> and <code>none</code> are equivalent.</p></dd>
-
-</dl></td>
+      <td><p>deprecated, use population.</p></td>
     </tr>
     <tr>
       <th>sumPercent</th>
-      <td><p>The percentage of each group in the larger population (i.e. the
-population composed of the sum of groups provided in <code>...</code>). Can be any of:</p><dl>
-<dt>A numeric vector</dt><dd><p>Each entry represents the total population of the  with one entry for each group/vector provided in <code>...</code>. (i.e.
-the rowwise length of <code>...</code>).
-Note that for this to work correctly, each group must be provided in the same order in
-<code>sumPercent</code> as in <code>...</code> Useful if the sum of <code>sumPercent</code> is less than 100%, as <code>divergence</code>
-will otherwise force</p></dd>
-<dt><code>weights</code></dt><dd><p>Default. Uses the value of <code>weights</code> to construct total population proportions.
-If weights is set to <code>none</code>, the total population proportions will be the unweighted
-average of the percentages in each observation.</p></dd>
-
-</dl></td>
+      <td><p>deprecated, will throw error.</p></td>
     </tr>
     <tr>
       <th>entropy_type</th>
