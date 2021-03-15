@@ -61,20 +61,18 @@ divergence <- function(..., population=NA, na.rm=TRUE, summed=FALSE, logBase=exp
   #sanity checks
   divergence_sanity(rowTotals=rowTotals,sumPercent=sumPercent,comparison=comparison,
     groupMatrix=groupMatrix)
-  population <- deprecate_weights(p=population, w=weights)
-  # process population inputs if not actual population/weights
-  if(isTRUE(is.na(population))){
-    population <- rep(1, nrow(groupMatrix))
-    warning("Population parameter not set; assuming equal populations.")
-  } else if (is.character(population)){
+  # if population is character, take the column from the dataframe
+   if (is.character(population)){
     popChar <- population
     population <- groupMatrix[[popChar]]
     groupMatrix[popChar] <- NULL
-  }
-  #remove population NAs
-  if(isTRUE(na.rm)) population[which(is.na(population))] <- 0
+   }
+  #process population
+  population <- multigroup_population(g=groupMatrix, p=population, w=weights, n=na.rm)
+
+  # ensure that percentages sum to about 1
   if(isTRUE(any(rowSums(groupMatrix)>1.05))) warning("Some of the provided rows sum to more than 1; check input values.")
-  # if(nrow(groupMatrix) == 1) return(0) # if a single observation composes a group
+
   # remove NAs
   if(isTRUE(na.rm)) groupMatrix[is.na(groupMatrix)] <- 0
 
@@ -143,13 +141,13 @@ entropy <- function( ..., population=NA, comparison=NA, entropy_type = 'entropy'
   # remove NAs
   if(isTRUE(na.rm)) groupMatrix[is.na(groupMatrix)] <- 0
 
-  #deal with weights and sumPercent in separate functions
-  population <- deprecate_weights(p=population, w=weights)
+  #deal with population and sumPercent in separate functions
+  population <- multigroup_population(g=groupMatrix, p=population, w=weights, n=na.rm)
   #convert to percentages if necessary
   groupMatrix <- to_percentages(groupMatrix, na.rm=na.rm)
-  sumPercent <- proc_sumPercent(groupMatrix, sumPercent, weights, na.rm)
+  sumPercent <- proc_sumPercent(groupMatrix, sumPercent, population, na.rm)
   # check for construction problems
-  multigroup_sanity(groupMatrix,weights)
+  multigroup_sanity(groupMatrix,population)
   # create by-group scores
   prescores <- groupMatrix
   # calculate entropy
@@ -169,7 +167,7 @@ entropy <- function( ..., population=NA, comparison=NA, entropy_type = 'entropy'
   if(entropy_type == 'information_theory') {
     # sanity check
     if(isTRUE(scale)) stop("scale is not compatible with information_theory")
-    return(information_theory(entropy, sumPercent, weights, summed))
+    return(information_theory(entropy, sumPercent, population, summed))
   }
 
   # in either entropy_type, the entropy of the larger geography is needed
@@ -185,7 +183,7 @@ entropy <- function( ..., population=NA, comparison=NA, entropy_type = 'entropy'
   return(entropy)
 }
 # information theory
-information_theory <- function(entropy, sumPercent, weights, summed){
+information_theory <- function(entropy, sumPercent, population, summed){
   #large population entropy score
   entropySum <- ifelse(sumPercent <= 0, 0,
     sumPercent * log(1 / sumPercent) )
@@ -194,8 +192,8 @@ information_theory <- function(entropy, sumPercent, weights, summed){
   index <- 1 - (entropy/entropySum)
 
   #index score
-  if(isTRUE(summed)) index <- sum(weights * index)
-  if(isTRUE(summed == 'weighted')) index <- (index * weights)
+  if(isTRUE(summed)) index <- sum(population * index)
+  if(isTRUE(summed == 'weighted')) index <- (index * population)
 
   return(index)
 }
@@ -235,10 +233,20 @@ divergence_sanity <- function(...){
   if(!is.null(comparison) & length(comparison) != length(groupMatrix)) stop("`comparison` must be the same length the number of columns in `...`")
 }
 # weight deprecation
-deprecate_weights <- function(population, weights){
+multigroup_population <- function(groupMatrix, population, weights, na.rm){
+  # throw warning if weights are provided
   if(!isTRUE(is.na(weights))){
     warning('parameter `weights` is deprecated, use `population`')
     population <- weights
   }
+  # warning if population is NA; give equal weights
+  if(isTRUE(is.na(population))){
+    population <- rep(1, nrow(groupMatrix))
+    warning("Population parameter not set; assuming equal populations.")
+  }
+  #remove population NAs
+  if(isTRUE(na.rm)) population[which(is.na(population))] <- 0
+  # convert population from numbers to weights
+  population <- population/sum(population)
   return(population)
 }
