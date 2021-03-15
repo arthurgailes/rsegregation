@@ -114,6 +114,8 @@ multigroup_sanity <- function(groupMatrix, population, comparison){
 #'  \eqn{E_{i} = \Sigma (X_{im} * ln(1/X_{im})}{Ei = \Sigma (Xim \* ln(1/X_{im}))}
 #'  where Xim is the proportion of racial group within the geography i.}
 #' \item{"information_theory"}{Theil's information theory index}
+#' \item{"overall_entropy"}{Overall entropy for the summarized dataset. Reports one score for the
+#' entire dataset, as when setting `summed`=TRUE.}
 #' }
 #'
 #' @inheritParams divergence
@@ -142,14 +144,14 @@ entropy <- function( ..., population=NA, comparison=NULL, entropy_type = 'entrop
   if(isTRUE(na.rm)) groupMatrix[is.na(groupMatrix)] <- 0
 
   #process population/weights
-  population <- multigroup_population(g=groupMatrix, p=population, w=weights, n=na.rm)
+  population <- multigroup_population(groupMatrix=groupMatrix, population=population, weights=weights, na.rm=na.rm)
 
   # check for construction problems
   multigroup_sanity(groupMatrix,population,c=comparison)
   # create by-group scores
   prescores <- groupMatrix
   # get summary proportions for the full dataset
-  largeGroup <- sumProportion(g=groupMatrix, p=population,c=comparison)
+  largeGroup <- sumProportion(groupMatrix=groupMatrix, population=population,comparison=comparison)
   # calculate entropy
   for(column in seq_along(groupMatrix)){
     group <- groupMatrix[[column]]
@@ -159,37 +161,34 @@ entropy <- function( ..., population=NA, comparison=NULL, entropy_type = 'entrop
       group * log(1 / group, base=logBase) )
   }
   entropy <- rowSums(prescores, na.rm = na.rm)
+
   if(isTRUE(scale)){
     #scale entropy between zero and 1, where 1 represents log(number of groups)
     entropy <- scale01(entropy, 0, log(length(groupMatrix), base=logBase))
   }
 
-  if(entropy_type == 'information_theory') {
+  if(entropy_type %in% c('information_theory','overall_entropy')) {
+    # the entropy/diversity of the overall population
+    overall_entropy <- sum(sapply(largeGroup, function(x) ifelse(x <= 0, 0, x * log(1 / x, base=logBase) )))
+    if (entropy_type=='overall_entropy') return(overall_entropy)
     # sanity check
-    if(isTRUE(scale)) stop("scale is not compatible with information_theory")
-    return(information_theory(e=entropy, large=largeGroup, p=population, summed=summed, log=logBase))
+    if(isTRUE(scale)) stop("scale is not yet compatible with information_theory")
+    return(information_theory(entropy=entropy, overall_entropy=overall_entropy, population=population, summed=summed, logBase=logBase))
   }
 
   # in either entropy_type, the entropy of the larger geography is needed
   if(summed==T) {
     #large population entropy score
-    entropySum <- ifelse(largeGroup <= 0, 0,
-      largeGroup * log(1 / largeGroup) )
-    entropySum <- sum(entropySum)
-    if(isTRUE(scale)) entropySum <- scale01(entropySum, 0, log(length(largeGroup)))
+    entropySum <- stats::weighted.mean(entropy, population)
     return(entropySum)
   }
 
   return(entropy)
 }
 # information theory
-information_theory <- function(entropy, largeGroup, population, summed, logBase){
-  #large population entropy score
-  entropySum <- ifelse(largeGroup <= 0, 0,
-    largeGroup * log(1 / largeGroup, base=logBase) )
-  entropySum <- sum(entropySum)
+information_theory <- function(entropy, overall_entropy, population, summed, logBase){
   # Information index - single observation
-  index <- 1 - (entropy/entropySum)
+  index <- 1 - (entropy/overall_entropy)
 
   #index score
   if(isTRUE(summed)) index <- sum(population * index)

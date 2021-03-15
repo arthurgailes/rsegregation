@@ -9,27 +9,38 @@ Theil, Henri. 1972. Statistical Decomposition Analysis.
 \usage{
 entropy(
   ...,
-  weights = "sum",
-  sumPercent = "weights",
+  population = NA,
+  comparison = NULL,
   entropy_type = "entropy",
+  logBase = exp(1),
   scale = FALSE,
   summed = FALSE,
-  na.rm = TRUE
+  na.rm = TRUE,
+  weights = NA,
+  sumPercent = NA
 )
 }
 \arguments{
 \item{...}{Vectors containing proportions of each group, or a dataframe containing only those vectors.}
 
-\item{weights}{deprecated, use population.}
+\item{population}{A vector of population totals for each row, or weights summing to a total of
+one. If NA, will assume all populations/weights are equal. Set to 1 to silence warning.
+If a string, will use the string as the named column of the dataframe provided in ...}
 
-\item{sumPercent}{deprecated, will throw error.}
+\item{comparison}{A vector of percentages that must equal the length of the
+number of vectors or columns in \code{...}, representing the percentages of each
+group in the larger (comparison) geography.}
 
 \item{entropy_type}{One of: \describe{
 \item{"entropy"}{Default.
 \eqn{E_{i} = \Sigma (X_{im} * ln(1/X_{im})}{Ei = \Sigma (Xim \* ln(1/X_{im}))}
 where Xim is the proportion of racial group within the geography i.}
 \item{"information_theory"}{Theil's information theory index}
+\item{"overall_entropy"}{Overall entropy for the summarized dataset. Reports one score for the
+entire dataset, as when setting \code{summed}=TRUE.}
 }}
+
+\item{logBase}{Specify the base for the logathirm used in the equation. Natural logarithm by default.}
 
 \item{scale}{Scale entropy scores from 0-1. Setting scale to TRUE
 ignores the entropy_type (set to "entropy") and summed parameters.}
@@ -43,6 +54,10 @@ such that \verb{sum(divergence(..., summed = 'weighted))} is equivalent to
 
 \item{na.rm}{logical. Should missing values (including NaN) be removed?
 Used only if \code{summed} is set to TRUE.}
+
+\item{weights}{deprecated, use population.}
+
+\item{sumPercent}{deprecated, will throw error.}
 }
 \value{
 A single value if summed==TRUE, or a vector equaling the length of the inputs. Note that if
