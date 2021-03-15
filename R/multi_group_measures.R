@@ -59,8 +59,7 @@ divergence <- function(..., population=NA, na.rm=TRUE, summed=FALSE, logBase=exp
   comparison=NULL, sumPercent = NA, weights = NA, rowTotals = NA){
   groupMatrix <- data.frame(...)
   #sanity checks
-  divergence_sanity(rowTotals=rowTotals,sumPercent=sumPercent,comparison=comparison,
-    groupMatrix=groupMatrix)
+  divergence_sanity(rowTotals=rowTotals,sumPercent=sumPercent)
   # if population is character, take the column from the dataframe
    if (is.character(population)){
     popChar <- population
@@ -76,7 +75,7 @@ divergence <- function(..., population=NA, na.rm=TRUE, summed=FALSE, logBase=exp
   # get summary proportions for the full dataset
   largeGroup <- sumProportion(g=groupMatrix, p=population,c=comparison)
   # check for construction problems
-  multigroup_sanity(groupMatrix,population)
+  multigroup_sanity(groupMatrix,population,c=comparison)
   # create by-group scores
   prescores <- groupMatrix
   for(column in seq_along(groupMatrix)){
@@ -96,10 +95,11 @@ divergence <- function(..., population=NA, na.rm=TRUE, summed=FALSE, logBase=exp
   return(results)
 }
 # Sanity checks and warnings for divergence and entropy
-multigroup_sanity <- function(groupMatrix, population){
+multigroup_sanity <- function(groupMatrix, population, comparison){
   if(isTRUE(any(groupMatrix<0))) warning("Negative numbers detected; may skew results")
   # ensure that percentages sum to about 1
   if(isTRUE(any(rowSums(groupMatrix)>1.05))) warning("Some of the provided rows sum to more than 1; check that input values are proportions.")
+  if(!is.null(comparison) & length(comparison) != length(groupMatrix)) stop("`comparison` must be the same length the number of columns in `...`")
 }
 #' Theil's Index of Entropy
 #'
@@ -133,7 +133,7 @@ multigroup_sanity <- function(groupMatrix, population){
 #' bay_race$black, bay_race$all_other, weights = bay_race$total_pop)
 #'
 #' @export
-entropy <- function( ..., population=NA, comparison=NA, entropy_type = 'entropy', logBase=exp(1),
+entropy <- function( ..., population=NA, comparison=NULL, entropy_type = 'entropy', logBase=exp(1),
   scale = FALSE, summed=FALSE, na.rm=TRUE, weights = NA, sumPercent = NA){
 
   groupMatrix <- data.frame(...)
@@ -145,7 +145,7 @@ entropy <- function( ..., population=NA, comparison=NA, entropy_type = 'entropy'
   population <- multigroup_population(g=groupMatrix, p=population, w=weights, n=na.rm)
 
   # check for construction problems
-  multigroup_sanity(groupMatrix,population)
+  multigroup_sanity(groupMatrix,population,c=comparison)
   # create by-group scores
   prescores <- groupMatrix
   # get summary proportions for the full dataset
@@ -167,26 +167,26 @@ entropy <- function( ..., population=NA, comparison=NA, entropy_type = 'entropy'
   if(entropy_type == 'information_theory') {
     # sanity check
     if(isTRUE(scale)) stop("scale is not compatible with information_theory")
-    return(information_theory(entropy, sumPercent, population, summed))
+    return(information_theory(e=entropy, large=largeGroup, p=population, summed=summed, log=logBase))
   }
 
   # in either entropy_type, the entropy of the larger geography is needed
   if(summed==T) {
     #large population entropy score
-    entropySum <- ifelse(sumPercent <= 0, 0,
-      sumPercent * log(1 / sumPercent) )
+    entropySum <- ifelse(largeGroup <= 0, 0,
+      largeGroup * log(1 / largeGroup) )
     entropySum <- sum(entropySum)
-    if(isTRUE(scale)) entropySum <- scale01(entropySum, 0, log(length(sumPercent)))
+    if(isTRUE(scale)) entropySum <- scale01(entropySum, 0, log(length(largeGroup)))
     return(entropySum)
   }
 
   return(entropy)
 }
 # information theory
-information_theory <- function(entropy, sumPercent, population, summed){
+information_theory <- function(entropy, largeGroup, population, summed, logBase){
   #large population entropy score
-  entropySum <- ifelse(sumPercent <= 0, 0,
-    sumPercent * log(1 / sumPercent) )
+  entropySum <- ifelse(largeGroup <= 0, 0,
+    largeGroup * log(1 / largeGroup, base=logBase) )
   entropySum <- sum(entropySum)
   # Information index - single observation
   index <- 1 - (entropy/entropySum)
@@ -209,16 +209,7 @@ convert_weights <- function(df, weights, na.rm){
   weights <- weights/sumweight
   return(weights)
 }
-# create sumPercent from weights if necessary
-proc_sumPercent <- function(df, sumPercent, weights, na.rm){
-  # conversion from weights if specified
-  if(isTRUE(sumPercent == 'weights')){
-    popTotals <- df * weights
-    popTotals <- colSums(popTotals, na.rm = na.rm)
-    sumPercent <- popTotals/sum(popTotals, na.rm = na.rm)
-  }
-  return(sumPercent)
-}
+
 # convert matrix to percentages or normalize percentages to sum to one
 to_percentages <- function(df, rowTotals = NA, na.rm){
   if(isTRUE(is.na(rowTotals))) rowTotals <- rowSums(df, na.rm = na.rm)
@@ -227,10 +218,8 @@ to_percentages <- function(df, rowTotals = NA, na.rm){
   return(df)
 }
 # sanity checks for divergence
-divergence_sanity <- function(...){
-  list2env(list(...), envir = environment())
+divergence_sanity <- function(rowTotals, sumPercent){
   if(!is.na(rowTotals) | !is.na(sumPercent)) stop('One of your parameters has been deprecated.')
-  if(!is.null(comparison) & length(comparison) != length(groupMatrix)) stop("`comparison` must be the same length the number of columns in `...`")
 }
 # handle population/weight inputs
 multigroup_population <- function(groupMatrix, population, weights, na.rm){
