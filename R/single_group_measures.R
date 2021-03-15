@@ -15,13 +15,13 @@
 #' was close to zero.
 #'
 #' @details The isolation formula is
-#' \eqn{\Sigma ((group/sum(group))*(group/totalPop))}
+#' \eqn{\Sigma ((group/sum(group))*(group/population))}
 #'
 #' @inheritParams divergence
 #' @inheritParams dissimilarity
 #'
 #' @param group A numeric vector of the proportion of the population
-#' @param totalPop A numeric vector the length of `group` with overall population totals.
+#' @param population A numeric vector the length of `group` with its proportion of `population`.
 #'
 #' @source Wendell Bell, A Probability Model for the Measurement of Ecological Segregation, Social Forces, Volume 32, Issue 4, May 1954, Pages 357–364, https://doi.org/10.2307/2574118
 #' @return A scalar value, see note.
@@ -30,10 +30,10 @@
 #' measure is not meant to be decomposed. These results are for verification
 #' purposes only.
 #' @export
-isolation <- function(group, totalPop, summed=TRUE, na.rm=TRUE){
-  superGroup <- sum(group * totalPop, na.rm=na.rm)
-  iso <- ifelse(totalPop == 0, 0,
-    (group * totalPop / superGroup) * (group)
+isolation <- function(group, population, summed=TRUE, na.rm=TRUE){
+  superGroup <- sum(group * population, na.rm=na.rm)
+  iso <- ifelse(population == 0, 0,
+    (group * population / superGroup) * (group)
   )
   if(summed==T) iso <- sum(iso, na.rm=na.rm)
   return(iso)
@@ -53,7 +53,7 @@ isolation <- function(group, totalPop, summed=TRUE, na.rm=TRUE){
 #'
 #' @details LQ is equivalent to the percentage of a group in a single observation divided
 #' by the percentage of that group in the population of all observations, i.e.
-#' \eqn{ (group/totalPop)/(\Sigma(group)/\Sigma(totalPop))}
+#' \eqn{ (group/population)/(\Sigma(group)/\Sigma(population))}
 #'
 #' @inheritParams isolation
 #' @inheritParams base::sum
@@ -63,15 +63,15 @@ isolation <- function(group, totalPop, summed=TRUE, na.rm=TRUE){
 #' data("bay_race")
 #' # calculate the location quotient for Hispanic people in each tract in the bay area
 #' location_quotient(group = bay_race$hispanic,
-#' totalPop = bay_race$total_pop)
+#' population = bay_race$total_pop)
 #'
 #' @name location_quotient
 #' @export
 NULL
 #' @rdname location_quotient
-location_quotient <- function(group, totalPop, na.rm = FALSE){
+location_quotient <- function(group, population, na.rm = FALSE){
   # calculate the percentage of the group in the total sample
-  superGroup <- stats::weighted.mean(group, totalPop, na.rm=na.rm)
+  superGroup <- stats::weighted.mean(group, population, na.rm=na.rm)
   return(group/superGroup)
 }
 #' @rdname location_quotient
