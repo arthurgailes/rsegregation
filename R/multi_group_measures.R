@@ -67,15 +67,15 @@ divergence <- function(..., population=NA, na.rm=TRUE, summed=FALSE, logBase=exp
     groupMatrix[popChar] <- NULL
    }
   #process population
-  population <- multigroup_population(g=groupMatrix, p=population, w=weights, n=na.rm)
+  population <- multigroup_population(groupMatrix=groupMatrix, population=population, weights=weights, na.rm=na.rm)
 
   # remove NAs
   if(isTRUE(na.rm)) groupMatrix[is.na(groupMatrix)] <- 0
 
   # get summary proportions for the full dataset
-  largeGroup <- sumProportion(g=groupMatrix, p=population,c=comparison)
+  largeGroup <- sumProportion(groupMatrix=groupMatrix, population=population,comparison=comparison)
   # check for construction problems
-  multigroup_sanity(groupMatrix,population,c=comparison)
+  multigroup_sanity(groupMatrix=groupMatrix,population=population,comparison=comparison)
   # create by-group scores
   prescores <- groupMatrix
   for(column in seq_along(groupMatrix)){
@@ -147,7 +147,7 @@ entropy <- function( ..., population=NA, comparison=NULL, entropy_type = 'entrop
   population <- multigroup_population(groupMatrix=groupMatrix, population=population, weights=weights, na.rm=na.rm)
 
   # check for construction problems
-  multigroup_sanity(groupMatrix,population,c=comparison)
+  multigroup_sanity(groupMatrix=groupMatrix,population=population,comparison=comparison)
   # create by-group scores
   prescores <- groupMatrix
   # get summary proportions for the full dataset
