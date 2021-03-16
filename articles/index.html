@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Dissimilarity Score — dissimilarity • rsegregation</title>
+<title>Articles • rsegregation</title>
 
 
 <!-- jquery -->
@@ -39,12 +39,7 @@
 
 
 
-<meta property="og:title" content="Dissimilarity Score — dissimilarity" />
-<meta property="og:description" content="This index measures the evenness with which two mutually exclusive
-groups are distributed across the geographic units that make up a
-larger geographic entity; for example, the distribution of blacks and
-whites across the census tracts that make up a metropolis.
-Its minimum value is zero and its maximum value is 100." />
+<meta property="og:title" content="Articles" />
 
 
 
@@ -63,7 +58,7 @@ Its minimum value is zero and its maximum value is 100." />
   </head>
 
   <body data-spy="scroll" data-target="#toc">
-    <div class="container template-reference-topic">
+    <div class="container template-article-index">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -124,66 +119,18 @@ Its minimum value is zero and its maximum value is 100." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Dissimilarity Score</h1>
-    <small class="dont-index">Source: <a href='https://github.com/arthurgailes/rsegregation/blob/master/R/two_group_measures.R'><code>R/two_group_measures.R</code></a></small>
-    <div class="hidden name"><code>dissimilarity.Rd</code></div>
+      <h1>Articles</h1>
     </div>
 
-    <div class="ref-description">
-    <p>This index measures the evenness with which two mutually exclusive
-groups are distributed across the geographic units that make up a
-larger geographic entity; for example, the distribution of blacks and
-whites across the census tracts that make up a metropolis.
-Its minimum value is zero and its maximum value is 100.</p>
+    <div class="section ">
+      <h3>All vignettes</h3>
+      <p class="section-desc"></p>
+
+      <dl>
+        <dt><a href="replication.html">Replicating Segregation Papers</a></dt>
+        <dd></dt>
+      </dl>
     </div>
-
-    <pre class="usage"><span class='fu'>dissimilarity</span><span class='op'>(</span><span class='va'>group1</span>, <span class='va'>group2</span>, population <span class='op'>=</span> <span class='cn'>NA</span>, summed <span class='op'>=</span> <span class='cn'>TRUE</span>, na.rm <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></pre>
-
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>group1, group2</th>
-      <td><p>Numeric vectors representing the proportions of each group in each observation</p></td>
-    </tr>
-    <tr>
-      <th>population</th>
-      <td><p>if <code>group1</code> and <code>group2</code> are proportions, this parameter gives the population weights.
-Set to 1 to avoid a warning measure if using population</p></td>
-    </tr>
-    <tr>
-      <th>summed</th>
-      <td><p>If TRUE, will return a single summary statistic. (Or one value per group if specifying
-<code><a href='https://dplyr.tidyverse.org/reference/group_by.html'>dplyr::group_by</a></code>.) If FALSE (default), will return a vector equaling the length
-of the input vectors. If 'weighted' (only for divergence and information theory), returns
-a vector as in FALSE, but with pre-weighted values,
-such that <code>sum(divergence(..., summed = 'weighted))</code> is equivalent to
-<code><a href='divergence.html'>divergence(..., summed = T)</a></code>.</p></td>
-    </tr>
-    <tr>
-      <th>na.rm</th>
-      <td><p>logical. Should missing values (including NaN) be removed?
-Used only if <code>summed</code> is set to TRUE.</p></td>
-    </tr>
-    </table>
-
-    <h2 class="hasAnchor" id="source"><a class="anchor" href="#source"></a>Source</h2>
-
-    <p>Duncan, Otis Dudley, and Beverly Duncan. A Methodological Analysis of Segregation Indexes.” American Sociological Review, vol. 20, no. 2, 1955, pp. 210–217. JSTOR, www.jstor.org/stable/2088328. Accessed 14 Mar. 2020.</p>
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
-
-    <p>A scalar value, see note.</p>
-    <h2 class="hasAnchor" id="note"><a class="anchor" href="#note"></a>Note</h2>
-
-    <p>Setting summed == FALSE will return by-observation measures, but this
-measure is not meant to be decomposed. These results are for verification
-purposes only.</p>
-
-  </div>
-  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
-    <nav id="toc" data-toggle="toc" class="sticky-top">
-      <h2 data-toc-skip>Contents</h2>
-    </nav>
   </div>
 </div>
 
