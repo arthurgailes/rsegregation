@@ -39,19 +39,19 @@
 #' data("bay_race")
 #' #return by-observation scores
 #' divergence(bay_race$white,bay_race$hispanic,bay_race$asian,
-#' bay_race$black, bay_race$all_other)
+#' bay_race$black, bay_race$all_other, population=bay_race$total_pop)
 #'
 #' # Using dplyr
 #' require(dplyr)
 #' mutate(bay_race, divergence_score = divergence(white, hispanic,
-#'   asian, black, all_other))
+#'   asian, black, all_other, population=total_pop))
 #'
 #' # divergence alsow works with percentages as long as you have
 #' # population totals by observation
 #' bay_race %>%
 #'   mutate_at(vars(hispanic:all_other), list(~(./total_pop))) %>%
 #'   mutate(divergence_score = divergence(white, hispanic, asian,
-#'   black, all_other, weights = total_pop))
+#'   black, all_other, population = total_pop))
 #'
 #' @source Created by Elizabeth Roberto: <https://arxiv.org/abs/1508.01167>
 #' @export
@@ -132,7 +132,7 @@ multigroup_sanity <- function(groupMatrix, population, comparison){
 #' @examples
 #' library(rsegregation)
 #' entropy(bay_race$white,bay_race$hispanic,bay_race$asian,
-#' bay_race$black, bay_race$all_other, weights = bay_race$total_pop)
+#' bay_race$black, bay_race$all_other, population = bay_race$total_pop)
 #'
 #' @export
 entropy <- function( ..., population=NA, comparison=NULL, entropy_type = 'entropy', logBase=exp(1),

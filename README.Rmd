@@ -56,14 +56,15 @@ library(dplyr)
 ## included dataset of Bay Area Census tracts
 # Using dplyr
 bay_divergence <- bay_race %>% 
-  summarize(bay_divergence = divergence(white,black,asian, hispanic, all_other), summed = T)
+  summarize(bay_divergence = divergence(white,black,asian, hispanic, all_other),
+    population=total_pop, summed = T)
 
 # Using base r
 bay_divergence <- divergence(bay_race[c('white','black','asian', 'hispanic', 'all_other')], 
-  summed = T)
+  population=bay_race$total_pop, summed = T)
 # or
 bay_divergence <- divergence(bay_race$white,bay_race$black,bay_race$asian, 
-  bay_race$hispanic, bay_race$all_other, summed = T)
+  bay_race$hispanic, bay_race$all_other, population=bay_race$total_pop, summed = T)
 # all return the same result:
 bay_divergence
 ```
@@ -74,7 +75,8 @@ Using the included Bay Area dataset of 2010 racial groups, divergence can be cal
 ```{r by_county}
 #library(dplyr)
 group_by(bay_race, county) %>% 
-  summarize(bay_divergence = divergence(white,black,asian, hispanic, all_other, summed = T))
+  summarize(bay_divergence = divergence(white,black,asian, hispanic, all_other, 
+    population=total_pop, summed = T))
 ```
 
 #### By-observation divergence scores
@@ -82,7 +84,7 @@ Divergence and entropy are both calculated rowwise by default (summed = FALSE).
 ```{r by_tract}
 bay_entropy <- bay_race
 bay_entropy$entropy <- entropy(bay_race[c('white','black','asian',
-  'hispanic','all_other')], summed = F)
+  'hispanic','all_other')], population=bay_race$total_pop, summed = F)
 head(bay_entropy)
 ```
 

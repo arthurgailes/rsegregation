@@ -41,9 +41,6 @@ The minimum value of the isolation index is asymptotically close to 0.
 That is, if there is only one white person in a metropolis of 100,000,
 he or she would live in a geographic unit in which the percent white
 was close to zero.
-
-The isolation formula is
-\eqn{\Sigma ((group/sum(group))*(group/population))}
 }
 \note{
 Setting summed == FALSE will return by-observation measures, but this

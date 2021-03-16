@@ -52,14 +52,17 @@ library(dplyr)
 ## included dataset of Bay Area Census tracts
 # Using dplyr
 bay_divergence <- bay_race %>% 
-  summarize(bay_divergence = divergence(white,black,asian, hispanic, all_other), summed = T)
+  summarize(bay_divergence = divergence(white,black,asian, hispanic, all_other),
+    population=total_pop, summed = T)
+#> Warning in multigroup_population(groupMatrix = groupMatrix, population =
+#> population, : Population parameter not set; assuming equal populations.
 
 # Using base r
 bay_divergence <- divergence(bay_race[c('white','black','asian', 'hispanic', 'all_other')], 
-  summed = T)
+  population=bay_race$total_pop, summed = T)
 # or
 bay_divergence <- divergence(bay_race$white,bay_race$black,bay_race$asian, 
-  bay_race$hispanic, bay_race$all_other, summed = T)
+  bay_race$hispanic, bay_race$all_other, population=bay_race$total_pop, summed = T)
 # all return the same result:
 bay_divergence
 ```
@@ -72,7 +75,8 @@ can be calculated by county using `dplyr::group_by()`.
 ``` r
 #library(dplyr)
 group_by(bay_race, county) %>% 
-  summarize(bay_divergence = divergence(white,black,asian, hispanic, all_other, summed = T))
+  summarize(bay_divergence = divergence(white,black,asian, hispanic, all_other, 
+    population=total_pop, summed = T))
 ```
 
 <div class="kable-table">
@@ -99,20 +103,20 @@ FALSE).
 ``` r
 bay_entropy <- bay_race
 bay_entropy$entropy <- entropy(bay_race[c('white','black','asian',
-  'hispanic','all_other')], summed = F)
+  'hispanic','all_other')], population=bay_race$total_pop, summed = F)
 head(bay_entropy)
 ```
 
 <div class="kable-table">
 
-| fips        | total\_pop | hispanic | white | black | asian | all\_other | county                           |   entropy |
-|:------------|-----------:|---------:|------:|------:|------:|-----------:|:---------------------------------|----------:|
-| 06001400100 |       2937 |      117 |  2078 |   140 |   456 |        146 | Alameda County, California, 2010 | 0.9566644 |
-| 06001400200 |       1974 |      151 |  1546 |    31 |   146 |        100 | Alameda County, California, 2010 | 0.7969746 |
-| 06001400300 |       4865 |      399 |  3256 |   512 |   419 |        279 | Alameda County, California, 2010 | 1.0859266 |
-| 06001400400 |       3703 |      332 |  2424 |   448 |   270 |        229 | Alameda County, California, 2010 | 1.1121719 |
-| 06001400500 |       3517 |      340 |  1778 |   933 |   208 |        258 | Alameda County, California, 2010 | 1.2816122 |
-| 06001400600 |       1571 |      126 |   671 |   615 |    80 |         79 | Alameda County, California, 2010 | 1.2348325 |
+| fips        | total\_pop |  hispanic |     white |     black |     asian | all\_other | county                           |   entropy |
+|:------------|-----------:|----------:|----------:|----------:|----------:|-----------:|:---------------------------------|----------:|
+| 06001400100 |       2937 | 0.0398366 | 0.7075247 | 0.0476677 | 0.1552605 |  0.0497106 | Alameda County, California, 2010 | 0.9566644 |
+| 06001400200 |       1974 | 0.0764944 | 0.7831814 | 0.0157042 | 0.0739615 |  0.0506586 | Alameda County, California, 2010 | 0.7969746 |
+| 06001400300 |       4865 | 0.0820144 | 0.6692703 | 0.1052415 | 0.0861254 |  0.0573484 | Alameda County, California, 2010 | 1.0859266 |
+| 06001400400 |       3703 | 0.0896570 | 0.6546044 | 0.1209830 | 0.0729139 |  0.0618417 | Alameda County, California, 2010 | 1.1121719 |
+| 06001400500 |       3517 | 0.0966733 | 0.5055445 | 0.2652829 | 0.0591413 |  0.0733580 | Alameda County, California, 2010 | 1.2816122 |
+| 06001400600 |       1571 | 0.0802037 | 0.4271165 | 0.3914704 | 0.0509230 |  0.0502864 | Alameda County, California, 2010 | 1.2348325 |
 
 </div>
 
@@ -128,14 +132,14 @@ head(bay_race)
 
 <div class="kable-table">
 
-| fips        | total\_pop | hispanic | white | black | asian | all\_other | county                           |
-|:------------|-----------:|---------:|------:|------:|------:|-----------:|:---------------------------------|
-| 06001400100 |       2937 |      117 |  2078 |   140 |   456 |        146 | Alameda County, California, 2010 |
-| 06001400200 |       1974 |      151 |  1546 |    31 |   146 |        100 | Alameda County, California, 2010 |
-| 06001400300 |       4865 |      399 |  3256 |   512 |   419 |        279 | Alameda County, California, 2010 |
-| 06001400400 |       3703 |      332 |  2424 |   448 |   270 |        229 | Alameda County, California, 2010 |
-| 06001400500 |       3517 |      340 |  1778 |   933 |   208 |        258 | Alameda County, California, 2010 |
-| 06001400600 |       1571 |      126 |   671 |   615 |    80 |         79 | Alameda County, California, 2010 |
+| fips        | total\_pop |  hispanic |     white |     black |     asian | all\_other | county                           |
+|:------------|-----------:|----------:|----------:|----------:|----------:|-----------:|:---------------------------------|
+| 06001400100 |       2937 | 0.0398366 | 0.7075247 | 0.0476677 | 0.1552605 |  0.0497106 | Alameda County, California, 2010 |
+| 06001400200 |       1974 | 0.0764944 | 0.7831814 | 0.0157042 | 0.0739615 |  0.0506586 | Alameda County, California, 2010 |
+| 06001400300 |       4865 | 0.0820144 | 0.6692703 | 0.1052415 | 0.0861254 |  0.0573484 | Alameda County, California, 2010 |
+| 06001400400 |       3703 | 0.0896570 | 0.6546044 | 0.1209830 | 0.0729139 |  0.0618417 | Alameda County, California, 2010 |
+| 06001400500 |       3517 | 0.0966733 | 0.5055445 | 0.2652829 | 0.0591413 |  0.0733580 | Alameda County, California, 2010 |
+| 06001400600 |       1571 | 0.0802037 | 0.4271165 | 0.3914704 | 0.0509230 |  0.0502864 | Alameda County, California, 2010 |
 
 </div>
 

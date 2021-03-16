@@ -14,8 +14,6 @@
 #' he or she would live in a geographic unit in which the percent white
 #' was close to zero.
 #'
-#' @details The isolation formula is
-#' \eqn{\Sigma ((group/sum(group))*(group/population))}
 #'
 #' @inheritParams divergence
 #' @inheritParams dissimilarity

@@ -71,7 +71,7 @@ a baseline.
 \examples{
 library(rsegregation)
 entropy(bay_race$white,bay_race$hispanic,bay_race$asian,
-bay_race$black, bay_race$all_other, weights = bay_race$total_pop)
+bay_race$black, bay_race$all_other, population = bay_race$total_pop)
 
 }
 \seealso{
