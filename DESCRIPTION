@@ -1,7 +1,7 @@
 Package: rsegregation
 Type: Package
 Title: Calculate Empirical Measures of Segregation
-Version: 0.4.0
+Version: 0.4.1
 Authors@R: person("Arthur", "Gailes", email = "arthurgailes@berkeley.edu",
   role = c("aut","cre"))
 Description: Provides functions for several empirical measures of racial segregation within a tidy framework.
@@ -19,6 +19,9 @@ Imports:
 RoxygenNote: 7.1.1
 Suggests: 
     covr,
-    testthat
+    testthat,
+    knitr,
+    rmarkdown
 URL: https://github.com/arthurgailes/rsegregation
 BugReports: https://github.com/arthurgailes/rsegregation/issues
+VignetteBuilder: knitr

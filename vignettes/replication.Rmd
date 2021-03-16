@@ -1,0 +1,79 @@
+---
+title: "Replicating Segregation Papers"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{replication}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+This vignette reproduces the results of some popular segregation packages.
+
+```{r setup}
+library(rsegregation)
+library(dplyr, warn.conflicts = FALSE)
+```
+
+#### The Divergence Index: A Decomposable Measure of Segregation and Inequality
+
+In [this paper](https://arxiv.org/abs/1508.01167), Elizabeth Roberto calculates divergence and entropy scores for the city of Detroit. Her calculations compare the black and white population specifically.
+
+*Load Data*
+
+```{r}
+load(system.file('extdata','detroit_race.rda', package='rsegregation', mustWork = T))
+
+
+# get black/white specific stats
+detroit_mod <- detroit_race %>%
+    filter(population>0) %>%
+    mutate(pop_bw=population*(black+white), black_bw=black/(black+white),
+      white_bw=white/(black+white))
+```
+
+*Divergence Index*
+
+```{r}
+# Roberto's results
+robCity <- 0.14
+robMetro <- 0.48
+
+city <- dplyr::filter(detroit_mod, grepl('Detroit',place_name))
+
+# compare city black/white results
+city_bw <- summarize(city, div=divergence(black_bw, white_bw,
+  population=pop_bw, summed=T, logBase=2))
+expect_equivalent(city_bw$div, robCity, tolerance=0.01)
+
+# compare metro results
+metro_bw <- summarize(detroit_mod, div=divergence(black_bw, white_bw,
+  population=pop_bw, summed=T, logBase=2))
+expect_equal(metro_bw$div, robMetro, tolerance=0.01)
+```
+
+*Entropy/Information Theory Indexes*
+
+Entropy has several scores, comparing them here.
+```{r}
+# compare city black/white results
+  create_comp <- function(df) summarize(df, ent=entropy(black_bw, white_bw,
+    population=pop_bw, summed=T, logBase=2),
+    inf=entropy(black_bw, white_bw, entropy_type = 'information_theory',
+      population=pop_bw, summed=T, logBase=2))
+  city_bw <- create_comp(city)
+  expect_equivalent(city_bw$ent, 0.29, tolerance=0.01)
+  expect_equivalent(city_bw$inf, 0.32, tolerance=0.01)
+
+  # compare metro results
+  metro_bw <- create_comp(detroit_mod)
+  expect_equal(metro_bw$ent, 0.33, tolerance=0.01)
+  expect_equivalent(metro_bw$inf, 0.59, tolerance=0.01)
+```
+
