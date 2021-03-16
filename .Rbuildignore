@@ -10,3 +10,4 @@
 documentation/*
 ^codecov\.yml$
 ^\.github$
+^data-raw$

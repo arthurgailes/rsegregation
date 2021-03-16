@@ -4,3 +4,5 @@
 .Ruserdata
 *.ini
 documentation/
+data-raw/roberto_test.R
+inst/doc
