@@ -7,7 +7,7 @@ test_that("Default data works",{
 })
 
 test_that("Results match Roberto in Detroit",{
-  data("detroit_race")
+  load(system.file('extdata','detroit_race.rda', package='rsegregation', mustWork = T))
   library(dplyr)
   detroit_mod <- detroit_race %>%
     filter(population>0) %>%

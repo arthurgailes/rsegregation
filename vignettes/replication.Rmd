@@ -2,7 +2,7 @@
 title: "Replicating Segregation Papers"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{replication}
+  %\VignetteIndexEntry{Replicating Segregation Papers}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -18,6 +18,7 @@ This vignette reproduces the results of some popular segregation packages.
 
 ```{r setup}
 library(rsegregation)
+library(testthat)
 library(dplyr, warn.conflicts = FALSE)
 ```
 
@@ -57,6 +58,22 @@ metro_bw <- summarize(detroit_mod, div=divergence(black_bw, white_bw,
   population=pop_bw, summed=T, logBase=2))
 expect_equal(metro_bw$div, robMetro, tolerance=0.01)
 ```
+
+*Decomposed Divergence*
+
+```{r}
+rob_result <- data.frame(within=c(0.05,0.32), between=c(0.5,0.14))
+dec <- detroit_mod %>%
+    transmute(place_name = ifelse(grepl('Detroit',place_name), place_name, 'Suburbs'),
+      pop_bw, white_bw, black_bw) %>%
+    decompose_divergence(groupCol='place_name', popCol = 'pop_bw', output='percentage',
+      logBase=2) %>%
+    select(-place_name) %>% as.data.frame()
+  
+
+  expect_equal(dec, rob_result, tolerance = 0.03, ignore_attr=T)
+```
+
 
 *Entropy/Information Theory Indexes*
 

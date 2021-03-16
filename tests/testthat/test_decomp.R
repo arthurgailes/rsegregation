@@ -52,6 +52,7 @@ test_that("decomposition works with an NA column",{
 })
 
 test_that("decompostition matches Roberto results",{
+  load(system.file('extdata','detroit_race.rda', package='rsegregation', mustWork = T))
   library(dplyr)
   # collect decomposed results
   dec <- detroit_race %>%

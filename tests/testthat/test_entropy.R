@@ -27,6 +27,7 @@ test_that('current entropy calculation matches pre-calculated results',{
 })
 
 test_that("Results match Roberto in Detroit",{
+  load(system.file('extdata','detroit_race.rda', package='rsegregation', mustWork = T))
   library(dplyr)
   detroit_mod <- detroit_race %>%
     filter(population>0) %>%
@@ -54,7 +55,7 @@ test_that("Results match Roberto in Detroit",{
 
 test_that("Overall entropy reports correct value",{
   library(dplyr)
-
+  load(system.file('extdata','detroit_race.rda', package='rsegregation', mustWork = T))
   overall <- summarize(detroit_race,
     ent=entropy(across(black:nhpi), population=population, entropy_type = 'overall_entropy'),
     across(black:nhpi, weighted.mean, population, na.rm=T)
