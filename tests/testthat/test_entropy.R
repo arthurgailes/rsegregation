@@ -38,11 +38,14 @@ test_that("Results match Roberto in Detroit",{
   city <- dplyr::filter(detroit_mod, grepl('Detroit',place_name))
 
   # compare city black/white results
-  create_comp <- function(df) summarize(df, ent=entropy(black_bw, white_bw,
-    population=pop_bw, summed=T, logBase=2),
+  create_comp <- function(df) summarize(df,
+    ent=entropy(black_bw, white_bw, population=pop_bw, summed=T, logBase=2),
     inf=entropy(black_bw, white_bw, entropy_type = 'information_theory',
-      population=pop_bw, summed=T, logBase=2))
+      population=pop_bw, summed=T, logBase=2),
+    ent_tot = entropy(across(c(white_bw, black_bw), weighted.mean, pop_bw),
+      population=1, logBase=2))
   city_bw <- create_comp(city)
+  expect_equal(city_bw$ent_tot, 0.42, tolerance=0.01)
   expect_equivalent(city_bw$ent, 0.29, tolerance=0.01)
   expect_equivalent(city_bw$inf, 0.32, tolerance=0.01)
 
