@@ -15,12 +15,10 @@
 #' @param weights deprecated, use population.
 #' @param rowTotals,sumPercent deprecated, will throw error.
 #'
-#' @param summed If TRUE, will return a single summary statistic. (Or one value per group if specifying
-#' `dplyr::group_by`.) If FALSE (default), will return a vector equaling the length
-#' of the input vectors. If 'weighted' (only for divergence and information theory), returns
-#'  a vector as in FALSE, but with pre-weighted values,
-#' such that `sum(divergence(..., summed = 'weighted))` is equivalent to
-#' `divergence(..., summed = T)`.
+#' @param summed If TRUE, will return a the average over the entire dataset
+#'  (Or one value per group if specifying
+#' `dplyr::group_by`), weighted by the population parameter. If FALSE (default), will return a vector equaling the length
+#' of the input vectors.
 #'
 #' @param logBase Specify the base for the logathirm used in the equation. Natural logarithm by default.
 #'

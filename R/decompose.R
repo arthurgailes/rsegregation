@@ -112,7 +112,7 @@ decompose_divergence <- function(dataframe, groupCol=NULL, popCol = NA, weightCo
   divSumGroup <- ifelse(sum(result$popCol)==0, 0,
     stats::weighted.mean(result$total, result$popCol, na.rm=T)
   )
-  if(round(divSum, 4) != round(divSumGroup, 4)) warning("sum of within and between divergence is not equal to sum of total divergence. Check inputs.")
+  if(isTRUE(round(divSum, 4) != round(divSumGroup, 4))) warning("sum of within and between divergence is not equal to sum of total divergence. Check inputs.")
 
   # process output parameter
   if(output == 'scores') result <- subset(result, select = -popCol)
