@@ -119,10 +119,8 @@ install.packages("rsegregation")
 <span class="co">## included dataset of Bay Area Census tracts</span>
 <span class="co"># Using dplyr</span>
 <span class="va">bay_divergence</span> <span class="op">&lt;-</span> <span class="va">bay_race</span> <span class="op">%&gt;%</span> 
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarize</a></span><span class="op">(</span>bay_divergence <span class="op">=</span> <span class="fu"><a href="reference/divergence.html">divergence</a></span><span class="op">(</span><span class="va">white</span>,<span class="va">black</span>,<span class="va">asian</span>, <span class="va">hispanic</span>, <span class="va">all_other</span><span class="op">)</span>,
-    population<span class="op">=</span><span class="va">total_pop</span>, summed <span class="op">=</span> <span class="cn">T</span><span class="op">)</span>
-<span class="co">#&gt; Warning in multigroup_population(groupMatrix = groupMatrix, population =</span>
-<span class="co">#&gt; population, : Population parameter not set; assuming equal populations.</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarize</a></span><span class="op">(</span>bay_divergence <span class="op">=</span> <span class="fu"><a href="reference/divergence.html">divergence</a></span><span class="op">(</span><span class="va">white</span>,<span class="va">black</span>,<span class="va">asian</span>, <span class="va">hispanic</span>, <span class="va">all_other</span>,
+    population<span class="op">=</span><span class="va">total_pop</span>, summed <span class="op">=</span> <span class="cn">T</span><span class="op">)</span><span class="op">)</span>
 
 <span class="co"># Using base r</span>
 <span class="va">bay_divergence</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/divergence.html">divergence</a></span><span class="op">(</span><span class="va">bay_race</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'white'</span>,<span class="st">'black'</span>,<span class="st">'asian'</span>, <span class="st">'hispanic'</span>, <span class="st">'all_other'</span><span class="op">)</span><span class="op">]</span>, 
