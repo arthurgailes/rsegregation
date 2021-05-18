@@ -52,10 +52,8 @@ library(dplyr)
 ## included dataset of Bay Area Census tracts
 # Using dplyr
 bay_divergence <- bay_race %>% 
-  summarize(bay_divergence = divergence(white,black,asian, hispanic, all_other),
-    population=total_pop, summed = T)
-#> Warning in multigroup_population(groupMatrix = groupMatrix, population =
-#> population, : Population parameter not set; assuming equal populations.
+  summarize(bay_divergence = divergence(white,black,asian, hispanic, all_other,
+    population=total_pop, summed = T))
 
 # Using base r
 bay_divergence <- divergence(bay_race[c('white','black','asian', 'hispanic', 'all_other')], 
